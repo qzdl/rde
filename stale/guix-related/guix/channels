@@ -2,8 +2,13 @@
 	     (guix channels))
 
 (list (channel-with-substitutes-available
-       %default-guix-channel
+       (channel
+        (name 'guix)
+        (branch "wip-guix-home")
+        (url %default-channel-url)
+        (introduction %guix-channel-introduction))
        "https://ci.guix.gnu.org")
       (channel
        (name 'rde)
+       (branch "without-guix-home")
        (url "https://git.sr.ht/~abcdw/rde")))
