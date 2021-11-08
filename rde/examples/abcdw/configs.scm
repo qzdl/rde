@@ -83,22 +83,31 @@
     ;;  #:remote-password-store-url "ssh://abcdw@olorin.lan/~/state/password-store")
 
    (feature-mail-settings
-    #:mail-accounts (list (mail-acc 'work     "sculpepper@newstore.com")
-                          (mail-acc 'personal "samuel@samuelculpepper.com"))
-    #:mailing-lists (list
-                     (mail-lst 'rde-announce "~acbdw/rde-announce@lists.sr.ht"
-                               '("https://lists.sr.ht/~abcdw/rde-announce/export"))
-                     (mail-lst 'rde-discuss "~acbdw/rde-discuss@lists.sr.ht"
-                               '("https://lists.sr.ht/~abcdw/rde-discuss"))
-                     (mail-lst 'rde-devel "~acbdw/rde-devel@lists.sr.ht"
-                               '("https://lists.sr.ht/~abcdw/rde-devel"))
 
-                     (mail-lst 'guix-bugs "guix-bugs@gnu.org"
-                                    '("https://yhetil.org/guix-bugs/0"))
-                     (mail-lst 'guix-devel "guix-devel@gnu.org"
-                               '("https://yhetil.org/guix-devel/0"))
-                     (mail-lst 'guix-patches "guix-patches@gnu.org"
-                               '("https://yhetil.org/guix-patches/1"))))
+    #:mail-accounts
+    (list (mail-account
+           (id   'work)
+           (fqda "sculpepper@newstore.com")
+           (type 'gmail))
+          (mail-account
+           (id   'personal)
+           (fqda "samuel@samuelculpepper.com")
+           (type 'bravehost)))
+    #:mailing-lists
+    (list
+     (mail-lst 'rde-announce "~acbdw/rde-announce@lists.sr.ht"
+               '("https://lists.sr.ht/~abcdw/rde-announce/export"))
+     (mail-lst 'rde-discuss "~acbdw/rde-discuss@lists.sr.ht"
+               '("https://lists.sr.ht/~abcdw/rde-discuss"))
+     (mail-lst 'rde-devel "~acbdw/rde-devel@lists.sr.ht"
+               '("https://lists.sr.ht/~abcdw/rde-devel"))
+
+     (mail-lst 'guix-bugs "guix-bugs@gnu.org"
+               '("https://yhetil.org/guix-bugs/0"))
+     (mail-lst 'guix-devel "guix-devel@gnu.org"
+               '("https://yhetil.org/guix-devel/0"))
+     (mail-lst 'guix-patches "guix-patches@gnu.org"
+               '("https://yhetil.org/guix-patches/1"))))
 
    (feature-keyboard
     ;; To get all available options, layouts and variants run:
@@ -202,7 +211,6 @@
                                  (postgresql-role
                                   (name "newstore")
                                   (create-database? #t))))))))
->>>>>>> 557a64c (feat: extend wm,emacs,ssh)
 
    (feature-base-services)
    (feature-desktop-services)
@@ -227,13 +235,30 @@
    (feature-bash)
    (feature-direnv)
    (feature-ssh
-    #:extra-config
-    (list (ssh-host
-           (host "bastion-sandbox")
-           (options '((user . "ubuntu@bastion-sandbox")
-                      (hostname . "bastion-sandbox.ssh.newstore.luminatesec.com")
-                      (port . 22)
-                      (identity-file . "~/.ssh/newstore-luminate.pem"))))))
+    #:ssh-configuration
+    (home-ssh-configuration
+     (default-options
+      '((hostkey-algorithms . "+ssh-rsa")
+        (pubkey-accepted-algorithms "+ssh-rsa")))
+     (extra-config
+      (list (ssh-host
+             (host "bastion-sandbox")
+             (options '((user . "ubuntu@bastion-sandbox")
+                        (hostname . "bastion-sandbox.ssh.newstore.luminatesec.com")
+                        (port . 22)
+                        (identity-file . "~/.ssh/newstore-luminate.pem"))))
+            (ssh-host
+             (host "bastion-staging")
+             (options '((user . "ubuntu@bastion-staging")
+                        (hostname . "bastion-staging.ssh.newstore.luminatesec.com")
+                        (port . 22)
+                        (identity-file . "~/.ssh/newstore-luminate.pem"))))
+            (ssh-host
+             (host "bastion-production")
+             (options '((user . "ubuntu@bastion-production")
+                        (hostname . "bastion-production.ssh.newstore.luminatesec.com")
+                        (port . 22)
+                        (identity-file . "~/.ssh/newstore-luminate.pem"))))))))
    (feature-git)
    (feature-ssh
     #:ssh-configuration
@@ -378,7 +403,8 @@
    (feature-mpv)
    (feature-isync #:isync-verbose #t)
    (feature-l2md)
-   (feature-msmtp)
+   (feature-msmtp
+    #:msmtp-package msmtp-latest)
    (feature-notmuch
     #:extra-tag-updates-post
     '("notmuch tag +guix-home -- 'thread:\"\
