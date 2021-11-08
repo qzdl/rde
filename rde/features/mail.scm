@@ -227,15 +227,40 @@ function, which accepts config with rde values and returns a string."
 ;;; feature-msmtp.
 ;;;
 
+
+;; "
+;; for example,
+;; (generate-msmtp-serializer)
+
+;; will yield
+;; @code{
+;; defaults
+;; auth on
+;; protocol smtp
+;; tls on
+
+;; account personal
+;; host mail.bravehost.com
+;; port 587
+;; user samuel@samuelculpepper.com
+;; passwordeval \"pass mail/samuel@samuelculpepper.com\"
+;; tls_starttls on
+;; from samuel@samuelculpepper.com
+;; }
+;; "
+
 (define-public %default-msmtp-provider-settings
   `((gmail . ((host . "smtp.gmail.com")
               (port . 587)))
+    (bravehost . ((host . "mail.bravehost.com")
+               (port . 587))
     (generic . #f)))
 
 (define %default-msmtp-settings
   "defaults
 tls on
 auth on
+protocol smtp
 logfile \"~/.local/var/log/msmtp.log\"\n")
 
 (define (default-msmtp-serializer provider-settings mail-account)
@@ -254,12 +279,30 @@ logfile \"~/.local/var/log/msmtp.log\"\n")
           (msmtp-provider-settings %default-msmtp-provider-settings)
           (msmtp-serializer default-msmtp-serializer))
   "Configure msmtp MTA."
+;;  (ensure-pred maybe-list? mail-account-ids)
+  (ensure-pred list? msmtp-serializers)
+  (ensure-pred list? msmtp-global-settings)
+
+  (define (serialize-mail-acc mail-acc)
+    ((assoc-ref msmtp-serializers (mail-account-type mail-acc))
+     mail-acc))
+
   (define (get-home-services config)
     (require-value 'mail-accounts config
                    "feature-msmtp can't operate without mail-accounts.")
 
     (define mail-accs (get-value 'mail-accounts config))
+    ;; (require-value 'mail-directory-fn config)
+    ;; (define mail-dir ((get-value 'mail-directory-fn config) config))
+    ;; (define queue-dir (string-append mail-dir "/queue"))
     (list
+     (service
+      home-msmtp-service-type
+      (home-msmtp-configuration
+       (config
+        (append
+         msmtp-global-settings
+         (append-map serialize-mail-acc mail-accounts)))))
      (simple-service
       'msmtp-config
       home-files-service-type
@@ -307,6 +350,7 @@ logfile \"~/.local/var/log/msmtp.log\"\n")
 ;;; feature-l2md.
 ;;;
 
+
 (define* (feature-l2md)
   "Configure l2md MDA."
   (define (get-home-services config)
@@ -333,7 +377,8 @@ logfile \"~/.local/var/log/msmtp.log\"\n")
                                   (lambda ()
                                     (setenv "DISPLAY" ":0")
                                     (system* "mbsync" "-a")
-                                    (system* "l2md")))))))
+                                    (system* "l2md"))
+                                  "mbsync")))))
      (service
       home-l2md-service-type
       (home-l2md-configuration
@@ -407,6 +452,18 @@ logfile \"~/.local/var/log/msmtp.log\"\n")
 (define gmail-isync-settings
   (generate-isync-serializer "imap.gmail.com" gmail-folder-mapping))
 
+(define bravehost-folder-mapping
+  '(("inbox"  . "INBOX")
+    ("sent"   . "[Bravehost]/Sent Mail")
+    ("drafts" . "[Bravehost]/Drafts")
+    ("all"    . "[Bravehost]/All Mail")
+    ("trash"  . "[Bravehost]/Trash")
+    ("spam"   . "[Bravehost]/Spam")))
+
+;; https://wiki.bravenet.com/Using_your_Bravenet_e-mail_account
+(define bravehost-isync-settings
+  (generate-isync-serializer "mail.bravehost.com" bravehost-folder-mapping))
+
 (define (generic-isync-settings mail-directory mail-account)
   (let* ((user     (mail-account-fqda mail-account)))
     `(,#~"# Do not know how to serialize generic accounts :("
@@ -415,7 +472,8 @@ logfile \"~/.local/var/log/msmtp.log\"\n")
 
 (define %default-isync-serializers
   `((gmail . ,gmail-isync-settings)
-    (generic . ,generic-isync-settings)))
+    (generic . ,generic-isync-settings)
+    (bravehost . ,bravehost-isync-settings)))
 
 (define default-isync-global-settings
   `((Create Both)

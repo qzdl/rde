@@ -81,6 +81,7 @@ behavior can be overriden with BASE-FILE-SYSTEM argument."
   (ensure-pred list-of-packages? kernel-loadable-modules)
   (ensure-pred list-of-string-or-gexps? kernel-arguments)
   (ensure-pred list-of-string-or-gexps? default-kernel-arguments)
+  ;(ensure-pred initrd? initrd)
   (ensure-pred list-of-packages? firmware)
   (ensure-pred list-of-packages? base-firmware)
   (ensure-pred procedure? initrd)
@@ -95,3 +96,4 @@ behavior can be overriden with BASE-FILE-SYSTEM argument."
      (values (make-feature-values
               kernel kernel-loadable-modules kernel-arguments
               initrd initrd-modules firmware)))))
+

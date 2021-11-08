@@ -34,7 +34,7 @@
     `((input *
 	     ((xkb_layout  ,(keyboard-layout-name keyboard-layout))
 	      (xkb_variant ,(keyboard-layout-variant keyboard-layout))
-	      (xkb_options ,kb-options))))))
+	      (xkb_options ,(if (string-null? kb-options) "none" kb-options)))))))
 
 (define* (feature-sway
 	  #:key
@@ -43,6 +43,8 @@
           ;; Logo key. Use Mod1 for Alt.
           (sway-mod 'Mod4)
 	  (add-keyboard-layout-to-config? #t)
+          (opacity 1)
+          (wallpaper #f)
           (xwayland? #f))
   "Setup and configure sway."
   (ensure-pred sway-config? extra-config)
@@ -80,6 +82,15 @@
             (default_border pixel)
             (default_floating_border pixel)
             (gaps inner ,(get-value 'emacs-margin config 8))
+            (,#~"")
+            (set $opacity ,opacity)
+            (,#~"for_window [class=\".*\"] opacity $opacity")
+            (,#~"for_window [app_id=\".*\"] opacity $opacity")
+            (,#~"")
+            ,@(if (not wallpaper)
+                  '()
+                  `((set $wallpaper ,wallpaper)
+                    (,#~"output \"*\" background $wallpaper fill")))
             (,#~"")))))
 
        (simple-service

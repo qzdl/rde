@@ -125,7 +125,7 @@ of services.  Service can be either @code{service?} or
 (define-syntax ensure-pred
   (syntax-rules ()
     ((ensure-pred pred field)
-     (when (not (pred field)) 
+     (when (not (pred field))
        (raise (condition
                (&message
 		(message
@@ -138,7 +138,7 @@ of services.  Service can be either @code{service?} or
 (define-syntax throw-message
   (syntax-rules ()
     ((throw-message pred msg)
-     (when pred 
+     (when pred
        (raise (condition
                (&message
 		(message
