@@ -1,6 +1,7 @@
 (define-module (rde examples abcdw configs)
   #:use-module (rde features)
   #:use-module (rde features base)
+  #:use-module (rde features bluetooth)
   #:use-module (rde features gnupg)
   #:use-module (rde features keyboard)
   #:use-module (rde features system)
@@ -67,41 +68,31 @@
 (define %abcdw-features
   (list
    (feature-user-info
-    #:user-name "bob"
-    #:full-name "Andrew Tropin"
-    #:email "andrew@trop.in"
-    #:user-initial-password-hash
-    "$6$abc$3SAZZQGdvQgAscM2gupP1tC.SqnsaLSPoAnEOb2k6jXMhzQqS1kCSplAJ/vUy2rrnpHtt6frW2Ap5l/tIvDsz."
-    ;; (crypt "bob" "$6$abc")
+    #:emacs-advanced-user? #t
+    #:user-name "samuel"
+    #:full-name "Samuel Culpepper"
+    #:email "samuel@samuelculpepper.com"
+    #:user-groups '("lp")) ;; TODO confluence of features -> groups
 
-    ;; WARNING: This option can reduce the explorability by hiding
-    ;; some helpful messages and parts of the interface for the sake
-    ;; of minimalistic, less distractive and clean look.  Generally
-    ;; it's not recommended to use it.
-    #:emacs-advanced-user? #t)
    (feature-gnupg
-    #:gpg-primary-key "74830A276C328EC2"
-    #:gpg-smart-card? #t)
-   (feature-password-store
-    #:remote-password-store-url "ssh://abcdw@olorin.lan/~/state/password-store")
+     #:gpg-primary-key "EE20E25391AAB9BB"
+     #:gpg-smart-card? #f)
+    ;; (feature-password-store
+    ;;  #:remote-password-store-url "ssh://abcdw@olorin.lan/~/state/password-store")
 
    (feature-mail-settings
-    #:mail-accounts (list (mail-acc 'work       "andrew@trop.in" 'gandi)
-                          (mail-acc 'personal   "andrewtropin@gmail.com"))
+    #:mail-accounts (list (mail-acc 'work     "sculpepper@newstore.com")
+                          (mail-acc 'personal "samuel@samuelculpepper.com"))
     #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
                                     '("https://yhetil.org/guix-devel/0"))
                           (mail-lst 'guix-bugs "guix-bugs@gnu.org"
                                     '("https://yhetil.org/guix-bugs/0"))
                           (mail-lst 'guix-patches "guix-patches@gnu.org"
                                     '("https://yhetil.org/guix-patches/1"))))
-
    (feature-keyboard
     ;; To get all available options, layouts and variants run:
     ;; cat `guix build xkeyboard-config`/share/X11/xkb/rules/evdev.lst
-    #:keyboard-layout
-    (keyboard-layout
-     "us,ru" "dvorak,"
-     #:options '("grp:shifts_toggle" "ctrl:nocaps")))))
+    #:keyboard-layout %thinkpad-layout)))
 
 ;;; TODO: feature-wallpapers https://wallhaven.cc/
 ;;; TODO: feature-icecat
@@ -252,8 +243,11 @@
     #:additional-elisp-packages
     (append
      (list emacs-consult-dir)
-     (pkgs "emacs-elfeed" "emacs-hl-todo"
+     (pkgs "emacs-elfeed"
+           "emacs-hl-todo"
            "emacs-ytdl"
+           "emacs-dimmer"
+           "emacs-hyperbole"
            "emacs-ement"
            "emacs-restart-emacs"
            "emacs-org-present")))
@@ -274,7 +268,7 @@
    (feature-emacs-message)
    (feature-emacs-erc
     #:erc-kill-buffers-on-quit #t
-    #:erc-nick "abcdw"
+    #:erc-nick "qzdl"
     #:align-nicknames? #f
     #:erc-autojoin-channels-alist
     '((Libera.Chat "#guix" "#emacs" "#tropin" "#rde" "#sway")
@@ -284,9 +278,9 @@
     ;; #:erc-server "chat.sr.ht"
     #:extra-config
     `((setq rde-bouncer-network-alist
-            `((irc.libera.chat . "abcdw")
-              (irc.oftc.net . "abcdw")))
-      (setq rde-bouncer-nick "abcdw")
+            `((irc.libera.chat . "qzdl")
+              (irc.oftc.net . "qzdl")))
+      (setq rde-bouncer-nick "qzdl")
 
       ;; Rename server buffers to reflect the current network name instead
       ;; of SERVER:PORT (e.g., "freenode" instead of "irc.freenode.net:6667").
@@ -296,11 +290,11 @@
 
       (defun rde-erc-connect-bouncer-oftc ()
         (interactive)
-        (setq erc-email-userid "abcdw/irc.oftc.net")
+        (setq erc-email-userid "qzdl/irc.oftc.net")
         (erc-tls :server "chat.sr.ht" :nick rde-bouncer-nick))
       (defun rde-erc-connect-bouncer-libera ()
         (interactive)
-        (setq erc-email-userid "abcdw/irc.libera.chat")
+        (setq erc-email-userid "qzdl/irc.libera.chat")
         (erc-tls :server "chat.sr.ht" :nick rde-bouncer-nick))))
    (feature-emacs-elpher)
    (feature-emacs-telega)
@@ -313,10 +307,9 @@
     #:org-directory "~/work/abcdw/notes")
    (feature-emacs-org-roam
     ;; TODO: Rewrite to states
-    #:org-roam-directory "~/work/abcdw/notes/notes")
-   (feature-emacs-org-agenda
-    #:org-agenda-files '("~/work/abcdw/agenda/todo.org"))
-   (feature-markdown)
+    #:org-roam-directory "~/life/roam")
+   ;; (feature-emacs-org-agenda
+   ;; #:org-agenda-files '("~/work/abcdw/agenda/todo.org"))
 
    (feature-mpv)
    (feature-isync #:isync-verbose #t)
@@ -346,6 +339,7 @@
      (desktop "$HOME")
      (publicshare "$HOME")
      (templates "$HOME")))
+   (feature-bluetooth #:auto-enable? #t)
    (feature-base-packages
     #:home-packages
     (append
@@ -357,8 +351,9 @@
 
       "utox" "qtox" "jami"
 
-      "alsa-utils" "youtube-dl" "imv" "cozy"
-      "pavucontrol" "wev"
+      "alsa-utils" "mpv" "youtube-dl" "imv" "vim"
+      "cozy" "pavucontrol"
+      "wev"
       "obs" "obs-wlrobs"
       "recutils" "binutils"
       "fheroes2"
@@ -377,51 +372,76 @@
   (list ))
 
 
-;;; Hardware/host specifis features
+;;; Hardware/host specific features
 
 ;; TODO: Switch from UUIDs to partition labels For better
 ;; reproducibilty and easier setup.  Grub doesn't support luks2 yet.
 
 (define ixy-mapped-devices
   (list (mapped-device
-         (source (uuid "0e51ee1e-49ef-45c6-b0c3-6307e9980fa9"))
-         (target "enc")
+         (source (uuid "cb453366-cc17-4742-ada1-91f7f569103f"))
+         (target "sys-root")
          (type luks-device-mapping))))
 
 (define ixy-file-systems
-  (append
-   (map (match-lambda
-	  ((subvol . mount-point)
-	   (file-system
-	     (type "btrfs")
-	     (device "/dev/mapper/enc")
-	     (mount-point mount-point)
-	     (options (format #f "subvol=~a" subvol))
-	     (dependencies ixy-mapped-devices))))
-	'((root . "/")
-	  (boot . "/boot")
-	  (gnu  . "/gnu")
-	  (home . "/home")
-	  (data . "/data")
-	  (log  . "/var/log")))
-   (list
-    (file-system
-      (mount-point "/boot/efi")
-      (type "vfat")
-      (device (uuid "8C99-0704" 'fat32))))))
+  (list (file-system
+           (device (file-system-label "sys-root"))
+           (mount-point "/")
+           (type "ext4")
+           (dependencies ixy-mapped-devices))
+         (file-system
+           (device "/dev/nvme0n1p1")
+           (mount-point "/boot/efi")
+           (type "vfat"))
+         ))
 
+
+;; (define ixy-file-systems
+;;   (append
+;;    (map (match-lambda
+;; 	  ((subvol . mount-point)
+;; 	   (file-system
+;; 	     (type "btrfs")
+;; 	     (device "/dev/mapper/enc")
+;; 	     (mount-point mount-point)
+;; 	     (options (format #f "subvol=~a" subvol))
+;; 	     (dependencies ixy-mapped-devices))))
+;; 	'((root . "/")
+;; 	  (boot . "/boot")
+;; 	  (gnu  . "/gnu")
+;; 	  (home . "/home")
+;; 	  (data . "/data")
+;; 	  (log  . "/var/log")))
+;;    (list
+;;     (file-system
+;;       (mount-point "/boot/efi")
+;;       (type "vfat")
+;;       (device (uuid "8C99-0704" 'fat32))))))
+
+(use-modules ((nongnu packages linux) #:prefix nongnu:)
+             ((nongnu system linux-initrd) #:prefix nongnu-sys:)
+)
 (define %ixy-features
   (list
    (feature-host-info
     #:host-name "ixy"
-    #:timezone  "Europe/Moscow")
+    #:timezone  "Europe/Berlin")
    ;;; Allows to declare specific bootloader configuration,
    ;;; grub-efi-bootloader used by default
-   ;; (feature-bootloader)
+   ;; (feature-bootloader)\
+   ; os
+   (feature-kernel
+    #:kernel nongnu:linux
+    #:kernel-arguments
+    '("quiet" "ipv6.disable=1" "net.ifnames=0"
+      "modprobe.blacklist=snd_hda_intel,snd_soc_skl")
+    #:firmware (list nongnu:linux-firmware nongnu:sof-firmware)
+    #:initrd nongnu-sys:microcode-initrd)
    (feature-file-systems
     #:mapped-devices ixy-mapped-devices
     #:file-systems   ixy-file-systems)
-   (feature-hidpi)))
+   ;(feature-hidpi)
+   ))
 
 
 ;;; rde-config and helpers for generating home-environment and
@@ -517,7 +537,7 @@
       ("live-system" live-os)
       (_ ixy-he))))
 
-;; (pretty-print-rde-config ixy-config)
+(pretty-print-rde-config ixy-config)
 ;; (use-modules (gnu services)
 ;; 	     (gnu services base))
 ;; (display
