@@ -613,6 +613,7 @@ utilizing reverse-im package."
   (define (get-home-services config)
     (require-value 'emacs-client-create-frame config)
     (define emacs-cmd (get-value 'emacs-client-create-frame config))
+    (define xdg-gexp #~(system* #$emacs-cmd "--eval" "(erc-tls)"))
     (list
      (elisp-configuration-service
       emacs-f-name
@@ -1086,6 +1087,9 @@ vterm_cmd() {
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
   (define (get-home-services config)
+    (require-value 'emacs-client config)
+    (define emacs-cmd (get-value 'emacs-client config))
+    (define xdg-gexp #~(system* #$emacs-cmd  (car (cdr (command-line)))))
     (list
      (elisp-configuration-service
       emacs-f-name
@@ -1155,7 +1159,9 @@ Start an unlimited search at `point-min' otherwise."
              '((add-hook 'org-mode-hook 'rde-buffer-name-to-title-config)))
 
          (with-eval-after-load 'notmuch (require 'ol-notmuch))))
-      #:elisp-packages (list emacs-org emacs-org-contrib))))
+      #:elisp-packages (list emacs-org emacs-org-contrib))
+     (emacs-xdg-service emacs-f-name "Emacs (Client) [org-protocol:]" xdg-gexp
+                        #:default-for '(x-scheme-handler/org-protocol))))
 
   (feature
    (name f-name)
