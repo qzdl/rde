@@ -40,7 +40,8 @@
   #:use-module (guix gexp)
   #:use-module (guix inferior)
   #:use-module (guix channels)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1))
 
 
 ;;; User-specific features
@@ -83,12 +84,21 @@
    (feature-mail-settings
     #:mail-accounts (list (mail-acc 'work     "sculpepper@newstore.com")
                           (mail-acc 'personal "samuel@samuelculpepper.com"))
-    #:mailing-lists (list (mail-lst 'guix-devel "guix-devel@gnu.org"
-                                    '("https://yhetil.org/guix-devel/0"))
-                          (mail-lst 'guix-bugs "guix-bugs@gnu.org"
+    #:mailing-lists (list
+                     (mail-lst 'rde-announce "~acbdw/rde-announce@lists.sr.ht"
+                               '("https://lists.sr.ht/~abcdw/rde-announce/export"))
+                     (mail-lst 'rde-discuss "~acbdw/rde-discuss@lists.sr.ht"
+                               '("https://lists.sr.ht/~abcdw/rde-discuss"))
+                     (mail-lst 'rde-devel "~acbdw/rde-devel@lists.sr.ht"
+                               '("https://lists.sr.ht/~abcdw/rde-devel"))
+
+                     (mail-lst 'guix-bugs "guix-bugs@gnu.org"
                                     '("https://yhetil.org/guix-bugs/0"))
-                          (mail-lst 'guix-patches "guix-patches@gnu.org"
-                                    '("https://yhetil.org/guix-patches/1"))))
+                     (mail-lst 'guix-devel "guix-devel@gnu.org"
+                               '("https://yhetil.org/guix-devel/0"))
+                     (mail-lst 'guix-patches "guix-patches@gnu.org"
+                               '("https://yhetil.org/guix-patches/1"))))
+
    (feature-keyboard
     ;; To get all available options, layouts and variants run:
     ;; cat `guix build xkeyboard-config`/share/X11/xkb/rules/evdev.lst
@@ -251,7 +261,7 @@
            "emacs-ement"
            "emacs-restart-emacs"
            "emacs-org-present")))
-   (feature-emacs-appearance)
+   (feature-emacs-appearance #:light #f)
    (feature-emacs-faces)
    (feature-emacs-completion
     #:mini-frame? #f)
@@ -261,6 +271,7 @@
    (feature-emacs-input-methods)
    (feature-emacs-which-key)
    (feature-emacs-keycast #:turn-on? #f)
+   (feature-emacs-perfect-margin)
 
    (feature-emacs-dired)
    (feature-emacs-eshell)
@@ -303,13 +314,24 @@
    ;; TODO: Revisit <https://en.wikipedia.org/wiki/Git-annex>
    (feature-emacs-git)
    ;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
+
    (feature-emacs-org
-    #:org-directory "~/work/abcdw/notes")
+    #:org-directory my-org-directory
+    #:org-agenda-directory my-notes-directory)
+
    (feature-emacs-org-roam
     ;; TODO: Rewrite to states
-    #:org-roam-directory "~/life/roam")
    ;; (feature-emacs-org-agenda
    ;; #:org-agenda-files '("~/work/abcdw/agenda/todo.org"))
+    #:org-roam-directory my-notes-directory
+    #:org-roam-dailies-directory (string-append my-notes-directory "/daily"))
+   (feature-emacs-ref
+    ;; TODO: Rewrite to states
+    #:bibliography-paths
+    (list (string-append my-org-directory "/tex.bib"))
+    #:bibliography-notes
+    (string-append my-org-directory "/bib.org")
+    #:bibliography-directory my-notes-directory)
 
    (feature-mpv)
    (feature-isync #:isync-verbose #t)
@@ -418,9 +440,10 @@
 ;;       (type "vfat")
 ;;       (device (uuid "8C99-0704" 'fat32))))))
 
-(use-modules ((nongnu packages linux) #:prefix nongnu:)
-             ((nongnu system linux-initrd) #:prefix nongnu-sys:)
-)
+(use-modules
+ (gnu packages linux)
+ ((nongnu packages linux) #:prefix nongnu:)
+ ((nongnu system linux-initrd) #:prefix nongnu-sys:))
 (define %ixy-features
   (list
    (feature-host-info
@@ -428,15 +451,17 @@
     #:timezone  "Europe/Berlin")
    ;;; Allows to declare specific bootloader configuration,
    ;;; grub-efi-bootloader used by default
-   ;; (feature-bootloader)\
+   ;; (feature-bootloader)
    ; os
    (feature-kernel
     #:kernel nongnu:linux
     #:kernel-arguments
     '("quiet" "ipv6.disable=1" "net.ifnames=0"
       "modprobe.blacklist=snd_hda_intel,snd_soc_skl")
-    #:firmware (list nongnu:linux-firmware nongnu:sof-firmware)
-    #:initrd nongnu-sys:microcode-initrd)
+    #:firmware (list nongnu:linux-firmware
+                     nongnu:sof-firmware)
+    #:initrd nongnu-sys:microcode-initrd
+    #:kernel-loadable-modules (list v4l2loopback-linux-module))
    (feature-file-systems
     #:mapped-devices ixy-mapped-devices
     #:file-systems   ixy-file-systems)
@@ -537,7 +562,7 @@
       ("live-system" live-os)
       (_ ixy-he))))
 
-(pretty-print-rde-config ixy-config)
+;;(pretty-print-rde-config ixy-config)
 ;; (use-modules (gnu services)
 ;; 	     (gnu services base))
 ;; (display

@@ -40,6 +40,8 @@
   #:use-module (guix packages)
   #:use-module (guix transformations)
 
+  #:use-module (srfi srfi-1)
+
   #:export (feature-emacs
             feature-emacs-appearance
             feature-emacs-faces
@@ -52,17 +54,19 @@
             feature-emacs-git
             feature-emacs-dired
             feature-emacs-eshell
-            feature-emacs-monocle
-            feature-emacs-org
-            feature-emacs-org-roam
-            feature-emacs-org-agenda
-            feature-emacs-erc
+	    feature-emacs-monocle
+	    feature-emacs-org
+	    feature-emacs-org-roam
+	    feature-emacs-org-agenda
+            feature-emacs-ref
+	    feature-emacs-erc
             feature-emacs-elpher
             feature-emacs-telega
             feature-emacs-pdf-tools
             feature-emacs-nov-el
             feature-emacs-which-key
             feature-emacs-keycast
+            feature-emacs-perfect-margin
 
             elisp-configuration-service
             emacs-xdg-service))
@@ -399,6 +403,7 @@ Prefix argument can be used to kill a few words."
 (define* (feature-emacs-appearance
           #:key
           (margin 8)
+          (light? #t)
           (deuteranopia? #t))
   "Make Emacs looks modern and minimalistic. `deuteranopia?' substitutes
 red/green colors with red/blue, which helps people with colorblindness
@@ -408,6 +413,7 @@ and overall looks cool."
 
   (define emacs-f-name 'appearance)
   (define f-name (symbol-append 'emacs- emacs-f-name))
+  (define theme (if light? 'modus-operandi 'modus-vivendi))
 
   (define (get-home-services config)
     (list
@@ -430,12 +436,11 @@ and overall looks cool."
               `((fg-window-divider-inner . "#000000")
                 (fg-window-divider-outer . "#000000")))
 
-        (load-theme 'modus-operandi t)
+        (load-theme ',theme t)
 
         (with-eval-after-load
          'configure-rde-keymaps
          (define-key rde-toggle-map (kbd "t") 'modus-themes-toggle))
-
         (setq bookmark-set-fringe-mark nil)
 
         ;; (setq header-line-format (delete 'mode-line-modes header-line-format))
@@ -968,9 +973,12 @@ previous window layout otherwise.  With universal argument toggles
    (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
+(define default-org-directory "~/org")
+
 (define* (feature-emacs-org
           #:key
-          (org-directory "~/org")
+          (org-directory default-org-directory)
+          (org-agenda-directory org-directory)
           (org-rename-buffer-to-title #t))
   "Configure org-mode for GNU Emacs."
   (define emacs-f-name 'org)
@@ -980,11 +988,14 @@ previous window layout otherwise.  With universal argument toggles
     (list
      (elisp-configuration-service
       emacs-f-name
+
       `((eval-when-compile
          (require 'org)
          (require 'org-refile))
 
         (define-key mode-specific-map (kbd "c") 'org-capture)
+        (setq org-directory ,org-directory)
+        (setq org-agenda-directory ,org-agenda-directory)
 
         (with-eval-after-load
          'org
@@ -1005,8 +1016,13 @@ previous window layout otherwise.  With universal argument toggles
          (setq org-hide-emphasis-markers t)
          (setq org-log-into-drawer t)
 
-         (setq org-directory ,org-directory)
          (setq org-default-notes-file (concat org-directory "/todo.org"))
+
+         ;;; see org-mode/org-keys.el
+         (define-key org-mode-map (kbd "C-c o n") 'org-num-mode)
+
+         (define-key org-mode-map (kbd "C-M-<return>") 'org-insert-subheading)
+         (define-key org-mode-map (kbd "C-M-S-<return>") 'org-insert-todo-subheading)
 
          ;; <https://emacs.stackexchange.com/questions/54809/rename-org-buffers-to-orgs-title-instead-of-filename>
          (defun rde-buffer-name-to-title (&optional end)
@@ -1724,10 +1740,30 @@ emacsclient feels more like a separate emacs instance."
    (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
+
+(define* (feature-emacs-perfect-margin)
+  "Configure perfect-margin for GNU Emacs."
+  (define emacs-f-name 'perfect-margin)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (elisp-configuration-service
+      emacs-f-name
+      `()
+
+      #:elisp-packages (list emacs-perfect-margin))))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . #t)))
+   (home-services-getter get-home-services)))
+
 ;; TODO: rewrite to states
 (define* (feature-emacs-org-roam
-          #:key
-          (org-roam-directory #f))
+	  #:key
+	  (org-roam-directory #f)
+          (org-roam-dailies-directory org-roam-directory))
   "Configure org-roam for GNU Emacs."
   (define (not-boolean? x) (not (boolean? x)))
   (ensure-pred not-boolean? org-roam-directory)
@@ -1739,12 +1775,14 @@ emacsclient feels more like a separate emacs instance."
     (list
      (elisp-configuration-service
       emacs-f-name
+
       `((eval-when-compile
          (let ((org-roam-v2-ack t))
            (require 'org-roam)))
         (setq org-roam-v2-ack t)
         (setq org-roam-completion-everywhere t
               org-roam-directory ,org-roam-directory)
+        (setq org-roam-dailies-directory ,org-roam-dailies-directory)
 
         (autoload 'org-roam-db-autosync-enable "org-roam")
         (with-eval-after-load
@@ -1755,9 +1793,28 @@ emacsclient feels more like a separate emacs instance."
                (lambda (node) (marginalia--time (org-roam-node-file-mtime node))))
          (org-roam-db-autosync-enable))
 
-        (define-key global-map (kbd "C-c n n") 'org-roam-buffer-toggle)
-        (define-key global-map (kbd "C-c n f") 'org-roam-node-find)
-        (define-key global-map (kbd "C-c n i") 'org-roam-node-insert))
+        (defun +rde/search-notes ()
+          (interactive)
+          (consult-ripgrep org-roam-directory))
+
+	(define-key global-map (kbd "C-c n n")   'org-roam-buffer-toggle)
+	(define-key global-map (kbd "C-c n f")   'org-roam-node-find)
+	(define-key global-map (kbd "C-c n i")   'org-roam-node-insert)
+        (define-key global-map (kbd "C-c n s")   '+rde/search-notes)
+
+        (define-key global-map (kbd "C-c n a")   'org-agenda)
+        (define-key global-map (kbd "C-c n C-n") 'org-capture)
+
+        (define-key global-map (kbd "C-c n j") 'org-roam-dailies-capture-today)
+        (define-key global-map (kbd "C-c n J") 'org-roam-dailies-goto-today)
+
+        (define-key global-map (kbd "C-c n d d") 'org-roam-dailies-goto-date)
+        (define-key global-map (kbd "C-c n d t") 'org-roam-dailies-goto-today)
+        (define-key global-map (kbd "C-c n d y") 'org-roam-dailies-goto-yesterday)
+        (define-key global-map (kbd "C-c n d n") 'org-roam-dailies-goto-next)
+        (define-key global-map (kbd "C-c n d n") 'org-roam-dailies-goto-previous)
+        )
+
       #:elisp-packages (list emacs-org-roam))))
 
   (feature
