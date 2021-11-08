@@ -3,18 +3,21 @@
   #:use-module (rde features predicates)
   #:use-module (gnu home services)
   #:use-module (gnu home-services emacs)
+  #:use-module (gnu home-services shells)
   #:use-module (gnu home-services wm)
   #:use-module (gnu home services xdg)
   #:use-module (gnu home-services-utils)
   #:use-module (gnu services)
 
-  #:use-module (rde packages)
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages mail)
+  #:use-module (rde packages)
 
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix transformations)
+
+  #:use-module (srfi srfi-1)
 
   #:export (feature-emacs
             feature-emacs-appearance
@@ -26,15 +29,20 @@
 	    feature-emacs-git
 	    feature-emacs-dired
             feature-emacs-eshell
+            feature-emacs-vterm
 	    feature-emacs-monocle
 	    feature-emacs-org
 	    feature-emacs-org-roam
+            feature-emacs-ref
 	    feature-emacs-erc
             feature-emacs-elpher
 	    feature-emacs-telega
 	    feature-emacs-pdf-tools
             feature-emacs-which-key
             feature-emacs-keycast
+            feature-emacs-perfect-margin
+            feature-emacs-es-mode
+            feature-emacs-restclient
 
             elisp-configuration-service
             emacs-xdg-service))
@@ -274,12 +282,14 @@ point reaches the beginning or end of the buffer, stop there."
 
 (define* (feature-emacs-appearance
           #:key
-          (margin 8))
+          (margin 8)
+          (light? #t))
   "Make Emacs looks modern and minimalistic."
   (ensure-pred integer? margin)
 
   (define emacs-f-name 'appearance)
   (define f-name (symbol-append 'emacs- emacs-f-name))
+  (define theme (if light? 'modus-operandi 'modus-vivendi))
 
   (define (get-home-services config)
     (list
@@ -294,7 +304,7 @@ point reaches the beginning or end of the buffer, stop there."
         (require 'modus-themes)
         (setq modus-themes-diffs 'fg-only-deuteranopia)
         (setq modus-themes-scale-headings t)
-	(load-theme 'modus-operandi t)
+        (load-theme ',theme t)
 
         ;; (setq header-line-format (delete 'mode-line-modes header-line-format))
         (setq mode-line-modes
@@ -439,6 +449,7 @@ utilizing reverse-im package."
   (define (get-home-services config)
     (require-value 'emacs-client-create-frame config)
     (define emacs-cmd (get-value 'emacs-client-create-frame config))
+    (define xdg-gexp #~(system* #$emacs-cmd "--eval" "(erc-tls)"))
     (list
      (elisp-configuration-service
       emacs-f-name
@@ -455,10 +466,7 @@ utilizing reverse-im package."
 	 (setq erc-fill-column 86)
 
 	 (setq erc-track-visibility nil))))
-     (emacs-xdg-service
-      emacs-f-name
-      "Emacs (Client) [IRC]"
-      #~(system* #$emacs-cmd "--eval" "(erc-tls)"))))
+     (emacs-xdg-service emacs-f-name "Emacs (Client) [IRC]" xdg-gexp)))
 
   (feature
    (name f-name)
@@ -702,19 +710,125 @@ previous window layout otherwise.  With universal argument toggles
    (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
+;; https://github.com/akermu/emacs-libvterm
+(define* (feature-emacs-vterm)
+  "Configure vterm, the Emacs libterm emulator"
+  (define emacs-f-name 'vterm)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (simple-service
+      'vterm-home-shell-configuration
+      home-shell-profile-service-type
+      (list
+       ;; oof, this sucks. when porting
+       ;; (query-replace "\\" "\\\\")  ;; literal escapes
+       ;; (query-replace "\"" "\\\"")  ;; then quotes
+       ;; https://github.com/akermu/emacs-libvterm#shell-side-configuration
+       "
+vterm_printf(){
+    if [ -n \"$TMUX\" ] && ([ \"${TERM%%-*}\" = \"tmux\" ] || [ \"${TERM%%-*}\" = \"screen\" ] ); then
+        # Tell tmux to pass the escape sequences through
+        printf \"\\ePtmux;\\e\\e]%s\\007\\e\\\\\" \"$1\"
+    elif [ \"${TERM%%-*}\" = \"screen\" ]; then
+        # GNU screen (screen, screen-256color, screen-256color-bce)
+        printf \"\\eP\\e]%s\\007\\e\\\\\" \"$1\"
+    else
+        printf \"\\e]%s\\e\\\\\" \"$1\"
+    fi
+}"
+       "
+vterm_cmd() {
+    local vterm_elisp
+    vterm_elisp=\"\"
+    while [ $# -gt 0 ]; do
+        vterm_elisp=\"$vterm_elisp\"\"$(printf '\"%s\" ' \"$(printf \"%s\" \"$1\" | sed -e 's|\\\\|\\\\\\\\|g' -e 's|\"|\\\\\"|g')\")\"
+        shift
+    done
+    vterm_printf \"51;E$vterm_elisp\"
+}"
+
+       "alias  e='vterm_cmd find-file'"
+       "alias ee='vterm_cmd find-file-other-window'"
+       "alias  d='vterm_cmd dired'"
+       "alias gd='vterm_cmd magit-diff-unstaged'"))
+
+     (elisp-configuration-service
+      emacs-f-name
+      `((define-key global-map (kbd "s-e") 'vterm)
+        (define-key global-map (kbd "C-x C-'") 'vterm)
+
+         ;; TODO move to upper `emacs-config/helpers'
+        (defun switch-to-prev-buffer-or-given-buffer (gb arg)
+          (interactive "P")
+          (message "%s" (list gb arg
+                              (current-buffer)
+                              (get-buffer (symbol-name gb))
+                              (bufferp                       (get-buffer (symbol-name gb)))
+                              (eq (current-buffer) (get-buffer (symbol-name gb)))))
+
+          (switch-to-buffer
+           (if (eq (current-buffer) (get-buffer (symbol-name gb)))
+               (other-buffer (current-buffer))
+               (or (get-buffer (symbol-name gb))
+                   (funcall gb arg)))))
+
+         (defun switch-to-prev-buffer-or-vterm (arg)
+           (interactive "P")
+           (switch-to-prev-buffer-or-given-buffer 'vterm arg))
+
+         (with-eval-after-load
+          'vterm
+
+          (mapc (lambda (c) (add-to-list 'vterm-eval-cmds c))
+                (list '("dired" dired)
+                      '("find-file-other-window" find-file-other-window)))
+
+          (with-eval-after-load
+           'magit
+           (add-to-list 'vterm-eval-cmds
+                        '("magit-diff-unstaged" magit-diff-unstaged)))
+
+          (defun vterm-complete-history ()
+            (message "oof"))
+
+          (define-key vterm-mode-map (kbd "M-r") 'vterm-complete-history)
+          ;; redef keys once vterm has loaded, so as not to maintain two ways to open
+          (define-key global-map (kbd "s-e")     'switch-to-prev-buffer-or-vterm)
+          (define-key global-map (kbd "C-x C-'") 'switch-to-prev-buffer-or-vterm))
+         )
+
+      #:elisp-packages (list emacs-vterm))))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . #t)))
+   (home-services-getter get-home-services)))
+
+(define default-org-directory "~/org")
+
 (define* (feature-emacs-org
           #:key
-          (org-directory "~/org")
+          (org-directory default-org-directory)
+          (org-agenda-directory org-directory)
           (org-rename-buffer-to-title #t))
   "Configure org-mode for GNU Emacs."
   (define emacs-f-name 'org)
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
   (define (get-home-services config)
+    (require-value 'emacs-client config)
+    (define emacs-cmd (get-value 'emacs-client config))
+    (define xdg-gexp #~(system* #$emacs-cmd  (car (cdr (command-line)))))
     (list
      (elisp-configuration-service
       emacs-f-name
-      `((with-eval-after-load
+
+      `((setq org-directory ,org-directory)
+        (setq org-agenda-directory ,org-agenda-directory)
+
+        (with-eval-after-load
          'org
 	 (setq org-adapt-indentation nil)
 	 (setq org-edit-src-content-indentation 0)
@@ -730,10 +844,13 @@ previous window layout otherwise.  With universal argument toggles
 		             :weight 'normal)
          (setq org-hide-emphasis-markers t)
 
-         (setq org-directory ,org-directory)
          (setq org-default-notes-file (concat org-directory "/todo.org"))
 
+         ;;; see org-mode/org-keys.el
          (define-key org-mode-map (kbd "C-c o n") 'org-num-mode)
+
+         (define-key org-mode-map (kbd "C-M-<return>") 'org-insert-subheading)
+         (define-key org-mode-map (kbd "C-M-S-<return>") 'org-insert-todo-subheading)
 
          ;; <https://emacs.stackexchange.com/questions/54809/rename-org-buffers-to-orgs-title-instead-of-filename>
          (defun org+-buffer-name-to-title (&optional end)
@@ -764,7 +881,9 @@ Start an unlimited search at `point-min' otherwise."
              '((add-hook 'org-mode-hook 'org+-buffer-name-to-title-config)))
 
          (with-eval-after-load 'notmuch (require 'ol-notmuch))))
-      #:elisp-packages (list emacs-org emacs-org-contrib))))
+      #:elisp-packages (list emacs-org emacs-org-contrib))
+     (emacs-xdg-service emacs-f-name "Emacs (Client) [org-protocol:]" xdg-gexp
+                        #:default-for '(x-scheme-handler/org-protocol))))
 
   (feature
    (name f-name)
@@ -1099,10 +1218,64 @@ emacsclient feels more like a separate emacs instance."
    (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
+
+(define* (feature-emacs-perfect-margin)
+  "Configure perfect-margin for GNU Emacs."
+  (define emacs-f-name 'perfect-margin)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (elisp-configuration-service
+      emacs-f-name
+      `()
+      #:elisp-packages (list emacs-perfect-margin))))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . #t)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-es-mode)
+  "Configure es-mode for GNU Emacs."
+  (define emacs-f-name 'es-mode)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (elisp-configuration-service
+      emacs-f-name
+      `()
+      #:elisp-packages (list emacs-es-mode))))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . #t)))
+   (home-services-getter get-home-services)))
+
+
+(define* (feature-emacs-restclient)
+  "Configure restclient for GNU Emacs."
+  (define emacs-f-name 'restclient)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (elisp-configuration-service
+      emacs-f-name
+      `()
+      #:elisp-packages (list emacs-restclient))))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . #t)))
+   (home-services-getter get-home-services)))
+
 ;; TODO: rewrite to states
 (define* (feature-emacs-org-roam
 	  #:key
-	  (org-roam-directory #f))
+	  (org-roam-directory #f)
+          (org-roam-dailies-directory org-roam-directory))
   "Configure org-roam for GNU Emacs."
   (define (not-boolean? x) (not (boolean? x)))
   (ensure-pred not-boolean? org-roam-directory)
@@ -1115,6 +1288,7 @@ emacsclient feels more like a separate emacs instance."
      (elisp-configuration-service
       emacs-f-name
       `((setq org-roam-v2-ack t)
+        (setq org-roam-dailies-directory ,org-roam-dailies-directory)
 
         (custom-set-variables
          '(org-roam-completion-everywhere t)
@@ -1122,9 +1296,28 @@ emacsclient feels more like a separate emacs instance."
 
         (with-eval-after-load 'org-roam (org-roam-setup))
 
-	(define-key global-map (kbd "C-c n n") 'org-roam-buffer-toggle)
-	(define-key global-map (kbd "C-c n f") 'org-roam-node-find)
-	(define-key global-map (kbd "C-c n i") 'org-roam-node-insert))
+        (defun +rde/search-notes ()
+          (interactive)
+          (consult-ripgrep org-roam-directory))
+
+	(define-key global-map (kbd "C-c n n")   'org-roam-buffer-toggle)
+	(define-key global-map (kbd "C-c n f")   'org-roam-node-find)
+	(define-key global-map (kbd "C-c n i")   'org-roam-node-insert)
+        (define-key global-map (kbd "C-c n s")   '+rde/search-notes)
+
+        (define-key global-map (kbd "C-c n a")   'org-agenda)
+        (define-key global-map (kbd "C-c n C-n") 'org-capture)
+
+        (define-key global-map (kbd "C-c n j") 'org-roam-dailies-capture-today)
+        (define-key global-map (kbd "C-c n J") 'org-roam-dailies-goto-today)
+
+        (define-key global-map (kbd "C-c n d d") 'org-roam-dailies-goto-date)
+        (define-key global-map (kbd "C-c n d t") 'org-roam-dailies-goto-today)
+        (define-key global-map (kbd "C-c n d y") 'org-roam-dailies-goto-yesterday)
+        (define-key global-map (kbd "C-c n d n") 'org-roam-dailies-goto-next)
+        (define-key global-map (kbd "C-c n d n") 'org-roam-dailies-goto-previous)
+        )
+
       #:elisp-packages (list emacs-org-roam))))
 
   (feature
@@ -1132,6 +1325,48 @@ emacsclient feels more like a separate emacs instance."
    (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
+
+;; TODO: rewrite to states
+(define* (feature-emacs-ref
+	  #:key
+	  (bibliography-paths '())
+          (bibliography-notes (string-append
+                               default-org-directory "/bib.org")) ;; XXX should use empty string?
+          (bibliography-directory default-org-directory)) ;; XXX should use empty string?
+  "Configure org-ref and org-reftex for GNU Emacs."
+
+  (define (not-boolean? x) (not (boolean? x)))
+  (ensure-pred not-boolean? bibliography-paths)
+  (ensure-pred not-boolean? bibliography-notes)
+  (ensure-pred not-boolean? bibliography-directory)
+
+  (define emacs-f-name 'org-reftex)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (elisp-configuration-service
+      emacs-f-name
+      `(
+        ;; (with-eval-after-load 'org-reftex nil)
+
+        (custom-set-variables
+         '(reftex-bib-path ,bibliography-paths)
+         '(reftex-default-bibliography ,bibliography-paths)
+         '(org-ref-default-bibliography ,bibliography-paths)
+
+         '(org-ref-notes-directory ,bibliography-directory)
+         '(bibtex-completion-notes-path ,bibliography-directory)
+         ;; '(org-noter-notes-search-path '(,bibliography-directory))
+
+         '(org-ref-bibliography-notes ,bibliography-notes)))
+
+      #:elisp-packages (list emacs-org-ref))))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . #t)))
+   (home-services-getter get-home-services)))
 
 (define* (feature-emacs-keycast)
   "Show keybindings and related functions as you type."

@@ -38,10 +38,20 @@ FILE-NAME found in %PATCH-PATH."
     (list (string-append %channel-root "/rde/packages/patches"))
     (%patch-path))))
 
+;; https://git.savannah.gnu.org/cgit/emacs.git/log/?h=feature/pgtk
+;; ((cd $HOME/git/sys/emacs) || git clone https://git.savannah.gnu.org/cgit/emacs.git $HOME/git/sys/emacs) && cd $HOME/git/sys/emacs
+;; git checkout feature/pgtk
+;; git rev-parse HEAD
+;; => b4204bdae83695089a27141602a955339df78b7a
+;; guix hash -rx .
+;; => 0drpms07231zc4w9g7gikwm5zlgrzdw8vbq853rlb7wqk3xg6gyq
+;;
+;; NOTE in the logs when building, we are missing `git' (rev-parse on something)
+
 (use-modules (gnu packages emacs))
 (define-public emacs-next-pgtk-latest
-  (let ((commit "01b0a909b5ca858a09484821cc866127652f4153")
-        (revision "4"))
+  (let ((commit "b4204bdae83695089a27141602a955339df78b7a")
+        (revision "5"))
     (package
       (inherit emacs-next-pgtk)
       (name "emacs-next-pgtk-latest")
@@ -55,7 +65,7 @@ FILE-NAME found in %PATCH-PATH."
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1agfssdllfvjpq3vcwn5hi6cb7il042phl41y79b17gjg612qc6b")))))))
+           "0drpms07231zc4w9g7gikwm5zlgrzdw8vbq853rlb7wqk3xg6gyq")))))))
 
 (use-modules (gnu packages emacs-xyz)
              (guix build-system emacs))
@@ -94,6 +104,57 @@ FILE-NAME found in %PATCH-PATH."
              (base32
               "0yghz9pdjsm9v6lbjckm6c5h9ak7iylx8sqgyjwl6nihkpvv4jyp"))))))
 
+(define-public emacs-perfect-margin
+  (package
+    (name "emacs-perfect-margin")
+    (version "0.1")
+    (home-page "https://github.com/mpwang/perfect-margin")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url home-page)
+              (commit "94b055c743b1859098870c8aca3e915bd6e67d9d")))
+       (sha256
+        (base32 "02k379nig43j85wfm327pw6sh61kxrs1gwz0vgcbx9san4dp83bk"))))
+    (build-system emacs-build-system)
+    (synopsis "A global margin-making-mode, great for ultrawides")
+    (description
+     "[emacs] auto center emacs windows, work with minimap and/or linum-mode")
+    (license license:gpl3+)))
+
+(define-public emacs-es-mode
+  (package
+    (name "emacs-es-mode")
+    (version "4.3.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dakrone/es-mode")
+             (commit "cde5cafcbbbd57db6d38ae7452de626305bba68d")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02zzwf9ykfi2dggjbspg7mk77b5x1fnkpp3bcp6rd4h95apnsjq5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     ;; The version of org in Emacs 24.5 is not sufficient, and causes tables
+     ;; to be rendered incorrectly
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-org" ,emacs-org)
+       ("emacs-spark" ,emacs-spark)
+       ("emacs-s" ,emacs-s)
+       ("emacs-request" ,emacs-request)))
+    (home-page "https://github.com/dakrone/es-mode")
+    (synopsis "Major mode for editing Elasticsearch queries")
+    (description "@code{es-mode} includes highlighting, completion and
+indentation support for Elasticsearch queries.  Also supported are
+@code{es-mode} blocks in @code{org-mode}, for which the results of queries can
+be processed through @code{jq}, or in the case of aggregations, can be
+rendered in to a table.  In addition, there is an @code{es-command-center}
+mode, which displays information about Elasticsearch clusters.")
+    (license license:gpl3+)))
+
 (define-public emacs-hide-header-line
   (package
    (inherit emacs-hide-mode-line)
@@ -128,6 +189,35 @@ FILE-NAME found in %PATCH-PATH."
             (sha256
              (base32
               "1g3pij5qn2j7v7jjac2a63lxd97mcsgw6xq6k5p7835q9fjiid98"))))))
+
+(define-public emacs-restclient
+  (let ((commit "49eb367dc17303c5633a69f49c6a30b18c29d62f")
+        (version "0")
+        (revision "4"))               ;Guix package revision,
+                                      ;upstream doesn't have official releases
+    (package
+      (name "emacs-restclient")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/qzdl/restclient.el")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0vrlrcggznilkm48wqanlm2z4zz2fqlvgbi28v4hfsrjjmrlsr1m"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-jq-mode" ,emacs-jq-mode)))
+      (home-page "https://github.com/pashky/restclient.el")
+      (synopsis "Explore and test HTTP REST webservices")
+      (description
+       "This tool allows for testing and exploration of HTTP REST Web services
+from within Emacs.  Restclient runs queries from a plan-text query sheet,
+displays results pretty-printed in XML or JSON with @code{restclient-mode}")
+      (license license:public-domain))))
 
 (use-modules (guix build-system emacs)
              (gnu packages mail)
