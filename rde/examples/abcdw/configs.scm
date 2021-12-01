@@ -25,8 +25,12 @@
   ;; #:use-module (gnu services nix)
 
   #:use-module (rde packages)
+
+  #:use-module (gnu services ssh)
+
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
+
   #:use-module (gnu home-services ssh)
   #:use-module (gnu packages)
   #:use-module (guix gexp)
@@ -119,7 +123,50 @@
 (define my-notes-directory (string-append my-org-directory "/roam"))
 
 (define my-extra-emacs-config
-  '(
+  '(;; TODO port back to literate
+    (require 'hyperbole)
+
+    (with-eval-after-load 'pdf-view
+      (add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode))
+
+    (defvar qz/restclient-token nil)
+    (defvar qz/restclient-token-field 'access_token)
+
+    (defun qz/restclient-hook ()
+      "Update token from a request."
+      ;; url is visible while the hook is running.
+      (let ((result))
+        (save-excursion
+         (cond
+          ((string-suffix-p "/token" url)
+	   (condition-case nil
+	                   (progn
+	                    (setq result (cdr (assoc qz/restclient-token-field (json-read))))
+	                    (when (stringp result)
+		              (progn
+		               (setq qz/restclient-token result)
+		               (message (concat "stored token: " qz/restclient-token)))))
+	                   (error (message "That wasn't cleanly handled."))))))))
+
+    (add-hook 'restclient-response-loaded-hook 'qz/restclient-hook)
+    (provide 'restclient-hooks)
+
+    ;;(custom-set-variables
+    ;; '(org-disputed-keys '([(shift o)] . [(meta shift o)])))
+
+    (defun qz/newline-above ()
+      (interactive)
+      (save-excursion
+       (beginning-of-line)
+       (newline))
+      (indent-according-to-mode))
+
+    (define-key global-map (kbd "C-z") 'qz/newline-above)
+    ;;(define-key global-map (kbd "C-o") 'open-line)
+    ;;
+    ;;(org-remap org-mode-map
+    ;;           'open-line 'org-open-line)
+
     (define-key global-map (kbd "s-h") 'windmove-left)
     (define-key global-map (kbd "s-j") 'windmove-down)
     (define-key global-map (kbd "s-k") 'windmove-up)
@@ -150,10 +197,9 @@
       (interactive)
       (load-file "~/.config/emacs/init.el"))
 
+    (define-key global-map (kbd "s-\\") 'org-store-link)
 
-    (with-eval-after-load
-     'org-roam
-
+    (with-eval-after-load 'org-roam
      (setq org-confirm-babel-evaluate nil)
 
      ;; [[file:~/.doom.d/config.org::*refile][refile]]
@@ -331,6 +377,7 @@
                                           year))))
      )
 
+    (require 'perfect-margin)
     (perfect-margin-mode 1)
     (setq perfect-margin-ignore-regexps nil
           perfect-margin-ignore-filters nil)
@@ -379,19 +426,23 @@
         ("NODE_REPL_HISTORY" . "${NODE_REPL_HISTORY:-$XDG_CACHE_HOME/node/repl_history}")
         ("NVM_DIR" . "${NVM_DIR:-$XDG_DATA_HOME/nvm}")
         ("BABEL_CACHE_PATH" . "${BABEL_CACHE_PATH:-$XDG_CACHE_HOME/babel/cache.json}")
-        ("PATH" . (string-join (list "$PATH"
-                                     "$HOME/local/bin"
-                                     "${XDG_CACHE_HOME}/npm/bin")
-                               ":"))))
+        ;; XXX this reports multiple entries for PATH and doesn't use this one
+        ;; ("PATH" . (string-join
+        ;;            (list "$PATH"
+        ;;                  "$HOME/local/bin"
+        ;;                  "${XDG_CACHE_HOME}/npm/bin") ":"))
+        ))
      ((@ (gnu services) simple-service)
       'extend-shell-profile
       (@ (gnu home-services shells) home-shell-profile-service-type)
       (list
+       "PATH=\"$PATH:$HOME/local/bin:${XDG_CACHE_HOME}/npm/bin\""
        #~(string-append
           "alias superls="
           #$(file-append (@ (gnu packages base) coreutils) "/bin/ls")))))
     #:system-services
-    (list (service postgresql-service-type)
+    (list (service openssh-service-type)
+          (service postgresql-service-type)
           (service postgresql-role-service-type
                    (postgresql-role-configuration
                     (roles (list (postgresql-role
@@ -416,7 +467,24 @@
    (feature-alacritty
     #:config-file (local-file "./config/alacritty/alacritty.yml")
     )
-   (feature-zsh)
+   (feature-zsh
+    #:extra-config
+    '(;; XXX higher level category
+      "alias ns='cd $HOME/git/ns'"
+      "alias om='ns && cd om'"
+      "alias omom='om && cd om'"
+      "alias rt='ns && cd routing'"
+      "alias sys='cd $HOME/git/sys'"
+
+      ;; TIL https://unix.stackexchange.com/questions/225943/except-the-1st-argument
+      "rgw() { d=$1; p=$2; argv[1,2]=(); rg $p $d $@; }"
+      "alias rgg='rgw $HOME/git/'"
+      "alias rgr='rgw $HOME/git/sys/rde'"
+      "alias rgns='rgw $HOME/git/ns'"
+      "alias rgom='rgw $HOME/git/ns/om'"
+      "alias rgrt='rgw $HOME/git/ns/routing'"
+      "alias rgsys='rgw $HOME/git/sys'"
+      ))
    (feature-ssh
     #:ssh-configuration
     (home-ssh-configuration
@@ -445,7 +513,8 @@
    (feature-git)
 
    (feature-sway
-    #:opacity 0.9
+    #:xwayland? #t
+    #:opacity 0.88
     #:wallpaper "$HOME/.cache/wallpaper.png"
     #:extra-config
     `((include ,(local-file "./config/sway/config"))))
@@ -461,8 +530,7 @@
     (append  ;; TODO if feature-emacs-PACKAGE exists, advise its use
      (pkgs "emacs-yasnippet" "emacs-elfeed" "emacs-hl-todo"
            "emacs-dimmer" "emacs-hyperbole" "emacs-org-fragtog"
-           "emacs-yaml-mode"
-           ;;"emacs-restclient" "emacs-ob-restclient"
+           "emacs-yaml-mode" "emacs-plantuml-mode"
            ;; "emacs-org-autotangle"
            ))
     #:extra-config ;; this will be much tidier collected from literate config, with each elisp block as `:noweb'
