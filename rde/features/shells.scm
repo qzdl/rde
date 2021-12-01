@@ -17,7 +17,8 @@
 	  #:key
 	  (package zsh)
 	  (default-shell? #t)
-	  (enable-zsh-autosuggestions? #t))
+	  (enable-zsh-autosuggestions? #t)
+          (extra-config '()))
   "Configure Zsh."
   (ensure-pred package? package)
 
@@ -83,9 +84,9 @@ bindkey -e '^Y' rde-yank
        (xdg-flavor? #t)
        (package package)
        (zshrc
-	(list
-	 (slurp-file-gexp (local-file "./zsh/zshrc"))
-	 "alias state-sync='herd sync state && pass git push origin master'"))))))
+        (append (list (slurp-file-gexp (local-file "./zsh/zshrc"))
+	              "alias state-sync='herd sync state && pass git push origin master'")
+                extra-config))))))
 
   (feature
    (name 'zsh)

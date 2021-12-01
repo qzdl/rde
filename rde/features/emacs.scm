@@ -549,6 +549,7 @@ utilizing reverse-im package."
         (add-to-list 'auto-mode-alist '("\\.[pP][dD][fF]\\'" . pdf-view-mode))
         (add-to-list 'magic-mode-alist '("%PDF" . pdf-view-mode))
         (add-hook 'pdf-view-mode-hook 'pdf-tools-enable-minor-modes)
+        (add-hook 'pdf-view-mode-hook 'pdf-view-fit-page-to-window)
         (with-eval-after-load
          'saveplace
          (require 'saveplace-pdf-view)))
@@ -720,7 +721,7 @@ previous window layout otherwise.  With universal argument toggles
     (list
      (simple-service
       'vterm-home-shell-configuration
-      home-shell-profile-service-type
+      home-shell-profile-service-type ;; XXX this needs to go to the relevant [ba|fi|z]shrc file
       (list
        ;; oof, this sucks. when porting
        ;; (query-replace "\\" "\\\\")  ;; literal escapes
@@ -828,8 +829,8 @@ vterm_cmd() {
       `((setq org-directory ,org-directory)
         (setq org-agenda-directory ,org-agenda-directory)
 
-        (with-eval-after-load
-         'org
+        (with-eval-after-load 'org
+         (require 'org-protocol)
 	 (setq org-adapt-indentation nil)
 	 (setq org-edit-src-content-indentation 0)
 	 (setq org-startup-indented t)
@@ -847,7 +848,11 @@ vterm_cmd() {
          (setq org-default-notes-file (concat org-directory "/todo.org"))
 
          ;;; see org-mode/org-keys.el
+         ;;; [[file:/gnu/store/qhqhlclxnqsxazs88wrmqz2vi5abcgm0-emacs-org-9.5/share/emacs/site-lisp/org-9.5/org-keys.el::;;; Global bindings]]
+
          (define-key org-mode-map (kbd "C-c o n") 'org-num-mode)
+
+         (define-key org-mode-map (kbd "C-c C-x i") 'org-id-get-create)
 
          (define-key org-mode-map (kbd "C-M-<return>") 'org-insert-subheading)
          (define-key org-mode-map (kbd "C-M-S-<return>") 'org-insert-todo-subheading)
@@ -1254,7 +1259,10 @@ emacsclient feels more like a separate emacs instance."
    (home-services-getter get-home-services)))
 
 
-(define* (feature-emacs-restclient)
+(define* (feature-emacs-restclient
+          #:key
+          (emacs-restclient emacs-restclient)
+          (emacs-ob-restclient emacs-ob-restclient))
   "Configure restclient for GNU Emacs."
   (define emacs-f-name 'restclient)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -1264,7 +1272,8 @@ emacsclient feels more like a separate emacs instance."
      (elisp-configuration-service
       emacs-f-name
       `()
-      #:elisp-packages (list emacs-restclient))))
+      #:elisp-packages (list emacs-restclient
+                             emacs-ob-restclient))))
 
   (feature
    (name f-name)
@@ -1294,7 +1303,9 @@ emacsclient feels more like a separate emacs instance."
          '(org-roam-completion-everywhere t)
          '(org-roam-directory ,org-roam-directory))
 
-        (with-eval-after-load 'org-roam (org-roam-setup))
+        (with-eval-after-load 'org-roam
+          (org-roam-setup)
+          (require 'org-roam-protocol))
 
         (defun +rde/search-notes ()
           (interactive)
@@ -1302,6 +1313,8 @@ emacsclient feels more like a separate emacs instance."
 
 	(define-key global-map (kbd "C-c n n")   'org-roam-buffer-toggle)
 	(define-key global-map (kbd "C-c n f")   'org-roam-node-find)
+        (define-key global-map (kbd "C-c n C-f") 'org-roam-ref-find)
+
 	(define-key global-map (kbd "C-c n i")   'org-roam-node-insert)
         (define-key global-map (kbd "C-c n s")   '+rde/search-notes)
 
