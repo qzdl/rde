@@ -44,7 +44,9 @@
 ;; Initial user's password hash will be available in store, so it's
 ;; use this feature with care
 ;; (display (crypt "hi" "$6$abc"))
+(use-modules (ice-9 pretty-print))
 
+(pretty-print "bonk")
 (define* (mail-acc id user #:optional (type 'gmail))
   "Make a simple mail-account with gmail type by default."
   (mail-account
@@ -71,7 +73,7 @@
     ;; some helpful messages and parts of the interface for the sake
     ;; of minimalistic, less distractive and clean look.  Generally
     ;; it's not recommended to use it.
-    #:emacs-advanced-user? #t)
+    #:emacs-advanced-user? #t
     #:user-groups '("lp")) ;; TODO confluence of features -> groups
 
    (feature-gnupg
@@ -586,8 +588,7 @@
 
    (feature-isync #:isync-verbose #t)
    (feature-l2md)
-   (feature-msmtp
-    #:msmtp-package msmtp-latest)
+   (feature-msmtp)
    (feature-notmuch
     #:notmuch-saved-searches
     (cons* '(:name "Work Inbox" :query "tag:work and tag:inbox"
@@ -699,6 +700,8 @@
    ;(feature-hidpi)
    ))
 
+(pretty-print "pre-config get")
+
 
 ;;; rde-config and helpers for generating home-environment and
 ;;; operating-system records.
@@ -710,12 +713,15 @@
      %abcdw-features
      %main-features
      %ixy-features))))
+(pretty-print "post-config get")
 
 ;; TODISCUSS: Make rde-config-os/he to be a feature instead of getter?
 (define ixy-os
   (rde-config-operating-system ixy-config))
 (define ixy-he
   (rde-config-home-environment ixy-config))
+
+(pretty-print "post-os get")
 
 (define (dispatcher)
   (let ((rde-target (getenv "RDE_TARGET")))
@@ -724,6 +730,7 @@
       ("ixy-system" ixy-os)
       (_ ixy-he))))
 
+(pretty-print "post-dispatcher get")
 ;; (pretty-print-rde-config ixy-config)
 ;; (use-modules (gnu services)
 ;; 	     (gnu services base))

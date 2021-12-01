@@ -123,38 +123,6 @@ FILE-NAME found in %PATCH-PATH."
      "[emacs] auto center emacs windows, work with minimap and/or linum-mode")
     (license license:gpl3+)))
 
-(define-public emacs-es-mode
-  (package
-    (name "emacs-es-mode")
-    (version "4.3.0.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/dakrone/es-mode")
-             (commit "cde5cafcbbbd57db6d38ae7452de626305bba68d")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "02zzwf9ykfi2dggjbspg7mk77b5x1fnkpp3bcp6rd4h95apnsjq5"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     ;; The version of org in Emacs 24.5 is not sufficient, and causes tables
-     ;; to be rendered incorrectly
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-org" ,emacs-org)
-       ("emacs-spark" ,emacs-spark)
-       ("emacs-s" ,emacs-s)
-       ("emacs-request" ,emacs-request)))
-    (home-page "https://github.com/dakrone/es-mode")
-    (synopsis "Major mode for editing Elasticsearch queries")
-    (description "@code{es-mode} includes highlighting, completion and
-indentation support for Elasticsearch queries.  Also supported are
-@code{es-mode} blocks in @code{org-mode}, for which the results of queries can
-be processed through @code{jq}, or in the case of aggregations, can be
-rendered in to a table.  In addition, there is an @code{es-command-center}
-mode, which displays information about Elasticsearch clusters.")
-    (license license:gpl3+)))
-
 (define-public emacs-hide-header-line
   (package
    (inherit emacs-hide-mode-line)
