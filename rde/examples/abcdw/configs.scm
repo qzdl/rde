@@ -139,14 +139,14 @@
         (save-excursion
          (cond
           ((string-suffix-p "/token" url)
-	   (condition-case nil
-	                   (progn
-	                    (setq result (cdr (assoc qz/restclient-token-field (json-read))))
-	                    (when (stringp result)
-		              (progn
-		               (setq qz/restclient-token result)
-		               (message (concat "stored token: " qz/restclient-token)))))
-	                   (error (message "That wasn't cleanly handled."))))))))
+           (condition-case nil
+                           (progn
+                            (setq result (cdr (assoc qz/restclient-token-field (json-read))))
+                            (when (stringp result)
+                              (progn
+                               (setq qz/restclient-token result)
+                               (message (concat "stored token: " qz/restclient-token)))))
+                           (error (message "That wasn't cleanly handled."))))))))
 
     (add-hook 'restclient-response-loaded-hook 'qz/restclient-hook)
     (provide 'restclient-hooks)
@@ -652,19 +652,19 @@
 ;; (define ixy-file-systems
 ;;   (append
 ;;    (map (match-lambda
-;; 	  ((subvol . mount-point)
-;; 	   (file-system
-;; 	     (type "btrfs")
-;; 	     (device "/dev/mapper/enc")
-;; 	     (mount-point mount-point)
-;; 	     (options (format #f "subvol=~a" subvol))
-;; 	     (dependencies ixy-mapped-devices))))
-;; 	'((root . "/")
-;; 	  (boot . "/boot")
-;; 	  (gnu  . "/gnu")
-;; 	  (home . "/home")
-;; 	  (data . "/data")
-;; 	  (log  . "/var/log")))
+;;        ((subvol . mount-point)
+;;         (file-system
+;;           (type "btrfs")
+;;           (device "/dev/mapper/enc")
+;;           (mount-point mount-point)
+;;           (options (format #f "subvol=~a" subvol))
+;;           (dependencies ixy-mapped-devices))))
+;;      '((root . "/")
+;;        (boot . "/boot")
+;;        (gnu  . "/gnu")
+;;        (home . "/home")
+;;        (data . "/data")
+;;        (log  . "/var/log")))
 ;;    (list
 ;;     (file-system
 ;;       (mount-point "/boot/efi")
@@ -726,11 +726,11 @@
 
 ;; (pretty-print-rde-config ixy-config)
 ;; (use-modules (gnu services)
-;; 	     (gnu services base))
+;;           (gnu services base))
 ;; (display
 ;;  (filter (lambda (x)
-;; 	   (eq? (service-kind x) console-font-service-type))
-;; 	 (rde-config-system-services ixy-config)))
+;;         (eq? (service-kind x) console-font-service-type))
+;;       (rde-config-system-services ixy-config)))
 
 ;; (use-modules (rde features))
 ;;  ((@@ (ice-9 pretty-print) pretty-print)
