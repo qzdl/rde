@@ -47,11 +47,14 @@ FILE-NAME found in %PATCH-PATH."
 ;; => 0drpms07231zc4w9g7gikwm5zlgrzdw8vbq853rlb7wqk3xg6gyq
 ;;
 ;; NOTE in the logs when building, we are missing `git' (rev-parse on something)
+;;
+;; 57a9bf8d4186878a59750e2f0bef3ca3b526e8ef 0bkd7x7fr8xalx58ayjpbsjhqx47kkc6kgx4fa3kn4xcyn7y9amk
+;; 1afa295aed81357fddf9694bfe68ed0e6d159a2d 0w9ngwb1006g5i5agssmbrjh6z8w1d9mfjmxin0ich3lj4pjhqbf
 
 (use-modules (gnu packages emacs))
 (define-public emacs-next-pgtk-latest
-  (let ((commit "b4204bdae83695089a27141602a955339df78b7a")
-        (revision "5"))
+  (let ((commit "1afa295aed81357fddf9694bfe68ed0e6d159a2d")
+        (revision "6"))
     (package
       (inherit emacs-next-pgtk)
       (name "emacs-next-pgtk-latest")
@@ -65,7 +68,7 @@ FILE-NAME found in %PATCH-PATH."
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0drpms07231zc4w9g7gikwm5zlgrzdw8vbq853rlb7wqk3xg6gyq")))))))
+           "0w9ngwb1006g5i5agssmbrjh6z8w1d9mfjmxin0ich3lj4pjhqbf")))))))
 
 (use-modules (gnu packages emacs-xyz)
              (guix build-system emacs))

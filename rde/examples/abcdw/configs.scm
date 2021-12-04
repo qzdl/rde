@@ -126,7 +126,7 @@
 
 (define my-extra-emacs-config
   '(;; TODO port back to literate
-    (require 'hyperbole)
+    ;;(require 'hyperbole)
 
     (with-eval-after-load 'pdf-view
       (add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode))

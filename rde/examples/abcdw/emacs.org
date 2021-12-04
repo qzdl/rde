@@ -400,7 +400,7 @@ buffer are offered."
 
 *** restclient-choose-env
 #+begin_src emacs-lisp :noweb-ref conf
-(defvar qz/restclient-environment nil)
+(defvar qz/restclient-env nil)
 
 (defun qz/restclient-choose-env (&optional env)
   (interactive)
@@ -1269,7 +1269,8 @@ the major mode specifies support for Font Lock."
       qz/newstore-tenant-current nil
       qz/newstore-tenants '("dodici" "windsor"
                             "boardriders" "marine-layer"
-                            "frankandoak" "vince"))
+                            "frankandoak" "vince" "outdoor-voices"))
+
 
 (defun qz/newstore-choose-env (&optional env)
   (interactive)
