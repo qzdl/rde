@@ -28,8 +28,9 @@
   #:use-module (gnu services)
   #:use-module (rde home services i2p)
 
-  ;; #:use-module (gnu services nix)
   #:use-module (gnu system keyboard)
+  #:use-module (rde examples abcdw emacs)
+
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
   #:use-module (gnu home-services ssh)
@@ -42,7 +43,9 @@
   #:use-module (guix inferior)
   #:use-module (guix channels)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 pretty-print)
   #:use-module (srfi srfi-1))
+
 
 
 ;;; User-specific features
@@ -67,10 +70,11 @@
             (name (symbol->string id))
             (urls urls)))))
 
+(pretty-print "pre-%abcdw-features")
 (define %abcdw-features
   (list
    (feature-user-info
-    #:emacs-advanced-user? #t
+    ;;#:emacs-advanced-user? #t
     #:user-name "samuel"
     #:full-name "Samuel Culpepper"
     #:email "samuel@samuelculpepper.com"
@@ -83,7 +87,6 @@
     ;;  #:remote-password-store-url "ssh://abcdw@olorin.lan/~/state/password-store")
 
    (feature-mail-settings
-
     #:mail-accounts
     (list (mail-account
            (id   'work)
@@ -146,6 +149,7 @@
              (gnu services databases)
              (gnu services desktop))
 
+(pretty-print "pre-%main-features")
 ;;; WARNING: The order can be important for features extending
 ;;; services of other features.  Be careful changing it.
 (define %main-features
@@ -188,7 +192,8 @@
         ("NVM_DIR" . "${NVM_DIR:-$XDG_DATA_HOME/nvm}")
         ("BABEL_CACHE_PATH" . "${BABEL_CACHE_PATH:-$XDG_CACHE_HOME/babel/cache.json}")
         ("PATH" . (string-join (list "$PATH"
-                                     "$HOME/local/bin"
+                                     "$HOME/.local/bin"
+                                     "$HOME/.krew/bin"
                                      "${XDG_CACHE_HOME}/npm/bin")
                                ":"))))
      ;; ((@ (gnu services) simple-service)
@@ -197,7 +202,8 @@
      ;;  (list
      ;;   #~(string-append
      ;;      "alias superls="
-     ;;      #$(file-append (@ (gnu packages base) coreutils) "/bin/ls")))))
+     ;;      #$(file-append (@ (gnu packages base) coreutils) "/bin/ls"))))
+     )
     #:system-services
     (list (service postgresql-service-type)
           (service postgresql-role-service-type
@@ -210,7 +216,8 @@
                                   (create-database? #t))
                                  (postgresql-role
                                   (name "newstore")
-                                  (create-database? #t))))))))
+                                  (create-database? #t))))))
+          ))
 
    (feature-base-services)
    (feature-desktop-services)
@@ -230,10 +237,35 @@
     #:backup-terminal? #t
     #:software-rendering? #f)
    (feature-vterm)
-   (feature-zsh
-    #:enable-zsh-autosuggestions? #t)
    (feature-bash)
    (feature-direnv)
+   (feature-zsh
+    #:enable-zsh-autosuggestions? #t)
+    #:extra-zshrc
+    (list ;; XXX higher level category
+     "alias ns='cd $HOME/git/ns'"
+     "alias om='ns && cd om'"
+     "alias omom='om && cd om'"
+     "alias rt='ns && cd routing'"
+     "alias sys='cd $HOME/git/sys'"
+
+     ;; TIL https://unix.stackexchange.com/questions/225943/except-the-1st-argument
+     "rgw() { d=$1; p=$2; argv[1,2]=(); rg $p $d $@; }"
+     "alias rgg='rgw $HOME/git/'"
+     "alias rgr='rgw $HOME/git/sys/rde'"
+     "alias rgns='rgw $HOME/git/ns'"
+     "alias rgom='rgw $HOME/git/ns/om'"
+     "alias rgrt='rgw $HOME/git/ns/routing'"
+     "alias rgsys='rgw $HOME/git/sys'"
+
+     ;; (string-append
+     ;;  "export PATH=\""
+     ;;  (string-join (list "$PATH"
+     ;;                     "$HOME/.local/bin"
+     ;;                     "$HOME/.krew/bin"
+     ;;                     "${XDG_CACHE_HOME}/npm/bin") ":")
+     ;;  "\"")
+     ))
    (feature-ssh
     #:ssh-configuration
     (home-ssh-configuration
@@ -325,7 +357,41 @@
            "emacs-hyperbole"
            "emacs-ement"
            "emacs-restart-emacs"
-           "emacs-org-present")))
+           "emacs-org-present"
+
+           "emacs-dimmer" "emacs-hyperbole" "emacs-org-fragtog"
+           "emacs-yaml-mode"
+           "emacs-org-download"
+           "emacs-org-edit-latex"
+           "emacs-guix"
+           "emacs-forge"
+           "emacs-debbugs"
+           "emacs-ob-async"
+           ;;"emacs-es-mode"
+           "emacs-org-fragtog"
+           ;; TODO feature-emacs-lsp
+           "emacs-eglot"
+           "emacs-lsp-ui"
+           "emacs-lsp-mode"
+           "emacs-python-black"
+           "emacs-py-isort"
+           "emacs-gnuplot"
+           "emacs-protobuf-mode"
+           "emacs-go-mode"
+           "emacs-eros"
+           "emacs-string-inflection"
+           ;; emacs-impostman
+           ;;"emacs-restclient" "emacs-ob-restclient"
+           ;; "emacs-org-autotangle"
+           ))
+    #:extra-config ;; this will be much tidier collected from literate config, with each elisp block as `:noweb'
+    (append ;; this can port
+     (list #~"(define-key key-translation-map [?\\C-x] [?\\C-u])\n"
+           #~"(define-key key-translation-map [?\\C-u] [?\\C-x])\n"
+           )
+     ;;init-el
+     ))
+     ))
    (feature-emacs-appearance #:light #f)
    (feature-emacs-faces)
    (feature-emacs-completion
@@ -403,8 +469,8 @@
    (feature-mpv)
    (feature-isync #:isync-verbose #t)
    (feature-l2md)
-   (feature-msmtp
-    #:msmtp-package msmtp-latest)
+   ;;(feature-msmtp
+   ;; #:msmtp-package msmtp-latest)
    (feature-notmuch
     #:extra-tag-updates-post
     '("notmuch tag +guix-home -- 'thread:\"\
@@ -456,10 +522,9 @@
 
       ;; TODO: Fix telega package!
       "ffmpeg"
-      "ripgrep" "curl")))))
+      "ripgrep" "curl" "make")))))
+(pretty-print "post-%main-features")
 
-(define %laptop-features
-  (list ))
 
 
 ;;; Hardware/host specific features
@@ -512,6 +577,7 @@
  (gnu packages linux)
  ((nongnu packages linux) #:prefix nongnu:)
  ((nongnu system linux-initrd) #:prefix nongnu-sys:))
+
 (define %ixy-features
   (list
    (feature-host-info
@@ -642,4 +708,5 @@
 ;; ((@ (ice-9 pretty-print) pretty-print)
 ;;  (map feature-name (rde-config-features ixy-config)))
 
+(pretty-print "pre-dispatch")
 (dispatcher)
