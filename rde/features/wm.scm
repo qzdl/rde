@@ -189,6 +189,8 @@
             (default_floating_border pixel)
             (gaps inner ,(get-value 'emacs-margin config 8))
             (,#~"")
+            ;;(,#~"input \"*\" tool_mode \"*\" relative") ;; needs wayland >= 1.6
+            (,#~"")
             (set $opacity ,opacity)
             (,#~"for_window [class=\".*\"] opacity $opacity")
             (,#~"for_window [app_id=\".*\"] opacity $opacity")
@@ -399,7 +401,9 @@ $(date +'%Y-%m-%d %l:%M:%S %p'); do sleep 5; done" battery))
                     `((font ,(font-name font-mono)))
                     '())
               (colors ((statusline "#ffffff")
-                       (background "#323232")))
+                       (background "#323232ee")))
+              (gaps 8)
+              ;; (gaps inner ,(get-value 'emacs-margin config 8))
               (status_command ,(get-status-command))))))))
 
   (feature
