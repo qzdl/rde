@@ -1935,7 +1935,9 @@ emacsclient feels more like a separate emacs instance."
    (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
-(define* (feature-emacs-es-mode)
+(define* (feature-emacs-es-mode
+          #:key
+          (package emacs-es-mode))
   "Configure es-mode for GNU Emacs."
   (define emacs-f-name 'es-mode)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -1945,7 +1947,7 @@ emacsclient feels more like a separate emacs instance."
      (elisp-configuration-service
       emacs-f-name
       `()
-      #:elisp-packages (list emacs-es-mode))))
+      #:elisp-packages (list package))))
 
   (feature
    (name f-name)
