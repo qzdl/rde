@@ -30,7 +30,6 @@
 
   #:use-module (gnu system keyboard)
   #:use-module (rde examples abcdw emacs)
-
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
   #:use-module (gnu home-services ssh)
@@ -45,7 +44,6 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
   #:use-module (srfi srfi-1))
-
 
 
 ;;; User-specific features
@@ -85,7 +83,6 @@
     #:user-groups '("lp")) ;; TODO confluence of features -> groups
 
    (feature-gnupg
-     #:pinentry-flavor 'qt ;;'emacs ;; '
      #:gpg-primary-key "EE20E25391AAB9BB"
      #:gpg-smart-card? #f)
    (feature-password-store)
@@ -150,7 +147,6 @@
     (car (lookup-inferior-packages inferior pkg-name)))
 
    (map get-inferior-pkg lst))
-
 
 (use-modules (gnu services)
              (gnu services databases)
