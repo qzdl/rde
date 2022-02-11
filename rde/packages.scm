@@ -283,7 +283,7 @@ project.
 This code was partially adapted from the excellent consult-lsp package.")
    (license license:expat)))
 
-(define-public emacs-ob-restclient
+(define-public emacs-ob-restclient-latest
   (let ((commit "f81f2f4f3fe6882947b8547ccd570f540106ed4d"))
     (package
       (name "emacs-ob-restclient")
