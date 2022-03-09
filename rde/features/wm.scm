@@ -49,7 +49,10 @@
 
   #:use-module (srfi srfi-1)
 
-  #:export (feature-sway
+  #:export (feature-i3
+            feature-i3-run-on-tty
+
+            feature-sway
             feature-sway-run-on-tty
             feature-sway-tessen
             feature-sway-screenshot
@@ -309,6 +312,213 @@ automatically switch to SWAY-TTY-NUMBER on boot."
    (values (make-feature-values sway-tty-number))
    (home-services-getter sway-run-on-tty-home-services)
    (system-services-getter sway-run-on-tty-system-services)))
+
+
+;;;;;;
+
+(define* (feature-i3
+          #:key
+          (extra-config '())
+          (i3 i3-gaps            )
+          (foot foot)
+          (bemenu bemenu)
+          (xdg-desktop-portal xdg-desktop-portal)
+          (xdg-desktop-portal-wlr xdg-desktop-portal-wlr)
+          ;; Logo key. Use Mod1 for Alt.
+          (i3-mod 'Mod4)
+          (add-keyboard-layout-to-config? #t)
+          (opacity 1)
+          (wallpaper #f)
+          (xwayland? #f))
+  "Setup and configure i3."
+  (ensure-pred i3-config? extra-config)
+  (ensure-pred boolean? add-keyboard-layout-to-config?)
+  (ensure-pred any-package? i3)
+  (ensure-pred any-package? foot)
+  (ensure-pred any-package? bemenu)
+  (ensure-pred any-package? xdg-desktop-portal)
+  (ensure-pred any-package? xdg-desktop-portal-wlr)
+
+  (define (i3-home-services config)
+    "Returns home services related to i3."
+    (let* ((kb-layout      (get-value 'keyboard-layout config))
+           (layout-config  (if (and add-keyboard-layout-to-config? kb-layout)
+                               (keyboard-layout-to-sway-config kb-layout)
+                               '()))
+
+           (lock-cmd
+            (get-value 'default-screen-locker config "loginctl lock-session"))
+
+           (default-terminal
+             (get-value-eval 'default-terminal config
+                             (file-append foot "/bin/foot")))
+           (backup-terminal
+             (get-value 'backup-terminal config
+                        (file-append foot "/bin/foot")))
+           (default-application-launcher
+             (get-value 'default-application-launcher config
+                        (file-append bemenu "/bin/bemenu-run -l 20 -p run:"))))
+      (list
+       (service
+        home-i3-service-type
+        (home-i3-configuration
+         (package i3)
+         (config
+          `(;;(xwayland ,(if xwayland? 'enable 'disable))
+            (,#~"")
+            (smart_borders on)
+            ,@layout-config
+
+            (,#~"\n\n# General settings:")
+            (set $mod ,i3-mod)
+            (set $term ,default-terminal)
+            (set $backup-term ,backup-terminal)
+            (set $menu ,default-application-launcher)
+            (set $lock ,lock-cmd)
+
+            (floating_modifier $mod normal)
+
+            (bindsym $mod+Shift+r reload)
+
+            (,#~"\n\n# Launching external applications:")
+            (bindsym $mod+Control+Shift+Return exec $backup-term)
+            (bindsym $mod+Return exec $term)
+
+            (bindsym $mod+Shift+d exec $menu)
+            (bindsym $mod+Shift+l exec $lock)
+
+            (,#~"\n\n# Manipulating windows:")
+            (bindsym $mod+Shift+c kill)
+            (bindsym $mod+Shift+f fullscreen)
+            (bindsym $mod+Shift+space floating toggle)
+            (bindsym $mod+Ctrl+space focus mode_toggle)
+
+            (bindsym $mod+Left focus left)
+            (bindsym $mod+Down focus down)
+            (bindsym $mod+Up focus up)
+            (bindsym $mod+Right focus right)
+
+            (bindsym $mod+Shift+Left move left)
+            (bindsym $mod+Shift+Down move down)
+            (bindsym $mod+Shift+Up move up)
+            (bindsym $mod+Shift+Right move right)
+
+            (,#~"\n\n# Moving around workspaces:")
+            (bindsym $mod+tab workspace back_and_forth)
+            ,@(append-map
+               (lambda (x)
+                 `((bindsym ,(format #f "$mod+~a" (modulo x 10))
+                            workspace number ,x)
+                   (bindsym ,(format #f "$mod+Shift+~a" (modulo x 10))
+                            move container to workspace number ,x)))
+               (iota 10 1))
+
+            (,#~"\n\n# Scratchpad settings:")
+            (bindsym $mod+Shift+minus move scratchpad)
+            (bindsym $mod+minus scratchpad show)
+
+            (,#~"")
+            (default_border pixel)
+            (default_floating_border pixel)
+            (gaps inner ,(get-value 'emacs-margin config 8))
+
+            (,#~"")
+            (set $opacity ,opacity)
+            (,#~"for_window [class=\".*\"] opacity $opacity")
+            (,#~"for_window [app_id=\".*\"] opacity $opacity")
+            (,#~"")
+            ,@(if (not wallpaper)
+                  '()
+                  `((set $wallpaper ,wallpaper)
+                    (,#~"output \"*\" background $wallpaper fill")))))))
+
+
+       (simple-service
+        'i3-configuration
+        home-i3-service-type
+        `(,@extra-config
+          (,#~"")))
+
+       (simple-service
+        'i3-reload-config-on-change
+        (@@ (gnu home services) home-run-on-change-service-type)
+        `(("files/config/i3/config"
+           ,#~(system* #$(file-append i3 "/bin/i3-msg") "reload"))))
+
+       (simple-service
+        'packages-for-i3
+        home-profile-service-type
+        (append
+         (if (and (get-value 'default-terminal config)
+                  (get-value 'backup-terminal config))
+             '() (list foot))
+         (if (get-value 'default-application-launcher config) '() (list bemenu))
+         (list
+          (@@ (gnu packages xorg) xorg-server)
+          (@@ (gnu packages xorg) xinit)
+          (@@ (gnu packages wm) i3status)
+          ;; qtwayland swayhide
+          ;; xdg-desktop-portal xdg-desktop-portal-wlr
+               )))
+       (simple-service 'set-wayland-specific-env-vars
+                       home-environment-variables-service-type
+                       ;; export NO_AT_BRIDGE=1
+                       '(("XDG_CURRENT_DESKTOP" . "i3")
+                         ("XDG_SESSION_TYPE" . "X11")
+                         ;; ("RTC_USE_PIPEWIRE" . "true")
+                         ;; ("SDL_VIDEODRIVER" . "wayland")
+                         ;; ("MOZ_ENABLE_WAYLAND" . "1")
+                         ;; ("CLUTTER_BACKEND" . "wayland")
+                         ;; ("ELM_ENGINE" . "wayland_egl")
+                         ;; ("ECORE_EVAS_ENGINE" . "wayland-egl")
+                         ;; ("QT_QPA_PLATFORM" . "wayland-egl")
+                         ;; ("_JAVA_AWT_WM_NONREPARENTING" . "1")
+                         )))))
+
+  (feature
+   (name 'i3)
+   (values `((i3 . ,i3)
+             (wl-clipboard . ,wl-clipboard)
+             (wayland . #t)
+             (xwayland? . ,xwayland?)))
+   (home-services-getter i3-home-services)))
+
+(define* (feature-i3-run-on-tty
+          #:key
+          (i3-tty-number 2)
+          (launch-args ""))
+  "Launch i3 on specified tty upon user login.  Also,
+automatically switch to i3-TTY-NUMBER on boot."
+  (ensure-pred tty-number? i3-tty-number)
+  (ensure-pred string? launch-args)
+
+  (define (i3-run-on-tty-home-services config)
+    (list
+     (simple-service
+      'run-i3-on-login-to-i3-tty
+      home-shell-profile-service-type
+      (list
+       (format #f "[ $(tty) = /dev/tty~a ] && xinit ~a"
+               i3-tty-number
+               launch-args)))))
+
+  (define (i3-run-on-tty-system-services _)
+    (list
+     (simple-service
+      'switch-to-i3-tty-after-boot shepherd-root-service-type
+      (list (shepherd-service
+             (provision '(switch-to-i3-tty))
+             (requirement '(virtual-terminal))
+             (start #~(lambda ()
+                        (invoke #$(file-append kbd "/bin/chvt")
+                                #$(format #f "~a" i3-tty-number))))
+             (one-shot? #t))))))
+
+  (feature
+   (name 'i3-run-on-tty)
+   (values (make-feature-values i3-tty-number))
+   (home-services-getter i3-run-on-tty-home-services)
+   (system-services-getter i3-run-on-tty-system-services)))
 
 
 ;;;
