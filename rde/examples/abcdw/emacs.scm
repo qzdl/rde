@@ -70,11 +70,11 @@
       (s-trim (shell-command-to-string
                (format "pass newstore/%s" env))))
     
-    (defun qz/newstore-quick-auth ()
-      (interactive)
-      (qz/newstore-choose-tenant)
-      (qz/newstore-choose-env)
-      (org-sbe "newstore-token"))
+    ;; (defun qz/newstore-quick-auth ()
+    ;;   (interactive)
+    ;;   (qz/newstore-choose-tenant)
+    ;;   (qz/newstore-choose-env)
+    ;;   (org-sbe "newstore-token"))
     (defun qz/shell-command-to-list-of-strings (command)
       (remove "" (s-split "\n" (shell-command-to-string command))))
     (defun qz/revert-buffer-no-confirm ()
@@ -85,6 +85,7 @@
 
     ;; NOWEB CONF START
     ;; NOWEB KBD START
+    (define-key global-map (kbd "C-x C-M-f") 'consult-recent-file)
     ;;(custom-set-variables
     ;; '(org-disputed-keys '([(shift o)] . [(meta shift o)])))
     
@@ -111,6 +112,23 @@
     (define-key global-map (kbd "s-k") 'windmove-up)
     (define-key global-map (kbd "s-l") 'windmove-right)
     (define-key global-map (kbd "s-\\") 'org-store-link)
+    ;; Activate occur easily inside isearch
+    (define-key isearch-mode-map (kbd "C-o")
+                (lambda () (interactive)
+                  (let ((case-fold-search isearch-case-fold-search))
+                    (occur (if isearch-regexp
+                               isearch-string
+                             (regexp-quote isearch-string))))))
+    (define-key isearch-mode-map (kbd "M-o")
+                (lambda () (interactive)
+                  (let ((case-fold-search isearch-case-fold-search))
+                    (consult-line (if isearch-regexp
+                                      isearch-string
+                                    (regexp-quote isearch-string))))))
+    (global-set-key (kbd "C-s") 'isearch-forward-regexp)
+    (global-set-key (kbd "C-r") 'isearch-backward-regexp)
+    (global-set-key (kbd "C-M-s") 'isearch-forward)
+    (global-set-key (kbd "C-M-r") 'isearch-backward)
     ;; NOWEB KBD END
     ;; NOWEB CONSULT START
     (with-eval-after-load 'consult
@@ -277,6 +295,11 @@
         (org-toggle-inline-images t))
       
       (qz/advice- org-babel-execute-src-block :after qz/org-refresh-inline-images)
+      (define-key org-mode-map (kbd "C-c C-M-i")
+                  (lambda ()
+                    "go to default opening mode -- see `org-startup-folded'"
+                    (interactive)
+                    (funcall-interactively 'org-global-cycle '(4))))
       
       ;; NOWEB AGENDA START
       (defun qz/agenda-files-update (&rest _)
@@ -571,30 +594,30 @@
           (goto-char (point-min))
           (org-agenda-goto-today))
         
-        (setq org-agenda-custom-commands nil)
+        ;;(setq org-agenda-custom-commands nil)
         
         (add-to-list
          'org-agenda-custom-commands
          `("g" "GTD"
            ((agenda "" ((org-agenda-span 'day) (org-deadline-warning-days 60)))
             (tags-todo "now"
-                       ((org-agenda-overriding-header "now")))
+                       ((org-agenda-overriding-header "\nnow\n")))
             (tags-todo "wip"
-                       ((org-agenda-overriding-header "wip")))
+                       ((org-agenda-overriding-header "\nwip\n")))
             (todo "TODO"
-                  ((org-agenda-overriding-header "to process")
+                  ((org-agenda-overriding-header "\nto process\n")
                    (org-agenda-files '(,(format "%s/%s" org-roam-directory "inbox.org")))))
             (todo "TODO"
-                  ((org-agenda-overriding-header "daily inbox")
+                  ((org-agenda-overriding-header "\ndaily inbox\n")
                    (org-agenda-files qz/agenda-daily-files)))
             (todo "TODO"
-                  ((org-agenda-overriding-header "emails")
+                  ((org-agenda-overriding-header "\nemails\n")
                    (org-agenda-files '(,(format "%s/%s" org-roam-directory "emails.org")))))
             (todo "TODO"
-                  ((org-agenda-overriding-header "one-off Tasks")
+                  ((org-agenda-overriding-header "\none-off Tasks\n")
                    (org-agenda-files '(,(format "%s/%s" org-roam-directory "next.org")))))
             (todo "TODO"
-                  ((org-agenda-overriding-header "to yak shave")
+                  ((org-agenda-overriding-header "\nto yak shave\n")
                    (org-agenda-files '(,(format "%s/%s" org-roam-directory "emacs.org"))))))))
         
         (add-to-list
@@ -667,18 +690,30 @@
                 ("l" "last-capture" entry (file ,(concat org-agenda-directory "/inbox.org"))
                  (function qz/inbox-last-captured)
                  :immediate-finish t)
-                ("I" "current-roam" entry (file ,(concat org-agenda-directory "inbox.org"))
+                ("I" "current-roam" entry (file ,(concat org-agenda-directory "/inbox.org"))
                  (function qz/current-roam-link)
                  :immediate-finish t)
                 ("w" "weekly review" entry
-                 (file+datetree ,(concat org-agenda-directory "reviews.org"))
-                 (file ,(concat org-agenda-directory "templates/weekly_review.org")))))
+                 (file+datetree ,(concat org-agenda-directory "/reviews.org"))
+                 (file ,(concat org-agenda-directory "/templates/weekly_review.org")))))
         
         
         
         
         ;; [[file:~/.doom.d/config.org::*capture templates][roam capture templates]]
         
+        (defun qz/create-node ()
+          "assumes point is at the desired headline"
+          (interactive)
+          (org-id-get-create)
+          (org-delete-property "ROAM_EXCLUDE"))
+        
+        (defun qz/exclude-node ()
+          "assumes point is at the desired headline -- unlikely to work for files"
+          (org-set-property "ROAM_EXCLUDE" "t"))
+        
+        (define-key org-mode-map (kbd "C-c C-x i") 'qz/create-node)
+        (define-key org-mode-map (kbd "C-c C-x i") 'qz/create-node)
         (defun qz/org-roam-capture-current ()
           (interactive)
           "Capture a task in agenda mode."
@@ -696,10 +731,13 @@
                                                           :region ,region     :insert-at ,(point-marker)
                                                           :finalize 'insert-link))
             (qz/capture-last-captured)))
+        (defun qz/utc-timestamp ()
+          (format-time-string "%Y%m%dT%H%M%SZ" (current-time) t))
         (setq qz/org-roam-capture-head "#+title: ${title}\n")
-        (setq qz/capture-title-timestamp-roam "20210813T161035Z-${slug}.org")
+        (setq qz/capture-title-timestamp-roam "%(qz/utc-timestamp)-${slug}")
+        
         (setq org-roam-capture-templates
-              `(("d" "default" plain "%?"
+              `(("d" "default" plain "%?" 
                  :if-new (file+head ,qz/capture-title-timestamp-roam
                                     ,qz/org-roam-capture-head)
                  :unnarrowed t)
@@ -716,9 +754,8 @@
                  :if-new (file+head+olp
                           ,qz/org-roam-dailies-filespec
                           ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
-                                          "#+filetags: daily private project" ""
-                                          "%(qz/today-dateref)" ""
-        
+                                          "#+filetags: daily private project" "" ""
+                                          "%(qz/today-dateref)" "" ""
                                           "* today, I will"))
                           ("journal")))))
         
@@ -783,6 +820,7 @@
         (defun qz/current-roam-link ()
           "Get link to org-roam file with title"
           (interactive)
+          
           (concat "* TODO "
                   (let ((n (qz/org-roam-node-at-point)))
                     (org-link-make-string
@@ -818,20 +856,30 @@
           (let ((ltag (-flatten (or (and (listp tag) tag) (list tag)))))
             (progn (message "ensuring tag for %s" ltag)
                    (org-roam-tag-add ltag))))
+        
         (defun qz/org-roam--insert-timestamp (&rest args)
           (when (not (org-entry-get nil "CREATED"))
             (org-entry-put nil "CREATED" (format-time-string "<%Y-%m-%d %a %H:%M>")))
           (qz/org-roam--updated-timestamp))
         
         (defun qz/org-roam--updated-timestamp (&rest args)
-          (when-let* ((_ (org-roam-file-p))
-                      (n (org-roam-node-at-point)))
-            (org-entry-put
-             (org-roam-node-point n) "UPDATED"
-             (format-time-string "<%Y-%m-%d %a %H:%M>"))))
+          "on the current-heading, and current-node"
+          (interactive)
+          (mapcar (lambda (pt)
+                    (when pt
+                      (org-entry-put
+                       pt "UPDATED"
+                       (format-time-string "<%Y-%m-%d %a %H:%M>"))))
+                  (list (and (org-roam-node-at-point)
+                             (org-roam-node-point (org-roam-node-at-point)))
+                        (save-excursion
+                          (org-back-to-heading-or-point-min)
+                          (point)))))
         
         (add-hook 'org-roam-capture-new-node-hook 'qz/org-roam--insert-timestamp)
-        (add-hook 'before-save-hook 'qz/org-roam--updated-timestamp)
+        (add-hook 'org-mode-hook (lambda ()
+                                   (add-hook 'before-save-hook
+                                             'qz/org-roam--updated-timestamp nil t)))
         (qz/advice- org-id-get-create :after qz/org-roam--insert-timestamp)
         (defun qz/hard-refresh-org-tags-in-buffer ()
           (interactive)
@@ -918,6 +966,7 @@
                                  ("sample.org" :level . 0)
                                  ("wip.org" :level . 0)))
       (setq org-log-done 'time)
+      (setq org-startup-folded 'content)
       (require 'org-download)
       (defun qz/org-choose-current-attachment ()
         (let ((attach-dir (org-attach-dir)))
@@ -938,6 +987,22 @@
       
       (define-key org-mode-map (kbd "C-c M-a") 'qz/org-insert-current-attachment)
       
+      (defun qz/create-excluded-ids-for-headlines-in-buffer ()
+        "Add ID properties to all headlines in the current file which
+      do not already have one."
+        (interactive)
+        (org-map-entries (lambda (&rest r)
+                           (unless (org-id-get)
+                             (org-id-get-create)
+                             (org-set-property "ROAM_EXCLUDE" "t")))))
+      
+      
+      (add-hook 'org-mode-hook
+                (lambda ()
+                  (add-hook 'before-save-hook
+                            'qz/create-excluded-ids-for-headlines-in-buffer nil 'local)))
+      
+      (setq org-id-link-to-org-use-id t)
       ;; NOWEB ORG END
       (message "post org: %s" (shell-command-to-string "date"))
       )
@@ -1041,7 +1106,8 @@
        (concat
         "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
         "&& make ixy-home-reconfigure"
-        "&& echo 'home fuck complete' | espeak --stdin")))
+        "&& echo 'bal-eggd-e' "
+        "| espeak --stdin "))) 
     
     (defun qz/reload-config-system ()
       (interactive)
@@ -1049,7 +1115,19 @@
        (concat
         "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
         "&& sudo -E make ixy-system-reconfigure"
-        "&& echo 'system fuck complete' | espeak --stdin")))
+        "&& echo 'system bal-eggd-e complete' | espeak --stdin")))
+    
+    
+    (defun qz/reload-config-both ()
+      (interactive)
+      (async-shell-command
+       (concat
+        "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
+        "&& guix pull -C $HOME/git/sys/rde/stale/guix-related/guix/channels "
+        "&& make ixy-home-reconfigure "
+        "&& echo 'bal-eggd-e' | espeak --stdin "
+        "&& sudo -E make ixy-system-reconfigure "
+        "&& echo 'system bal-eggd-e complete' | espeak --stdin")))
     
     (defun qz/reload-config-emacs ()
       (interactive)
