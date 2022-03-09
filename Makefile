@@ -60,8 +60,22 @@ content=\"width=device-width, initial-scale=1\" />" \
 doc/rde.pdf: doc/rde.texi
 	makeinfo --pdf -o doc/rde.pdf doc/rde.texi
 
+DRIVER=neato
+GUILD=guild
+doc/graphs:
+	mkdir -p doc/graphs;
+	for file in $$(find . -name '*.scm') ; do\
+		[ ! -f $$file ] && continue;\
+		df="doc/graphs/$$(basename $$file).dot";\
+		echo rde doc $$df;\
+		$(GUILD) use2dot $$file > $$df;\
+		dp="$$df.png";\
+		$(DRIVER) $$df -Tpng -o $$dp -Goverlap=false -Gsplines=true;\
+	done\
+
 clean:
 	rm -f doc/rde.html
 	rm -f doc/rde.pdf
 	rm -f doc/rde.info
 	rm -f doc/rde-tool-list.texi
+	rm -f doc/graphs/*
