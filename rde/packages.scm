@@ -32,6 +32,9 @@
   #:use-module (gnu packages base)
 
   #:use-module (gnu packages man)
+  #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages python)
   #:use-module (srfi srfi-1)
 
   #:use-module (guix diagnostics)
@@ -91,8 +94,8 @@ FILE-NAME found in %PATCH-PATH."
            libjpeg-turbo
            librsvg
            libxkbcommon
-           wayland
-           wayland-protocols
+           wayland-latest
+           wayland-protocols-latest
            pango
            startup-notification))
     (description "Rofi is a minimalist application launcher.  It memorizes which
@@ -378,89 +381,21 @@ dmenu-like backend as an interface for auto-typing and copying
 password-store data, known to work with bemenu, fuzzel, rofi, wofi")
     (license license:gpl3+)))
 
-(define-public xdg-desktop-portal-wlr-latest
-  (let ((commit "c34d09877cb55eb353311b5e85bf50443be9439d"))
-  (package
-    (inherit xdg-desktop-portal-wlr)
-    (name "xdg-desktop-portal-wlr")
-    (version "0.5.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/emersion/xdg-desktop-portal-wlr")
-                     (commit commit)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0xw5hmx816w4hsy1pwz3qikxc7m6pcx1ly03hhbb6vp94gfcwpr3"))
-              (patches (search-patches "xdg-desktop-portal-wlr-harcoded-length.patch"))))
-        (license license:expat))))
-
-(use-modules (gnu packages wm)
-             (gnu packages gl)
-             (gnu packages xorg))
-(define-public wlroots-latest
-  (package
-    (inherit wlroots)
-    (name "wlroots-latest")
-    (version "0.15.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://gitlab.freedesktop.org/wlroots/wlroots")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "00s73nhi3sc48l426jdlqwpclg41kx1hv0yk4yxhbzw19gqpfm1h"))))
-    (build-system meson-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'hardcode-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "xwayland/server.c"
-               (("Xwayland") (string-append (assoc-ref inputs
-                                                       "xorg-server-xwayland")
-                                            "/bin/Xwayland")))
-             #t)))))
-    (propagated-inputs
-     (list ;; As required by wlroots.pc.
-           eudev
-           libinput
-           libxkbcommon
-           mesa
-           pixman
-           seatd
-           wayland-latest
-           wayland-protocols
-           xcb-util-errors
-           xcb-util-wm
-           xorg-server-xwayland))
-    (native-inputs
-     (list pkg-config wayland))
-    (home-page "https://github.com/swaywm/wlroots")
-    (synopsis "Pluggable, composable, unopinionated modules for building a
-Wayland compositor")
-    (description "wlroots is a set of pluggable, composable, unopinionated
-modules for building a Wayland compositor.")
-    (license license:expat)))
-
 (use-modules (gnu packages libffi)
              (gnu packages xml)
              (gnu packages docbook))
 (define-public wayland-latest
   (package
     (inherit wayland)
-    (name "wayland-latest")
+    (name "wayland")
     (version "1.20.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://wayland.freedesktop.org/releases/"
-                                  name "-" version ".tar.xz"))
+              (uri (string-append "https://gitlab.freedesktop.org/wayland/wayland/-/archive/"
+                                  version "/wayland-" version ".tar.bz2"))
               (sha256
                (base32
-                "09c7rpbwavjg4y16mrfa57gk5ix6rnzpvlnv1wp7fnbh9hak985q"))))
+                "0r0zjjqfcb6rykgcgy4w84g7jgfr400jwh4g0wh4d7g14r71qga7"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -514,3 +449,574 @@ modesetting and evdev input devices, an X application, or a wayland client
 itself.  The clients can be traditional applications, X servers (rootless or
 fullscreen) or other display servers.")
     (license license:expat)))
+
+(use-modules (gnu packages wm)
+             (gnu packages gl)
+             (gnu packages xorg))
+;; (define-public eglexternalplatform
+;;   (package
+;;     (name "eglexternalplatform")
+;;     (version "1.1")
+;;     (source
+;;      (origin
+;;        (method git-fetch)
+;;        (uri
+;;         (git-reference
+;;          (url "https://github.com/NVIDIA/eglexternalplatform")
+;;          (commit version)))
+;;        (file-name
+;;         (git-file-name name version))
+;;        (sha256
+;;         (base32 "0lr5s2xa1zn220ghmbsiwgmx77l156wk54c7hybia0xpr9yr2nhb"))))
+;;     (build-system copy-build-system)
+;;     (arguments
+;;      `(#:phases
+;;        (modify-phases %standard-phases
+;;          (add-after 'unpack 'patch-pkgconfig
+;;            (lambda* (#:key outputs #:allow-other-keys)
+;;              (substitute* "eglexternalplatform.pc"
+;;                (("/usr")
+;;                 (assoc-ref outputs "out")))))
+;;          (add-after 'install 'revise
+;;            (lambda* (#:key outputs #:allow-other-keys)
+;;              (let* ((out (assoc-ref outputs "out")))
+;;                (mkdir-p (string-append out "/include/EGL"))
+;;                (rename-file
+;;                 (string-append out "/interface")
+;;                 (string-append out "/include/EGL"))
+;;                (mkdir-p (string-append out "/share/pkgconfig"))
+;;                (rename-file
+;;                 (string-append out "/eglexternalplatform.pc")
+;;                 (string-append out "/share/pkgconfig/eglexternalplatform.pc"))
+;;                (for-each delete-file-recursively
+;;                          (list
+;;                           (string-append out "/samples")
+;;                           (string-append out "/COPYING")
+;;                           (string-append out "/README.md")))))))))
+;;     (synopsis "EGL External Platform interface")
+;;     (description "EGLExternalPlatform is an specification of the EGL External
+;; Platform interface for writing EGL platforms and their interactions with modern
+;; window systems on top of existing low-level EGL platform implementations.  This
+;; keeps window system implementation specifics out of EGL drivers by using
+;; application-facing EGL functions.")
+;;     (home-page "https://github.com/NVIDIA/eglexternalplatform")
+;;     (license license:expat)))
+
+(define-public egl-wayland-latest
+  (package
+    (name "egl-wayland")
+    (version "1.1.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/NVIDIA/egl-wayland")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1iz86cpc4v7izckrcslllnw0vvvgsxg1sr65yb8s9d0f8xa8djdd"))))
+    (build-system meson-build-system)
+    (native-inputs
+     (list libglvnd ;needed for headers
+           mesa-headers pkg-config))
+    (inputs
+     (list mesa wayland-latest wayland-protocols-latest))
+    (propagated-inputs
+     (list eglexternalplatform))
+    (synopsis "EGLStream-based Wayland external platform")
+    (description "EGL-Wayland is an implementation of a EGL External Platform
+library to add client-side Wayland support to EGL on top of EGLDevice and
+EGLStream families of extensions.")
+    (home-page "https://github.com/NVIDIA/egl-wayland")
+    (license license:expat)))
+
+(define-public wlroots-latest
+  (package
+    (inherit wlroots)
+    (name "wlroots")
+    (version "0.15.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/wlroots/wlroots")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00s73nhi3sc48l426jdlqwpclg41kx1hv0yk4yxhbzw19gqpfm1h"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'hardcode-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "xwayland/server.c"
+               (("Xwayland") (string-append (assoc-ref inputs
+                                                       "xorg-server-xwayland")
+                                            "/bin/Xwayland")))
+             #t)))))
+    (propagated-inputs
+     `(;; As required by wlroots.pc.
+           ("eudev" ,eudev)
+           ("libinput" ,libinput)
+           ("xkbcommon" ,libxkbcommon)
+           ;; ("mesa" ,mesa-latest)
+           ("mesa" ,mesa)
+           ("pixman" ,pixman)
+           ("seatd" ,seatd)
+           ("wayland" ,wayland-latest)
+           ("egl-wayland" ,egl-wayland-latest)
+           ("libglvnd" ,libglvnd)
+           ("libdrm" ,libdrm-latest)
+           ("wayland-protcols" ,wayland-protocols-latest)
+           ("xcb-util-errors" ,xcb-util-errors)
+           ("xcb-util-wm" ,xcb-util-wm)
+           ("xorg-server-xwayland" ,xorg-server-xwayland)))
+    (native-inputs
+     (list pkg-config wayland-latest))
+    (home-page "https://github.com/swaywm/wlroots")
+    (synopsis "Pluggable, composable, unopinionated modules for building a
+Wayland compositor")
+    (description "wlroots is a set of pluggable, composable, unopinionated
+modules for building a Wayland compositor.")
+    (license license:expat)))
+
+(use-modules (ice-9 match))
+(define-public libdrm-latest
+  (package
+    (name "libdrm")
+    (version "2.4.109")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://dri.freedesktop.org/libdrm/libdrm-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "09kzrdsd14zr0i3izvi5mck4vqccl3c9hr84r9i4is0zikh554v2"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       '(,@(match (%current-system)
+             ((or "armhf-linux" "aarch64-linux")
+              '("-Dexynos=true"
+                "-Domap=true"
+                "-Detnaviv=true"
+                "-Dtegra=true"
+                "-Dfreedreno-kgsl=true"))
+             (_ '())))
+
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "meson" "test" "--timeout-multiplier" "5")))))))
+    (propagated-inputs
+     (list libpciaccess))
+    (native-inputs
+     (list pkg-config))
+    (home-page "https://dri.freedesktop.org/wiki/")
+    (synopsis "Direct rendering userspace library")
+    (description "The Direct Rendering Infrastructure, also known as the DRI,
+is a framework for allowing direct access to graphics hardware under the
+X Window System in a safe and efficient manner.  It includes changes to the
+X server, to several client libraries, and to the kernel (DRM, Direct
+Rendering Manager).  The most important use for the DRI is to create fast
+OpenGL implementations providing hardware acceleration for Mesa.
+Several 3D accelerated drivers have been written to the DRI specification,
+including drivers for chipsets produced by 3DFX, AMD (formerly ATI), Intel
+and Matrox.")
+    (license license:x11)))
+
+(use-modules (gnu packages video)
+             (gnu packages vulkan)
+             (gnu packages elf)
+             (gnu packages gl)
+             (gnu packages llvm)
+             (gnu packages bison)
+             (gnu packages flex)
+             (gnu packages gettext)
+             (gnu packages python-xyz))
+
+(define libva-without-mesa
+  ;; Delay to work around circular import problem.
+  (delay
+    (package
+      (inherit libva)
+      (name "libva-without-mesa")
+      (inputs `(,@(fold alist-delete (package-inputs libva)
+                        '("mesa" "wayland"))))
+      (arguments
+       (strip-keyword-arguments
+        '(#:make-flags)
+        (substitute-keyword-arguments (package-arguments libva)
+          ((#:configure-flags flags)
+           '(list "--disable-glx" "--disable-egl"))))))))
+
+(define-public mesa-latest
+  (package
+    (name "mesa")
+    (version "21.3.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (list (string-append "https://mesa.freedesktop.org/archive/"
+                                  "mesa-" version ".tar.xz")
+                   (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
+                                  "mesa-" version ".tar.xz")
+                   (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
+                                  version "/mesa-" version ".tar.xz")))
+        (sha256
+         (base32
+          "08c118j440xpfbjjxmwzm6dfnv4y35q540mmzkchhpbwx89lczxd"   ; 21.3.3
+          ;;"1g96y59bw10ml8h4jl259g41jdmf5ww3jbwqpz1sprq7hgxvmrz2" ; 21.3.2
+          ))
+        (patches
+         (search-patches "mesa-skip-tests.patch"))))
+    (build-system meson-build-system)
+    (propagated-inputs
+      (list ;; The following are in the Requires.private field of gl.pc.
+            libdrm-latest
+            libvdpau
+            libglvnd
+            libx11
+            libxdamage
+            libxfixes
+            libxshmfence
+            libxxf86vm
+            xorgproto))
+    (inputs
+     `(("expat" ,expat)
+       ;;
+       ("gstreamer" ,(@ (gnu packages gstreamer) gstreamer))
+       ;;
+        ("libelf" ,elfutils)  ;required for r600 when using llvm
+        ("libva" ,(force libva-without-mesa))
+        ("libxml2" ,libxml2)
+        ("libxrandr" ,libxrandr)
+        ("libxvmc" ,libxvmc)
+        ,@(match (%current-system)
+            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux"
+                 "powerpc-linux" "riscv64-linux")
+             ;; Note: update the 'clang' input of mesa-opencl when bumping this.
+             `(("llvm" ,llvm-11)))
+            (_
+             `()))
+        ("wayland" ,wayland-latest)
+        ("wayland-protocols" ,wayland-protocols-latest)))
+    (native-inputs
+      `(("bison" ,bison)
+        ("flex" ,flex)
+        ("gettext" ,gettext-minimal)
+        ,@(match (%current-system)
+            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux"
+                 "powerpc-linux" "riscv64-linux")
+             `(("glslang" ,glslang)))
+            (_
+             `()))
+        ("pkg-config" ,pkg-config)
+        ("python" ,python-wrapper)
+        ("python-libxml2", python-libxml2) ;for OpenGL ES 1.1 and 2.0 support
+        ("python-mako" ,python-mako)
+        ("which" ,(@ (gnu packages base) which))))
+    (outputs '("out" "bin"))
+    (arguments
+     `(#:configure-flags
+       '(,@(match (%current-system)
+             ((or "armhf-linux" "aarch64-linux")
+              ;; TODO: Fix svga driver for non-Intel architectures.
+              '("-Dgallium-drivers=etnaviv,freedreno,kmsro,lima,nouveau,panfrost,r300,r600,swrast,tegra,v3d,vc4,virgl"))
+             ((or "powerpc64le-linux" "powerpc-linux" "riscv64-linux")
+              '("-Dgallium-drivers=nouveau,r300,r600,radeonsi,swrast,virgl"))
+             (_
+              '("-Dgallium-drivers=iris,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
+         ;; Enable various optional features.  TODO: opencl requires libclc,
+         ;; omx requires libomxil-bellagio
+         "-Dplatforms=x11,wayland"
+         "-Dglx=dri"        ;Thread Local Storage, improves performance
+         ;; "-Dopencl=true"
+         ;; "-Domx=true"
+         "-Dosmesa=true"
+         "-Dgallium-xa=enabled"
+
+         ;; features required by wayland
+         "-Dgles2=enabled"
+         "-Dgbm=enabled"
+         "-Dshared-glapi=enabled"
+
+         "-Dglvnd=true"
+
+         ;; Explicitly enable Vulkan on some architectures.
+         ,@(match (%current-system)
+             ((or "i686-linux" "x86_64-linux")
+              '("-Dvulkan-drivers=intel,amd"))
+             ((or "powerpc64le-linux" "powerpc-linux")
+              '("-Dvulkan-drivers=amd,swrast"))
+             ("aarch64-linux"
+              '("-Dvulkan-drivers=freedreno,amd,broadcom,swrast"))
+             ("riscv64-linux"
+              '("-Dvulkan-drivers=amd,swrast"))
+             (_
+              '("-Dvulkan-drivers=auto")))
+
+         ;; Enable the Vulkan overlay layer on architectures using llvm.
+         ,@(match (%current-system)
+             ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux"
+                  "powerpc-linux" "riscv64-linux")
+              '("-Dvulkan-layers=device-select,overlay"))
+             (_
+              '()))
+
+         ;; Also enable the tests.
+         "-Dbuild-tests=true"
+
+         ;; on non-intel systems, drop i915 and i965
+         ;; from the default dri drivers
+         ,@(match (%current-system)
+             ((or "x86_64-linux" "i686-linux")
+              '("-Ddri-drivers=i915,i965,nouveau,r200,r100"
+                "-Dllvm=enabled"))      ; default is x86/x86_64 only
+             ((or "powerpc64le-linux" "aarch64-linux" "powerpc-linux" "riscv64-linux")
+              '("-Ddri-drivers=nouveau,r200,r100"
+                "-Dllvm=enabled"))
+             (_
+              '("-Ddri-drivers=nouveau,r200,r100"))))
+
+       ;; XXX: 'debugoptimized' causes LTO link failures on some drivers.  The
+       ;; documentation recommends using 'release' for performance anyway.
+       #:build-type "release"
+
+       #:modules ((ice-9 match)
+                  (srfi srfi-1)
+                  (guix build utils)
+                  (guix build meson-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-test
+           (lambda _
+             ;; Disable the intel vulkan (anv_state_pool) tests, as they may
+             ;; fail in a nondeterministic fashion (see:
+             ;; https://gitlab.freedesktop.org/mesa/mesa/-/issues/5446).
+             (substitute* "src/intel/vulkan/meson.build"
+               (("if with_tests")
+                "if false"))
+             ,@(match (%current-system)
+                 ("riscv64-linux"
+                  ;; According to the test logs the llvm JIT is not designed
+                  ;; for this architecture and the llvmpipe tests all segfault.
+                  ;; The same is true for mesa:gallium / osmesa-render.
+                  `((substitute* '("src/gallium/drivers/llvmpipe/meson.build"
+                                   "src/gallium/targets/osmesa/meson.build")
+                      (("if with_tests") "if false"))))
+                 ("powerpc64le-linux"
+                  ;; Disable some of the llvmpipe tests.
+                  `((substitute* "src/gallium/drivers/llvmpipe/lp_test_arit.c"
+                      (("0\\.5, ") ""))))
+                 ("powerpc-linux"
+                  ;; There are some tests which fail specifically on powerpc.
+                  `((substitute* '(;; LLVM ERROR: Relocation type not implemented yet!
+                                   "src/gallium/drivers/llvmpipe/meson.build"
+                                   ;; This is probably a big-endian test failure.
+                                   "src/gallium/targets/osmesa/meson.build")
+                      (("if with_tests") "if not with_tests"))
+                    (substitute* "src/util/tests/format/meson.build"
+                      ;; This is definately an endian-ness test failure.
+                      (("'u_format_test', ") ""))
+                    ;; It is only this portion of the test which fails.
+                    (substitute* "src/mesa/main/tests/meson.build"
+                      ((".*mesa_formats.*") ""))
+                    ;; This test times out and receives SIGTERM.
+                    (substitute* "src/amd/common/meson.build"
+                      (("and not with_platform_windows") "and with_platform_windows"))))
+                 ("i686-linux"
+                  ;; Disable new test from Mesa 19 that fails on i686.  Upstream
+                  ;; report: <https://bugs.freedesktop.org/show_bug.cgi?id=110612>.
+                  `((substitute* "src/util/tests/format/meson.build"
+                      (("'u_format_test',") ""))))
+                 ("aarch64-linux"
+                  ;; The ir3_disasm test segfaults.
+                  ;; The simplest way to skip it is to run a different test instead.
+                  `((substitute* "src/freedreno/ir3/meson.build"
+                      (("disasm\\.c'") "delay.c',\n    link_args: ld_args_build_id"))))
+                 (_
+                  '((display "No tests to disable on this architecture.\n"))))))
+         (add-before 'configure 'fix-dlopen-libnames
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Remain agnostic to .so.X.Y.Z versions while doing
+               ;; the substitutions so we're future-safe.
+               (substitute* "src/glx/meson.build"
+                 (("-DGL_LIB_NAME=\"lib@0@\\.so\\.@1@\"")
+                  (string-append "-DGL_LIB_NAME=\"" out
+                                 "/lib/lib@0@.so.@1@\"")))
+               (substitute* "src/gbm/backends/dri/gbm_dri.c"
+                 (("\"libglapi\\.so")
+                  (string-append "\"" out "/lib/libglapi.so")))
+               (substitute* "src/gbm/main/backend.c"
+                 ;; No need to patch the gbm_gallium_drm.so reference;
+                 ;; it's never installed since Mesa removed its
+                 ;; egl_gallium support.
+                 (("\"gbm_dri\\.so")
+                  (string-append "\"" out "/lib/dri/gbm_dri.so"))))))
+         (add-after 'install 'split-outputs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (bin (assoc-ref outputs "bin")))
+               ;; Not all architectures have the Vulkan overlay control script.
+               (mkdir-p (string-append out "/bin"))
+               (call-with-output-file (string-append out "/bin/.empty")
+                 (const #t))
+               (copy-recursively (string-append out "/bin")
+                                 (string-append bin "/bin"))
+               (delete-file-recursively (string-append out "/bin")))))
+         (add-after 'install 'symlinks-instead-of-hard-links
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; All the drivers and gallium targets create hard links upon
+             ;; installation (search for "hardlink each megadriver instance"
+             ;; in the makefiles).  This is no good for us since we'd produce
+             ;; nars that contain several copies of these files.  Thus, turn
+             ;; them into symlinks, which saves ~124 MiB.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (lib    (string-append out "/lib"))
+                    (files  (find-files lib
+                                        (lambda (file stat)
+                                          (and (string-contains file ".so")
+                                               (eq? 'regular
+                                                    (stat:type stat))))))
+                    (inodes (map (compose stat:ino stat) files)))
+               (for-each (lambda (inode)
+                           (match (filter-map (match-lambda
+                                                ((file ino)
+                                                 (and (= ino inode) file)))
+                                              (zip files inodes))
+                             ((_)
+                              #f)
+                             ((reference others ..1)
+                              (format #t "creating ~a symlinks to '~a'~%"
+                                      (length others) reference)
+                              (for-each delete-file others)
+                              (for-each (lambda (file)
+                                          (if (string=? (dirname file)
+                                                        (dirname reference))
+                                              (symlink (basename reference)
+                                                       file)
+                                              (symlink reference file)))
+                                        others))))
+                         (delete-duplicates inodes))))))))
+    (home-page "https://mesa3d.org/")
+    (synopsis "OpenGL and Vulkan implementations")
+    (description "Mesa is a free implementation of the OpenGL and Vulkan
+specifications - systems for rendering interactive 3D graphics.  A variety of
+device drivers allows Mesa to be used in many different environments ranging
+from software emulation to complete hardware acceleration for modern GPUs.")
+    (license license:x11)))
+
+(define-public wayland-protocols-latest
+  (package
+    (name "wayland-protocols")
+    (version "1.24")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://wayland.freedesktop.org/releases/"
+                    "wayland-protocols-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1hlb6gvyqlmsdkv5179ccj07p04cn6xacjkgklakbszczv7xiw5z"))))
+    (build-system meson-build-system)
+    (inputs
+     (list wayland-latest))
+    (native-inputs
+     (list pkg-config python))
+    (synopsis "Wayland protocols")
+    (description "Wayland-Protocols contains Wayland protocols that add
+functionality not available in the Wayland core protocol.  Such protocols either
+add completely new functionality, or extend the functionality of some other
+protocol either in Wayland core, or some other protocol in wayland-protocols.")
+    (home-page "https://wayland.freedesktop.org")
+    (license license:expat)))
+
+(use-modules (gnu packages web))
+
+(define-public sway-latest
+  (package
+    (name "sway")
+    (version "1.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/swaywm/sway")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ss3l258blyf2d0lwd7pi7ga1fxfj8pxhag058k7cmjhs3y30y5l"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'hardcode-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Hardcode path to swaybg.
+             (substitute* "sway/config.c"
+               (("strdup..swaybg..")
+                (string-append "strdup(\"" (assoc-ref inputs "swaybg")
+                               "/bin/swaybg\")")))
+             ;; Hardcode path to scdoc.
+             (substitute* "meson.build"
+               (("scdoc.get_pkgconfig_variable..scdoc..")
+                (string-append "'" (assoc-ref inputs "scdoc")
+                               "/bin/scdoc'")))
+             #t)))))
+    (inputs (list cairo
+                  elogind
+                  gdk-pixbuf
+                  json-c
+                  libevdev
+                  libinput
+                  libxkbcommon
+                  libdrm-latest
+                  pango
+                  swaybg
+                  ;;egl-wayland
+                  wayland-latest
+                  wlroots-latest))
+    (native-inputs
+     (list linux-pam mesa pkg-config scdoc wayland-protocols-latest))
+    (home-page "https://github.com/swaywm/sway")
+    (synopsis "Wayland compositor compatible with i3")
+    (description "Sway is a i3-compatible Wayland compositor.")
+    (license license:expat)))
+
+(use-modules (guix transformations)
+             (nongnu packages nvidia))
+
+(define-public mesa->mesa-latest
+  ;; This is a procedure to replace MESA by MESA-LATEST,
+  ;; recursively.
+  (package-input-rewriting `((,mesa . ,mesa))
+                           #:deep? #f))
+
+(define mesa/fake
+  (package
+    (inherit mesa-latest)
+    (replacement (mesa->mesa-latest nvda))))
+
+(define-public mesa->nvda
+  ;; This is a procedure to replace MESA-LATEST by NVDA,
+  ;; recursively.
+  (package-input-rewriting `((,mesa-latest . ,mesa/fake))
+                           #:deep? #f))
+
+(define-public (transform-nvidia pkg)
+  (mesa->nvda (mesa->mesa-latest pkg)))
+
+;; (mesa-nvda (mesa->mesa-latest sway-latest))
+;; or
+;; (map (compose mesa->mesa-latest mesa->nvda)
+;;      (list wayland-protocols-latest
+;;            wayland-latest
+;;            libglvnd
+;;            libdrm-latest
+;;            wlroots-latest
+;;            sway-latest)))
