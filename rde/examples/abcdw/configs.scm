@@ -31,6 +31,10 @@
   #:use-module (gnu system keyboard)
 
   #:use-module (nongnu packages nvidia)
+  #:use-module (gnu services base)
+  #:use-module (gnu services ssh)
+  #:use-module (gnu services desktop)
+  #:use-module (gnu services xorg)
   #:use-module (rde examples abcdw emacs)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
@@ -75,53 +79,78 @@
   (string-append my-org-directory "/roam"))
 
 (pretty-print "pre-%abcdw-features")
-(define %abcdw-features
-  (list
-   (feature-user-info
-    ;;#:emacs-advanced-user? #t
-    #:user-name "samuel"
-    #:full-name "Samuel Culpepper"
-    #:email "samuel@samuelculpepper.com"
-    #:user-groups '("lp")) ;; TODO confluence of features -> groups
 
-   (feature-gnupg
+(define gaming? #f)
+
+(define %abcdw-features
+  (remove
+   unspecified?
+   (list
+    (feature-user-info
+     ;;#:emacs-advanced-user? #t
+     #:user-name "samuel"
+     #:full-name "Samuel Culpepper"
+     #:email "samuel@samuelculpepper.com"
+     #:user-groups '("lp")) ;; TODO confluence of features -> groups
+
+    (feature-gnupg
      #:gpg-primary-key "EE20E25391AAB9BB"
      #:gpg-smart-card? #f)
-   (feature-password-store)
-   (feature-mail-settings
-    #:mail-accounts
-    (list (mail-account
-           (id   'personal)
-           (fqda "samuel@samuelculpepper.com")
-           (type 'bravehost))
-          (mail-account
-           (id   'work)
-           (fqda "sculpepper@newstore.com")
-           (type 'gmail)))
-    #:mailing-lists
-    (list
-     (mail-lst 'python-speed "speed@python.org"
-               '("https://mail.python.org/mailman/listinfo/speed"
-                 "https://mail.python.org/archives/list/speed@python.org/"))
+    (feature-password-store)
+    (feature-mail-settings
+     #:mail-accounts
+     (list (mail-account
+            (id   'personal)
+            (fqda "samuel@samuelculpepper.com")
+            (type 'bravehost))
+           (mail-account
+            (id   'work)
+            (fqda "sculpepper@newstore.com")
+            (type 'gmail)))
+     #:mailing-lists
+     (list
+      ;; https://public-inbox.org/README.html
+      (mail-lst 'public-inbox-meta "meta@public-inbox.org"
+                '("https://public-inbox.org/meta"
+                  "nntps://news.public-inbox.org/inbox.comp.mail.public-inbox.meta"
+                  "imaps://news.public-inbox.org/inbox.comp.mail.public-inbox.meta.0"))
 
-     (mail-lst 'rde-announce "~acbdw/rde-announce@lists.sr.ht"
-               '("https://lists.sr.ht/~abcdw/rde-announce/export"))
-     (mail-lst 'rde-discuss "~acbdw/rde-discuss@lists.sr.ht"
-               '("https://lists.sr.ht/~abcdw/rde-discuss"))
-     (mail-lst 'rde-devel "~acbdw/rde-devel@lists.sr.ht"
-               '("https://lists.sr.ht/~abcdw/rde-devel"))
+      ;; source: https://mail.python.org/archives/list/speed@python.org/latest
+      ;;  -> mbox: https://mail.python.org/archives/list/speed@python.org/export/speed@python.org-2022-02.mbox.gz?start=1970-01-01&end=2022-02-21
+      ;; (mail-lst 'python-speed "speed@python.org"
+      ;;           '("https://mail.python.org/mailman/listinfo/speed"
+      ;;             "https://mail.python.org/archives/list/speed@python.org/"))
 
-     (mail-lst 'guix-bugs "guix-bugs@gnu.org"
-               '("https://yhetil.org/guix-bugs/0"))
-     (mail-lst 'guix-devel "guix-devel@gnu.org"
-               '("https://yhetil.org/guix-devel/0"))
-     (mail-lst 'guix-patches "guix-patches@gnu.org"
-               '("https://yhetil.org/guix-patches/1"))))
+      ;; (mail-lst 'rde-announce "~acbdw/rde-announce@lists.sr.ht"
+      ;;           '("https://lists.sr.ht/~abcdw/rde-announce/export"))
+      ;; (mail-lst 'rde-discuss "~acbdw/rde-discuss@lists.sr.ht"
+      ;;           '("https://lists.sr.ht/~abcdw/rde-discuss"))
+      ;; (mail-lst 'rde-devel "~acbdw/rde-devel@lists.sr.ht"
+      ;;           '("https://lists.sr.ht/~abcdw/rde-devel"))
+      ;;; emacs
+      (mail-lst 'emacs-org-mode "emacs-orgmode@gnu.org"
+                '("https://yhetil.org/orgmode"))
 
-   (feature-keyboard
-    ;; To get all available options, layouts and variants run:
-    ;; cat `guix build xkeyboard-config`/share/X11/xkb/rules/evdev.lst
-    #:keyboard-layout %thinkpad-layout)))
+      (mail-lst 'emacs-hyperbole "bug-hyperbole@gnu.org"
+                '("https://lists.gnu.org/archive/mbox/bug-hyperbole"
+                  "https://lists.gnu.org/archive/html/bug-hyperbole"))
+      (mail-lst 'emacs-hyperbole-users "hyperbole-users@gnu.org"
+                '("https://lists.gnu.org/archive/mbox/hyperbole-users"
+                  "https://lists.gnu.org/archive/html/hyperbole-users"))
+
+      (mail-lst 'guix-bugs "guix-bugs@gnu.org"
+                '("https://yhetil.org/guix-bugs/0"))
+      (mail-lst 'guix-devel "guix-devel@gnu.org"
+                '("https://yhetil.org/guix-devel/0"))
+      (mail-lst 'guix-patches "guix-patches@gnu.org"
+                '("https://yhetil.org/guix-patches/1"))))
+
+    (feature-keyboard
+     ;; To get all available options, layouts and variants run:
+     ;; cat `guix build xkeyboard-config`/share/X11/xkb/rules/evdev.lst
+     #:keyboard-layout %thinkpad-layout))))
+
+;;(map pretty-print %abcdw-features)
 
 ;;; TODO: feature-wallpapers https://wallhaven.cc/
 ;;; TODO: feature-icecat
@@ -158,102 +187,156 @@
 ;;; WARNING: The order can be important for features extending
 ;;; services of other features.  Be careful changing it.
 (define %main-features
-  (list
-   (feature-ssh-socks-proxy
-    #:host "204:cbf:3e07:e67a:424f:93bc:fc5c:b3dc")
-   (feature-i2pd
-    #:outproxy 'http://acetone.i2p:8888
-    ;; 'purokishi.i2p
-    #:less-anonymous? #t)
-   (feature-custom-services
-    #:feature-name-prefix 'ixy
-    #:system-services
-    (list
-     ;; (service nix-service-type)
-     (simple-service 'nvidia-udev-rule udev-service-type
-                     (list nvidia-driver))
-     )
-    #:home-services
-    ;; TODO: move to feature-irc-settings
-    (list
-     ;; TODO: Remove it once upstreamed.
-     ((@ (gnu services) simple-service)
-      'make-guix-aware-of-guix-home-subcomand
-      (@ (gnu home services) home-environment-variables-service-type)
-      '(
-        ;;; GRAPHICS
-        ;;("LIBGL_DRIVERS_PATH" . (string-join (list "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46/lib/gbm"
-        ;;                                           "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46/lib"
-        ;;                                           "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46") ":"))
-        ("LIBGL_DEBUG" . "verbose")
-        ("G_MESSAGES_DEBUG" . "1")
+  (remove
+   unspecified?
+   (list
+    ;;(feature-ssh-socks-proxy
+    ;; #:host "204:cbf:3e07:e67a:424f:93bc:fc5c:b3dc")
+    ;;(feature-i2pd
+    ;; #:outproxy 'http://acetone.i2p:8888
+    ;; ;; 'purokishi.i2p
+    ;; #:less-anonymous? #t)
+    (feature-custom-services
+     #:feature-name-prefix 'ixy
+     #:system-services
+     (list
+      (simple-service 'nvidia-udev-rule udev-service-type
+                      (list nvidia-driver)))
+     #:home-services
+     (list
+      ;; TODO: Remove it once upstreamed.
+      ((@ (gnu services) simple-service)
+       'make-guix-aware-of-guix-home-subcomand
+       (@ (gnu home services) home-environment-variables-service-type)
+       `(
+         ;;; GRAPHICS
+         ;;("LIBGL_DRIVERS_PATH" . (string-join (list "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46/lib/gbm"
+         ;;                                           "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46/lib"
+         ;;                                           "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46") ":"))
+         ("LIBGL_DEBUG" . "verbose")
+         ("G_MESSAGES_DEBUG" . "1")
 
-        ("GBM_BACKEND" . "nvidia-drm")
-        ("GBM_BACKENDS_PATH" . "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46/lib/gbm")
-        ("__GLX_VENDOR_LIBRARY_NAME" . "nvidia")
-        ("WLR_NO_HARDWARE_CURSORS" . "1")
-        ("WLR_DRM_NO_ATOMIC" . "1")
-        ;;("WLR_DRM_DEVICES" . "/dev/dri/card1")   ;; gpu only
-        ;;("WLR_DRM_DEVICES" . "/dev/dri/card1") ;; cpu only
-        ;;("WLR_DRM_DEVICES" . "/dev/dri/card0:/dev/dri/card1") ;; gpu:cpu
+         ;;("MESA_LOADER_DRIVER_OVERRIDE" . "nvidia") ;; no nvidia_dri
+         ;;("MESA_LOADER_DRIVER_OVERRIDE" . "nvidia-drm") ;; no nvidia-drm_dri
+
+         ("MESA_DEBUG" . "1")
+         ("MESA_LOG_FILE" . "/tmp/mesa.log")
+
+         ;; glfw patched?
+         ;; https://github.com/bulletphysics/bullet3/issues/2595#issuecomment-588080665
+         ;;("MESA_GL_VERSION_OVERRIDE" . "3.4")
+         ;;("MESA_GLSL_VERSION_OVERRIDE" . "340")
+
+         ;;("GBM_BACKEND" . "nvidia-drm")
+        ;;;; guix build --no-grafts -f /home/samuel/git/sys/nonguix/nongnu/packages/nvidia.scm | wl-copy
+        ;;;; or
+        ;;;; guix build nvidia-driver | wl-copy
+         ;;,@(let ((driver-path "/gnu/store/cbj701jzy9dj6cv84ak0b151y9plb5sc-nvidia-driver-495.46"))
+         ;;    `(("GBM_BACKENDS_PATH" . ,(string-join (list driver-path
+         ;;                                                 (string-append driver-path "/lib")
+         ;;                                                 (string-append driver-path "/lib/gbm")
+         ;;                                                 "$PATH") ":"))
+         ;;      ("VK_ICD_FILENAMES" . ,(string-append driver-path "/share/vulkan/icd.d/nvidia_icd.json"))
+         ;;      ("LIBGL_DRIVERS_PATH" . ,(string-join (list driver-path
+         ;;                                                  (string-append driver-path "/lib")
+         ;;                                                  (string-append driver-path "/lib/gbm")
+         ;;                                                  "$PATH") ":"))
+         ;;      ;; https://github.com/NVIDIA/egl-wayland/issues/39#issuecomment-927288015
+         ;;      ;; undocumented
+         ;;      ;; might have an issue for containerised stuff, as set(uid|gid)
+         ;;      ("__EGL_EXTERNAL_PLATFORM_CONFIG_DIRS" . ,(string-append driver-path "/share/egl/egl_external_platform.d"))
+         ;;      ))
+         ;;
+         ;;("__GLX_VENDOR_LIBRARY_NAME" . "nvidia")
+         ("WLR_NO_HARDWARE_CURSORS" . "1")
+         ;;("WLR_DRM_NO_ATOMIC" . "1")
+         ;; echo "/dev/dri/card$(udevadm info -a -n /dev/dri/card1 | grep boot_vga | rev | cut -c 2)"
+         ;;("WLR_DRM_DEVICES" . "/dev/dri/card1")   ;; gpu only
+         ;;("WLR_DRM_DEVICES" . "/dev/dri/card1") ;; cpu only
+         ;;("WLR_DRM_DEVICES" . "/dev/dri/card0:/dev/dri/card1") ;; gpu:cpu
 
         ;;; GUILE
-        ("GUILE_LOAD_PATH" .
-         "$XDG_CONFIG_HOME/guix/current/share/guile/site/3.0\
+         ("GUILE_LOAD_PATH" .
+          "$XDG_CONFIG_HOME/guix/current/share/guile/site/3.0\
 :$GUILE_LOAD_PATH")
-        ("GUILE_LOAD_COMPILED_PATH" .
-         "$XDG_CONFIG_HOME/guix/current/lib/guile/3.0/site-ccache\
+         ("GUILE_LOAD_COMPILED_PATH" .
+          "$XDG_CONFIG_HOME/guix/current/lib/guile/3.0/site-ccache\
 :$GUILE_LOAD_COMPILED_PATH")
 
         ;;; JS/BABEL
-        ;; javascript sucks, npm sucks
-        ;; https://github.com/npm/npm/issues/6675#issuecomment-250318382
-        ;; https://github.com/npm/cli/issues/1451
-        ;; https://github.com/pnpm/pnpm/issues/2574
-        ;; https://github.com/rxrc/zshrc/blob/3ca83703da5bd93b015747835a8a0164160c9b83/env.zsh#L33-L928
-        ("NPM_CONFIG_USERCONFIG" . "${XDG_CONFIG_HOME}/npm/config")
-        ("NPM_CONFIG_CACHE" . "${XDG_CACHE_HOME}/npm")
-        ("NPM_CONFIG_TMP" . "${XDG_RUNTIME_DIR}/npm")
-        ("YARN_CACHE_FOLDER" . "${YARN_CACHE_FOLDER:-$XDG_CACHE_HOME/yarn}")
-        ("NODE_REPL_HISTORY" . "${NODE_REPL_HISTORY:-$XDG_CACHE_HOME/node/repl_history}")
-        ("NVM_DIR" . "${NVM_DIR:-$XDG_DATA_HOME/nvm}")
-        ("BABEL_CACHE_PATH" . "${BABEL_CACHE_PATH:-$XDG_CACHE_HOME/babel/cache.json}")
+         ;; javascript sucks, npm sucks
+         ;; https://github.com/npm/npm/issues/6675#issuecomment-250318382
+         ;; https://github.com/npm/cli/issues/1451
+         ;; https://github.com/pnpm/pnpm/issues/2574
+         ;; https://github.com/rxrc/zshrc/blob/3ca83703da5bd93b015747835a8a0164160c9b83/env.zsh#L33-L928
+         ("NPM_CONFIG_USERCONFIG" . "${XDG_CONFIG_HOME}/npm/config")
+         ("NPM_CONFIG_CACHE" . "${XDG_CACHE_HOME}/npm")
+         ("NPM_CONFIG_TMP" . "${XDG_RUNTIME_DIR}/npm")
+         ("YARN_CACHE_FOLDER" . "${YARN_CACHE_FOLDER:-$XDG_CACHE_HOME/yarn}")
+         ("NODE_REPL_HISTORY" . "${NODE_REPL_HISTORY:-$XDG_CACHE_HOME/node/repl_history}")
+         ("NVM_DIR" . "${NVM_DIR:-$XDG_DATA_HOME/nvm}")
+         ("BABEL_CACHE_PATH" . "${BABEL_CACHE_PATH:-$XDG_CACHE_HOME/babel/cache.json}")
 
         ;;; DEVELOPMENT
-        ("GUIX_CHECKOUT" . "$HOME/git/sys/guix")
-        ("GUIX_EXTRA_PROFILES" . "$HOME/.guix-extra-profiles")
+         ("GUIX_CHECKOUT" . "$HOME/git/sys/guix")
+         ("GUIX_EXTRA_PROFILES" . "$HOME/.guix-extra-profiles")
 
         ;;; ETC
-        ("GDK_BACKEND" . "wayland") ;; ... for clipboarding emasc
-        ("PATH" . (string-join (list "$PATH"
-                                     "$HOME/.local/bin"
-                                     "$HOME/.krew/bin"
-                                     "${XDG_CACHE_HOME}/npm/bin")
-                               ":"))))
-     ;; ((@ (gnu services) simple-service)
-     ;;  'extend-shell-profile
-     ;;  (@ (gnu home-services shells) home-shell-profile-service-type)
-     ;;  (list
-     ;;   #~(string-append
-     ;;      "alias superls="
-     ;;      #$(file-append (@ (gnu packages base) coreutils) "/bin/ls"))))
+         ("GDK_BACKEND" . "wayland") ;; ... for clipboarding emasc
+         ("PATH" . (string-join (list "$PATH"
+                                      "$HOME/go/bin"
+                                      "$HOME/.local/bin"
+                                      "$HOME/.krew/bin"
+                                      "${XDG_CACHE_HOME}/npm/bin")
+                                ":"))))
+      ;; ((@ (gnu services) simple-service)
+      ;;  'extend-shell-profile
+      ;;  (@ (gnu home-services shells) home-shell-profile-service-type)
+      ;;  (list
+      ;;   #~(string-append
+      ;;      "alias superls="
+      ;;      #$(file-append (@ (gnu packages base) coreutils) "/bin/ls"))))
 
-     ;; see logs at ~/.local/var/log/mcron.log
-     ;;   tail --follow ~/.local/var/log/mcron.log
-     ;; ((@ (gnu services) simple-service)
-     ;;  'notes-commit-job
-     ;;  (@ (gnu home services mcron) home-mcron-service-type)
-     ;;  (list #~(job '(next-minute)
-     ;;               (lambda ()
-     ;;                 (system* "echo \"$(date -u) attempting to commit\" >> /tmp/commit-log")
-     ;;                 (system* "cd $HOME/life")
-     ;;                 (system* "git add .")
-     ;;                 (system* "git commit -m \"auto-commit | $(date -u)\""))
-     ;;               "notes-commit")))
+      ;; see logs at ~/.local/var/log/mcron.log
+      ;;   tail --follow ~/.local/var/log/mcron.log
+      ;; ((@ (gnu services) simple-service)
+      ;;  'notes-commit-job
+      ;;  (@ (gnu home services mcron) home-mcron-service-type)
+      ;;  (list #~(job '(next-minute)
+      ;;               (lambda ()
+      ;;                 (system* "echo \"$(date -u) attempting to commit\" >> /tmp/commit-log")
+      ;;                 (system* "cd $HOME/life")
+      ;;                 (system* "git add .")
+      ;;                 (system* "git commit -m \"auto-commit | $(date -u)\""))
+      ;;               "notes-commit")))
+      )
+     #:system-services
+     (remove
+      unspecified?
+      (append
+       (if gaming?
+           (@@ (gnu services desktop) %desktop-services)
+           '())
+       (list
+        (when gaming?
+          (simple-service
+           'nvidia-udev-rule udev-service-type
+           (list nvidia-driver)))
 
-     )
-    #:system-services
-    (list (service postgresql-service-type)
+        (when #f
+          (simple-service
+           'gdm-xorg-conf gdm-service-type
+           (gdm-configuration
+            (xorg-configuration
+             (xorg-configuration (keyboard-layout %thinkpad-layout)
+                                 (modules (append
+                                           (list nvidia-driver)
+                                           %default-xorg-modules))
+                                 (drivers (list "nvidia")))))))
+
+        (unless gaming?
+          (service postgresql-service-type))
+        (unless gaming?
           (service postgresql-role-service-type
                    (postgresql-role-configuration
                     (roles (list (postgresql-role
@@ -265,21 +348,29 @@
                                   (create-database? #t))
                                  (postgresql-role
                                   (name "newstore")
-                                  (create-database? #t))))))
-          ))
+                                  (create-database? #t)))))))
+        (service openssh-service-type
+                 (openssh-configuration
+                  (password-authentication? #t)
+                  ;; (authorised-keys
+                  ;;  `(("hww" ,(local-file "hww.pub"))
+                  ;;    ))
+                   ))
+        ))))
 
-   (feature-base-services)
-   (feature-desktop-services)
-   (feature-docker)
+    (unless gaming? (feature-base-services))
+    (unless gaming? (feature-desktop-services))
 
-   (feature-pipewire)
-   (feature-backlight #:step 5)
+    (feature-backlight #:step 5)
+
+    (feature-docker)
+
+    (unless gaming? (feature-pipewire))
 
    (feature-fonts
-    #:font-monospace (font "Iosevka" #:size 14 #:weight 'regular)
-    ;; #:font-monospace (font "Fira Mono" #:size 14 #:weight 'semi-light)
-    #:font-packages (list font-iosevka font-fira-mono))
-
+     #:font-monospace (font "Iosevka" #:size 14 #:weight 'regular)
+     ;; #:font-monospace (font "Fira Mono" #:size 14 #:weight 'semi-light)
+     #:font-packages (list font-iosevka font-fira-mono))
    (feature-alacritty
     #:config-file (local-file "./config/alacritty/alacritty.yml")
     #:default-terminal? #f
@@ -289,7 +380,7 @@
    (feature-bash)
    (feature-direnv)
    (feature-zsh
-    #:enable-zsh-autosuggestions? #t)
+    #:enable-zsh-autosuggestions? #t
     #:extra-zshrc
     (list ;; XXX higher level category
      ;; something which evals equiv to following for each promptline "PS1=\"[$(date -u '+%Y-%m-%d | %H:%M')] $PS1\""
@@ -321,168 +412,207 @@
      ;;                     "${XDG_CACHE_HOME}/npm/bin") ":")
      ;;  "\"")
      ))
-   (feature-ssh
-    #:ssh-configuration
-    (home-ssh-configuration
-     (default-options
-      '((hostkey-algorithms . "+ssh-rsa")
-        (pubkey-accepted-algorithms "+ssh-rsa")))
-     (extra-config
-      (list (ssh-host
-             (host "qz")
-             (options '((user . "samuel")
-                        (hostname . "192.168.0.249")
-                        (port . 22)
-                        ;;(identity-file . "~/.ssh/newstore-luminate.pem")
-                        )))
-            (ssh-host
-             (host "ko")
-             (options '((user . "root")
-                        (hostname . "192.168.0.240")
-                        (port . 2222)
-                        (identity-file . "~/.ssh/ko.pub"))))
-            (ssh-host
-             (host "bastion-sandbox")
-             (options '((user . "ubuntu@bastion-sandbox")
-                        (hostname . "bastion-sandbox.ssh.newstore.luminatesec.com")
-                        (port . 22)
-                        (identity-file . "~/.ssh/newstore-luminate.pem"))))
-            (ssh-host
-             (host "bastion-staging")
-             (options '((user . "ubuntu@bastion-staging")
-                        (hostname . "bastion-staging.ssh.newstore.luminatesec.com")
-                        (port . 22)
-                        (identity-file . "~/.ssh/newstore-luminate.pem"))))
-            (ssh-host
-             (host "bastion-production")
-             (options '((user . "ubuntu@bastion-production")
-                        (hostname . "bastion-production.ssh.newstore.luminatesec.com")
-                        (port . 22)
-                        (identity-file . "~/.ssh/newstore-luminate.pem"))))))))
-   (feature-git)
-   ;; #:package sway-latest
-   (feature-sway
-    #:xdg-desktop-portal-wlr xdg-desktop-portal-wlr-latest
-    #:xwayland? #f
-    #:opacity 0.9
-    #:wallpaper "$HOME/.cache/wallpaper.png"
-    #:extra-config
-    `(;;(include ,(local-file "./config/sway/config"))
-      ;; TODO sway: toggle opacity for WINDOW
-      (,#~"output DP-1 res 5120x1440 bg ~/.cache/wallpaper.png fill")
-      ;; TODO sway: wacom input rotation matrix
-      (,#~"input \"*\" tool_mode \"*\" relative calibration_matrix 0.0 -1.0 1.0 1.0 0.0 0.0")
-      ;; danke demis https://github.com/minikN/guix/blob/ca15b5a5954d50fe75e2b03f21afc019e002022b/config.scm#L173
-      (for_window "[app_id=\"pavucontrol\"]" floating enable, border pixel)
-      (for_window "[app_id=\"pinentry-qt\"]" floating enable, border pixel)
-      (for_window "[title=\"Nightly - Sharing Indicator\"]" floating enable, border pixel)
-      (bindsym $mod+Ctrl+o opacity set 1)
-      (bindsym $mod+Ctrl+p opacity minus 0.1)
-      (bindsym $mod+x exec $menu)))
-   (feature-sway-run-on-tty
-    #:sway-tty-number 2
-    ;;#:launch-args "--unsupported-gpu" ;; 1.7-rc1+ https://github.com/swaywm/sway/releases/tag/1.7-rc1
-    #:launch-args "--my-next-gpu-wont-be-nvidia --debug &>/tmp/sway")
-   (feature-sway-tessen
-    #:menu-arg "rofi"
-    #:menu-package rofi-wayland)
-   (feature-sway-screenshot)
-   ;; (feature-sway-statusbar
-   ;;  #:use-global-fonts? #f)
-   (feature-waybar
-    #:waybar-modules
-    (list
-     (waybar-sway-workspaces)
-     ;; (waybar-sway-window)
-     (waybar-tray)
-     (waybar-idle-inhibitor)
-     ;; (waybar-temperature)
-     (waybar-sway-language)
-     (waybar-battery #:intense? #f)
-     (waybar-clock)))
-   (feature-swayidle)
-   (feature-swaylock
-    #:swaylock (@ (gnu packages wm) swaylock-effects)
-    ;; The blur on lock screen is not privacy-friendly.
-    #:extra-config '(;; (screenshots)
-                     ;; (effect-blur . 7x5)
-                     (clock)))
-   (feature-rofi
-    #:theme (local-file "config/rofi/themes/base16-default-dark.rasi"))
-   (feature-direnv)
-   (feature-emacs
-    #:emacs
-    (if (string=? (or (getenv "BUILD_SUBMITTER") "") "git.sr.ht")
-        (@ (gnu packages emacs) emacs-next-pgtk)
-        emacs-next-pgtk-latest)
-    #:extra-init-el
-    (append
+    (feature-ssh
+     #:ssh-configuration
+     (home-ssh-configuration
+      (default-options
+        '((hostkey-algorithms . "+ssh-rsa")
+          (pubkey-accepted-algorithms "+ssh-rsa")))
+      (extra-config
+       (list (ssh-host
+              (host "qz")
+              (options '((user . "samuel")
+                         (hostname . "192.168.0.249")
+                         (port . 22)
+                         ;;(identity-file . "~/.ssh/newstore-luminate.pem")
+                         )))
+             (ssh-host
+              (host "ko")
+              (options '((user . "root")
+                         (hostname . "192.168.0.240")
+                         (port . 2222)
+                         (identity-file . "~/.ssh/ko.pub"))))
+             (ssh-host
+              (host "bastion-sandbox")
+              (options '((user . "ubuntu@bastion-sandbox")
+                         (hostname . "bastion-sandbox.ssh.newstore.luminatesec.com")
+                         (port . 22)
+                         (identity-file . "~/.ssh/newstore-luminate.pem"))))
+             (ssh-host
+              (host "bastion-staging")
+              (options '((user . "ubuntu@bastion-staging")
+                         (hostname . "bastion-staging.ssh.newstore.luminatesec.com")
+                         (port . 22)
+                         (identity-file . "~/.ssh/newstore-luminate.pem"))))
+             (ssh-host
+              (host "bastion-production")
+              (options '((user . "ubuntu@bastion-production")
+                         (hostname . "bastion-production.ssh.newstore.luminatesec.com")
+                         (port . 22)
+                         (identity-file . "~/.ssh/newstore-luminate.pem"))))))))
+    (feature-git)
+
+    ;; --- WM -----------------------------------------
+    ;; --- i3   --------
+
+    ;;(feature-i3)
+    ;; (feature-i3-run-on-tty
+    ;;  #:i3-tty-number 2
+    ;;  ;;#:launch-args "> /tmp/i3.log"
+    ;;  )
+
+    ;; --- sway --------
+    (unless gaming?
+      (feature-sway
+       #:sway sway-latest ;; sway-last (transform-nvidia sway-latest)
+       ;; #:sway (transform-nvidia sway-latest)
+       ;;#:Xdg-desktop-portal-wlr xdg-desktop-portal-wlr-latest
+       ;; #:xdg-desktop-portal-wlr (transform-nvidia xdg-desktop-portal-wlr-latest)
+       #:xwayland? #f
+       #:opacity 0.9
+       #:wallpaper "$HOME/.cache/wallpaper.png"
+       #:extra-config
+       `(;;(include ,(local-file "./config/sway/config"))
+         ;; TODO sway: toggle opacity for WINDOW
+         (,#~"output DP-2 res 5120x1440 bg ~/.cache/wallpaper.png fill")
+         ;; TODO sway: wacom input rotation matrix
+         (,#~"input \"*\" tool_mode \"*\" relative calibration_matrix 0.0 -1.0 1.0 1.0 0.0 0.0")
+         ;; danke demis https://github.com/minikN/guix/blob/ca15b5a5954d50fe75e2b03f21afc019e002022b/config.scm#L173
+         (for_window "[app_id=\"pavucontrol\"]" floating enable, border pixel)
+         (for_window "[app_id=\"pinentry-qt\"]" floating enable, border pixel)
+         (for_window "[title=\"Nightly - Sharing Indicator\"]" floating enable, border pixel)
+         (bindsym $mod+Ctrl+o opacity set 1)
+         (bindsym $mod+Ctrl+p opacity minus 0.1)
+         (bindsym $mod+x exec $menu))))
+    (unless gaming?
+      (feature-sway-run-on-tty
+       #:sway-tty-number 2
+       ;;#:launch-args "--unsupported-gpu" ;; 1.7-rc1+ https://github.com/swaywm/sway/releases/tag/1.7-rc1
+       ;;#:launch-args "--unsupported-gpu --debug &>/tmp/sway"
+       ))
+    (unless gaming?
+      (feature-sway-tessen
+       #:menu-arg "rofi"
+       #:menu-package rofi-wayland))
+    (unless gaming? (feature-sway-screenshot))
+    ;; ----- sway: statusbar; superseded by waybar
+    ;; (unless gaming?
+    ;;   (feature-sway-statusbar
+    ;;    #:use-global-fonts? #f))
+    ;; -----
+    (unless gaming?
+      (feature-waybar
+       #:waybar-modules
+       (list
+        (waybar-sway-workspaces)
+        ;; (waybar-sway-window)
+        (waybar-tray)
+        (waybar-idle-inhibitor)
+        ;; (waybar-temperature)
+        (waybar-sway-language)
+        (waybar-battery #:intense? #f)
+        (waybar-clock))))
+
+    ;; FIXME swayidle: external monitor resuming bug (probably gpu issue)e
+    ;; https://github.com/swaywm/sway/issues/5759
+    (unless gaming?
+      (feature-swayidle))
+    (unless gaming?
+      (feature-swaylock
+       #:swaylock (@ (gnu packages wm) swaylock-effects)
+       ;; The blur of last-screen on lock screen is not privacy-friendly.
+       ;; TODO use blurred wallpaper from $HOME/.cache/wallpaper.png
+       #:extra-config '(;; (screenshots)
+                        ;; (effect-blur . 7x5)
+                        (clock)))
+    (unless gaming?
+      (feature-rofi
+       #:theme (local-file "config/rofi/themes/base16-default-dark.rasi")))
+    ;; ------------------------------------------------
+
+    ;; --- EMACS --------------------------------------
+    (feature-emacs
+     #:emacs
+     (if (string=? (or (getenv "BUILD_SUBMITTER") "") "git.sr.ht")
+         (@ (gnu packages emacs) emacs-next-pgtk)
+         emacs-next-pgtk-latest)
+
+     #:extra-init-el
+     (append
       (list #~"(define-key key-translation-map [?\\C-x] [?\\C-u])\n"
             #~"(define-key key-translation-map [?\\C-u] [?\\C-x])\n")
       init-el)
-    #:additional-elisp-packages
-    ;; TODO if feature-emacs-PACKAGE exists, advise its use
-    (append
-     (list emacs-consult-dir
-           emacs-consult-eglot
-           emacs-consult-recoll)
-     (pkgs "emacs-elfeed"
-           "emacs-hl-todo"
-           "emacs-ytdl"
-           "emacs-dimmer"
-           "emacs-hyperbole"
-           "emacs-ement"
-           "emacs-restart-emacs"
-           "emacs-org-fragtog"
-           "emacs-yaml-mode"
-           "emacs-org-download"
-           "emacs-org-edit-latex"
-           "emacs-guix"
-           "emacs-forge"
-           "emacs-debbugs"
-           "emacs-ob-async"
-           "emacs-plantuml-mode"
-           "emacs-org-fragtog"
+     #:additional-elisp-packages
+     ;; TODO if feature-emacs-PACKAGE exists, advise its use
+     (append
+      (list emacs-consult-dir
+            emacs-consult-eglot
+            emacs-consult-recoll)
+      (pkgs "emacs-elfeed"
+            "emacs-hl-todo"
+            "emacs-ytdl"
+            "emacs-dimmer"
+            "emacs-hyperbole"
+            "emacs-ement"
+            "emacs-restart-emacs"
+            "emacs-yaml-mode"
+            "emacs-org-download"
+            "emacs-org-edit-latex"
+            "emacs-guix"
+            "emacs-forge"
+            "emacs-debbugs"
+            "emacs-plantuml-mode"
 
-           "emacs-explain-pause-mode"
-           ;; TODO feature-emacs-lsp
-           "emacs-jq-mode"
-           "emacs-eglot"
-           "emacs-lsp-ui"
-           "emacs-lsp-mode"
-           "emacs-python-black"
-           "emacs-py-isort"
-           "emacs-gnuplot"
-           "emacs-protobuf-mode"
-           "emacs-go-mode"
-           "emacs-eros"
-           "emacs-terraform-mode"
-           "emacs-string-inflection"
-           "emacs-htmlize" ;; ement: -> ox-export html: org src blocks
-           ;; emacs-impostman
-           ;; "emacs-org-autotangle"
-           )))
+            "emacs-ob-async"
+            "emacs-org-fragtog"
 
-   (feature-emacs-appearance
-    #:light? #f
-    #:emacs-modus-themes emacs-modus-themes-latest)
-   (feature-emacs-faces)
-   (feature-emacs-completion
-    #:mini-frame? #f)
-   (feature-emacs-vertico)
-   (feature-emacs-project)
-   (feature-emacs-perspective)
-   (feature-emacs-input-methods)
-   (feature-emacs-which-key)
-   (feature-emacs-keycast #:turn-on? #f)
-   (feature-emacs-perfect-margin
-    #:visible-width 150)
+            "emacs-repology"
 
-   (feature-emacs-dired)
-   (feature-emacs-vterm)
-   (feature-emacs-monocle)
-   (feature-emacs-message)
-   (feature-emacs-erc
+            "emacs-json-snatcher"
+            "emacs-logview" ;; https://github.com/doublep/logview
+            ;;"emacs-vlf" ;; TODO guix: package emacs-vlf
+
+            "emacs-ox-hugo"
+            "emacs-explain-pause-mode"
+            ;; TODO feature-emacs-lsp
+            "emacs-jq-mode"
+            "emacs-eglot"
+            "emacs-lsp-ui"
+            "emacs-lsp-mode"
+            "emacs-python-black"
+            "emacs-py-isort"
+            "emacs-gnuplot"
+            "emacs-protobuf-mode"
+            "emacs-go-mode"
+            "emacs-eros"
+            "emacs-terraform-mode"
+            "emacs-string-inflection"
+            "emacs-htmlize" ;; ement: -> ox-export html: org src blocks
+            ;; emacs-impostman
+            ;; "emacs-org-autotangle"
+            )))
+
+    (feature-emacs-appearance
+     #:light? #f
+     #:deuteranopia? #f
+     #:emacs-modus-themes emacs-modus-themes-latest)
+    (feature-emacs-faces)
+    (feature-emacs-completion
+     #:mini-frame? #f)
+    (feature-emacs-vertico)
+    (feature-emacs-project)
+    (feature-emacs-perspective)
+    (feature-emacs-input-methods)
+    (feature-emacs-which-key)
+    (feature-emacs-keycast)
+    (feature-emacs-perfect-margin
+     #:visible-width 150)
+
+    (feature-emacs-dired)
+    (feature-emacs-vterm)
+    (feature-emacs-monocle)
+    (feature-emacs-message)
+    (feature-emacs-erc
     #:erc-kill-buffers-on-quit #t
     #:erc-nick "qzdl"
     #:align-nicknames? #f
@@ -512,101 +642,105 @@
         (interactive)
         (setq erc-email-userid "qzdl/irc.libera.chat")
         (erc-tls :server "chat.sr.ht" :nick rde-bouncer-nick))))
-   (feature-emacs-elpher)
-   (feature-emacs-telega)
-   (feature-emacs-pdf-tools)
-   (feature-emacs-nov-el)
+    (feature-emacs-elpher)
+    (feature-emacs-telega)
+    (feature-emacs-pdf-tools)
+    (feature-emacs-nov-el)
+    ;; TODO: Revisit <https://en.wikipedia.org/wiki/Git-annex>
+    (feature-emacs-git)
+    ;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
+    (feature-emacs-org
+     #:org-directory my-org-directory
+     #:org-agenda-directory my-notes-directory)
+    (feature-emacs-org-agenda
+     #:org-agenda-files '("~/life/roam/inbox.org"))
+    (feature-emacs-org-roam
+     ;; TODO: Rewrite to states
+     #:org-roam-directory my-notes-directory
+     #:org-roam-dailies-directory (string-append my-notes-directory "/daily"))
+    ;; FIXME guix: org-roam-ui: httpd communication problem (endemic to guix)
+    ;; (feature-emacs-org-roam-ui)
+    ;; (feature-emacs-ref
+    ;;  ;; why error with nil for reftex-default-bibliography
+    ;;  ;; TODO: Rewrite to states
+    ;;  #:bibliography-paths
+    ;;  (list (string-append my-org-directory "/tex.bib"))
+    ;;  #:bibliography-notes
+    ;;  (list(string-append my-org-directory "/bib.org")
+    ;;  #:bibliography-directory my-notes-directory)
 
-   ;; TODO: Revisit <https://en.wikipedia.org/wiki/Git-annex>
-   (feature-emacs-git)
-   ;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
+    (feature-emacs-es-mode
+     #:package emacs-es-mode)
+    (feature-emacs-restclient
+     #:package-ob emacs-ob-restclient-latest)
+    ;; ------------------------------------------------
 
-   (feature-emacs-org
-    #:org-directory my-org-directory
-    #:org-agenda-directory my-notes-directory)
+    (feature-mpv)
+    (feature-isync #:isync-verbose #t)
+    (feature-l2md)
+    (feature-msmtp
+     #:msmtp msmtp-latest)
+    (feature-notmuch
+     #:extra-tag-updates-post
+     '("notmuch tag +guix-home -- 'thread:\"\
+{((subject:guix and subject:home) or subject:/home:/) and tag:new}\"'"
+       "notmuch tag +guix -- \"{to:guix or subject:guix}\"")
+     #:notmuch-saved-searches
+     (cons*
+      '(:name "Personal Inbox"  :key "P" :query "tag:personal and tag:inbox")
+      '(:name "Work Inbox"      :key "W" :query "tag:work and tag:inbox")
+      '(:name "Guix Home Inbox" :key "H" :query "tag:guix-home and tag:unread")
+      '(:name "RDE Inbox"       :key "R" :query "((to:/rde/ or cc:/rde/) or subject:/rde/) and tag:unread")
+      %rde-notmuch-saved-searches))
 
-   (feature-emacs-org-roam
-    ;; TODO: Rewrite to states
-   ;; (feature-emacs-org-agenda
-   ;; #:org-agenda-files '("~/work/abcdw/agenda/todo.org"))
-    #:org-roam-directory my-notes-directory
-    #:org-roam-dailies-directory (string-append my-notes-directory "/daily"))
-   ;; (feature-emacs-ref
-   ;;  ;; why error with nil for reftex-default-bibliography
-   ;;  ;; TODO: Rewrite to states
-   ;;  #:bibliography-paths
-   ;;  (list (string-append my-org-directory "/tex.bib"))
-   ;;  #:bibliography-notes
-   ;;  (list(string-append my-org-directory "/bib.org")
-   ;;  #:bibliography-directory my-notes-directory)
+    (feature-transmission #:auto-start? #f)
 
-   (feature-emacs-es-mode
-    #:package emacs-es-mode)
-   (feature-emacs-restclient
-    #:package-ob emacs-ob-restclient-latest)
-   (feature-mpv)
-   (feature-isync #:isync-verbose #t)
-   (feature-l2md)
-   (feature-msmtp
-    #:msmtp msmtp-latest)
-   (feature-notmuch
-    #:extra-tag-updates-post
-    '("notmuch tag +guix-home -- 'thread:\"\
-{((subject:guix and subject:home) or subject:/home:/) and tag:new}\"'")
-    #:notmuch-saved-searches
-    (cons*
-     '(:name "Work Inbox" :query "tag:work and tag:inbox" :key "W")
-     '(:name "Personal Inbox" :query "tag:personal and tag:inbox" :key "P")
-     '(:name "Guix Home Inbox" :key "H" :query "tag:guix-home and tag:unread")
-     %rde-notmuch-saved-searches))
+    (feature-xdg
+     #:xdg-user-directories-configuration
+     (home-xdg-user-directories-configuration
+      (music "$HOME/music")
+      (videos "$HOME/vids")
+      (pictures "$HOME/pics")
+      (documents "$HOME/docs")
+      (download "$HOME/dl")
+      (desktop "$HOME")
+      (publicshare "$HOME")
+      (templates "$HOME")))
+    (feature-bluetooth #:auto-enable? #t)
+    (feature-base-packages
+     #:home-packages
+     (append
+      (pkgs
+       "figlet" ;; TODO: Move to emacs-artist-mode
+       "calibre"
+       "icecat" "nyxt"
+       "ungoogled-chromium-wayland" "ublock-origin-chromium"
 
-   (feature-transmission #:auto-start? #f)
+       "utox" "qtox" "jami"
 
-   (feature-xdg
-    #:xdg-user-directories-configuration
-    (home-xdg-user-directories-configuration
-     (music "$HOME/music")
-     (videos "$HOME/vids")
-     (pictures "$HOME/pics")
-     (documents "$HOME/docs")
-     (download "$HOME/dl")
-     (desktop "$HOME")
-     (publicshare "$HOME")
-     (templates "$HOME")))
-   (feature-bluetooth #:auto-enable? #t)
-   (feature-base-packages
-    #:home-packages
-    (append
-     (pkgs
-      "figlet" ;; TODO: Move to emacs-artist-mode
-      "calibre"
-      "icecat" "nyxt"
-      "ungoogled-chromium-wayland" "ublock-origin-chromium"
+       "alsa-utils" "mpv" "youtube-dl" "imv" "vim"
+       "cozy" "pavucontrol"
+       "wev"
+       "obs" "obs-wlrobs"
+       "recutils" "binutils"
+       "fheroes2"
+       ;; TODO: Enable pipewire support to chromium by default
+       ;; chrome://flags/#enable-webrtc-pipewire-capturer
+       "ungoogled-chromium-wayland" "ublock-origin-chromium"
+       "nyxt"
+       ;;
+       "hicolor-icon-theme" "adwaita-icon-theme" "gnome-themes-standard"
+       "papirus-icon-theme" "arc-theme"
+       "thunar"
+       ;; "glib:bin"
 
-      "utox" "qtox" "jami"
+       ;; TODO: Fix telega package!
+       "ffmpeg"
 
-      "alsa-utils" "mpv" "youtube-dl" "imv" "vim"
-      "cozy" "pavucontrol"
-      "wev"
-      "obs" "obs-wlrobs"
-      "recutils" "binutils"
-      "fheroes2"
-      ;; TODO: Enable pipewire support to chromium by default
-      ;; chrome://flags/#enable-webrtc-pipewire-capturer
-      "ungoogled-chromium-wayland" "ublock-origin-chromium"
-      "nyxt"
-      ;;
-      "hicolor-icon-theme" "adwaita-icon-theme" "gnome-themes-standard"
-      "papirus-icon-theme" "arc-theme"
-      "thunar"
-      ;; "glib:bin"
+       "ripgrep" "curl" "make"
+       )))))))
 
-      ;; TODO: Fix telega package!
-      "ffmpeg"
-
-      ;;; nonguix
-      ;;"firefox"
-      "ripgrep" "curl" "make")))))
+;;(map pretty-print %main-features)
 (pretty-print "post-%main-features")
 
 
@@ -672,19 +806,23 @@
    ;; (feature-bootloader)
    ;; os
    (feature-kernel
-    #:kernel nongnu:linux-lts
+    ;;#:kernel nongnu:linux-lts ;; nvidia
+    #:kernel nongnu:linux
     #:kernel-arguments
     '("quiet" "ipv6.disable=1" "net.ifnames=0"
+      "nouveau.modeset=1"
       ;; https://forums.developer.nvidia.com/t/nvidia-495-on-sway-tutorial-questions-arch-based-distros/192212
-       "nvidia-drm.modeset=1" "nouveau.blacklist=1" "modprobe.blacklist=nouveau"
+       ;;"nvidia-drm.modeset=1" "nouveau.blacklist=1" "modprobe.blacklist=nouveau"
       )
     ;; removed "modprobe.blacklist=snd_hda_intel,snd_soc_skl"
     #:firmware (list nongnu:linux-firmware
                      nongnu:sof-firmware
-                     nvidia-driver)
+                     ;;nvidia-driver
+                     )
     #:initrd nongnu-sys:microcode-initrd
     #:kernel-loadable-modules (list v4l2loopback-linux-module
-                                    nvidia-driver))
+                                    ;;nvidia-driver
+                                    ))
    (feature-file-systems
     #:mapped-devices ixy-mapped-devices
     #:file-systems   ixy-file-systems)
@@ -799,5 +937,3 @@
 
 (pretty-print "pre-dispatch")
 (dispatcher)
-
-
