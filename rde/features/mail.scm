@@ -463,12 +463,10 @@ function, which accepts config with rde values and returns a string."
   (generate-isync-serializer "mail.gandi.net" gandi-folder-mapping))
 
 (define bravehost-folder-mapping
-  '(("inbox"  . "Inbox")
-    ("accounts" . "Inbox/Accounts")
-    ("kaggle" . "Inbox/Kaggle")
-    ("cv" . "Inbox/CV")
-    ("info" . "Inbox/info")
-    ("accounts" . "inbox/university")
+  '(("inbox"  . "INBOX")
+    ("accounts" . "INBOX/Accounts")
+    ("cv" . "INBOX/CV")
+    ("info" . "INBOX/info")
     ("sent"   . "Sent")
     ("drafts" . "Drafts")
     ("trash"  . "Deleted Items")
