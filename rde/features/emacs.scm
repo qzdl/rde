@@ -60,6 +60,7 @@
 	    feature-emacs-monocle
 	    feature-emacs-org
 	    feature-emacs-org-roam
+            feature-emacs-org-roam-ui
 	    feature-emacs-org-agenda
             feature-emacs-ref
 	    feature-emacs-erc
@@ -2213,6 +2214,35 @@ enable rde-keycast-mode on configure-keycast package load."
    (home-services-getter get-home-services)))
 
 ;;; emacs.scm end here
+
+(define* (feature-emacs-org-roam-ui
+          #:key
+          (emacs-org-roam-ui emacs-org-roam-ui))
+  "Configure emacs-org-roam-ui, a web-companion UI for org-roam in GNU Emacs."
+  (define emacs-f-name 'org-roam-ui)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (elisp-configuration-service
+      emacs-f-name
+      `(
+
+        (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t)
+
+        (with-eval-after-load
+         'org-roam-ui
+         ))
+      #:elisp-packages (list emacs-org-roam-ui))))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . #t)))
+   (home-services-getter get-home-services)))
+
 
 ;; TODO: feature-emacs-reasonable-keybindings
 ;; TODO: Fix env vars for emacs daemon
