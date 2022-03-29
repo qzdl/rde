@@ -1162,3 +1162,30 @@ created within Org-roam.")
             (files (list (string-append "lib/python"
                                         (version-major+minor version)
                                         "/site-packages"))))))))
+(define-public emacs-sql-indent
+  (package
+   (name "emacs-sql-indent")
+   (version "1.6")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "https://elpa.gnu.org/packages/sql-indent-"
+           version
+           ".tar"))
+     (sha256
+      (base32 "000pimlg0k4mrv2wpqq8w8l51wpr1lzlaq6ai8iaximm2a92ap5b"))))
+   (build-system emacs-build-system)
+   (home-page "https://github.com/alex-hhh/emacs-sql-indent")
+   (synopsis "Support for indenting code in SQL files.")
+   (description
+    "`sqlind-minor-mode' is a minor mode that enables syntax-based indentation for
+`sql-mode' buffers: the TAB key indents the current line based on the SQL code
+on previous lines.  To setup syntax-based indentation for every SQL buffer, add
+`sqlind-minor-mode' to `sql-mode-hook'.  Indentation rules are flexible and can
+be customized to match your personal coding style.  For more information, see
+the \"sql-indent.org\" file.
+
+The package also defines align rules so that the `align' function works for SQL
+statements, see `sqlind-align-rules'.")
+   (license license:gpl3+)))
