@@ -399,19 +399,12 @@
      "alias rgrt='rgw $HOME/git/ns/routing'"
      "alias rgsys='rgw $HOME/git/sys'"
 
-     "alias gp='ls $GUIX_EXTRA_PROFILES'"
-     "_gP() { export GUIX_PROFILE=$1 ; }"
-     "alias gP='_gP'"
-     "_gsP() { . $GUIX_EXTRA_PROFILES/$1/$1 ; }"
-     "gsP=_gsP"
-     ;; (string-append
-     ;;  "export PATH=\""
-     ;;  (string-join (list "$PATH"
-     ;;                     "$HOME/.local/bin"
-     ;;                     "$HOME/.krew/bin"
-     ;;                     "${XDG_CACHE_HOME}/npm/bin") ":")
-     ;;  "\"")
-     ))
+      "alias gp='ls $GUIX_EXTRA_PROFILES'"
+      "_gP() { export GUIX_PROFILE=$1 ; }"
+      "alias gP='_gP'"
+      "_gsP() { . $GUIX_EXTRA_PROFILES/$1/$1 ; }"
+      "gsP=_gsP"
+      ))
     (feature-ssh
      #:ssh-configuration
      (home-ssh-configuration
@@ -547,7 +540,8 @@
      (append
       (list emacs-consult-dir
             emacs-consult-eglot
-            emacs-consult-recoll)
+            emacs-consult-recoll
+            emacs-sql-indent)
       (pkgs "emacs-elfeed"
             "emacs-hl-todo"
             "emacs-ytdl"
@@ -567,6 +561,12 @@
             "emacs-org-fragtog"
 
             "emacs-repology"
+
+            "emacs-slime"
+            "emacs-slime-repl-ansi-color"
+            "emacs-slime-volleyball"
+
+            "emacs-calfw"
 
             "emacs-json-snatcher"
             "emacs-logview" ;; https://github.com/doublep/logview
