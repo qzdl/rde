@@ -112,13 +112,6 @@
     (define-key global-map (kbd "s-k") 'windmove-up)
     (define-key global-map (kbd "s-l") 'windmove-right)
     (define-key global-map (kbd "s-\\") 'org-store-link)
-    ;; Activate occur easily inside isearch
-    (define-key isearch-mode-map (kbd "C-o")
-                (lambda () (interactive)
-                  (let ((case-fold-search isearch-case-fold-search))
-                    (occur (if isearch-regexp
-                               isearch-string
-                             (regexp-quote isearch-string))))))
     (define-key isearch-mode-map (kbd "M-o")
                 (lambda () (interactive)
                   (let ((case-fold-search isearch-case-fold-search))
@@ -150,6 +143,7 @@
           (qz/consult-ripgrep-files files)))
       
       (define-key global-map (kbd "C-c b s") 'qz/consult-ripgrep-bookmark)
+      (define-key global-map (kbd "C-x C-M-SPC") 'consult-global-mark)
       (mapcar (lambda (bind)
                 (define-key global-map (kbd (car bind)) (cadr bind)))
               '(("C-x b" consult-buffer)))
@@ -248,6 +242,33 @@
       
       )
     ;; NOWEB EMBARK END
+    (defun eos/narrow-or-widen-dwim (p)
+      "Widen if buffer is narrowed, narrow-dwim otherwise.
+    Dwim means: region, org-src-block, org-subtree, or
+    defun, whichever applies first. Narrowing to
+    org-src-block actually calls `org-edit-src-code'.
+    
+    With prefix P, don't widen, just narrow even if buffer
+    is already narrowed."
+      (interactive "P")
+      (declare (interactive-only))
+      (cond ((and (buffer-narrowed-p) (not p)) (widen))
+            ((region-active-p)
+             (narrow-to-region (region-beginning)
+                               (region-end)))
+            ((derived-mode-p 'org-mode)
+             ;; `org-edit-src-code' is not a real narrowing
+             ;; command. Remove this first conditional if
+             ;; you don't want it.
+             (cond ((ignore-errors (org-edit-src-code) t)
+                    (delete-other-windows))
+                   ((ignore-errors (org-narrow-to-block) t))
+                   (t (org-narrow-to-subtree))))
+            ((derived-mode-p 'latex-mode)
+             (LaTeX-narrow-to-environment))
+            (t (narrow-to-defun))))
+    
+    (define-key global-map (kbd "C-x C-n") 'eos/narrow-or-widen-dwim)
     (defun qz/yq-interactively ()
       "haha yaml loophole"
       (interactive)
@@ -255,11 +276,20 @@
         (call-interactively 'jq-interactively)))
     (require 'hyperbole)
     (define-key global-map (kbd "C-<down-mouse-2>") 'hkey-either)
+    
+    ;; NOWEB GOLANG START
+    (with-eval-after-load 'go-mode
+      (setq gofmt-command "golines")
+      (add-hook 'go-mode-hook
+                (lambda () (add-hook 'before-save-hook
+                                     'gofmt-before-save
+                                     nil 'local)))
+      )
+    ;; NOWEB GOLANG END
+    ;; NOWEB ORG START
     (message "pre org: %s" (shell-command-to-string "date"))
     (with-eval-after-load 'org
-      (message "mid org: %s" (
-                              shell-command-to-string "date"))
-      ;; NOWEB ORG START
+      (message "mid org: %s" (shell-command-to-string "date"))
       (define-key org-mode-map (kbd "C-c C-j") 'consult-org-heading)
       (defvar qz/org-babel-indent-exclude-lang nil "org-babel languages to exclude from auto indent/format with ")
       (setq qz/org-babel-indent-exclude-lang nil)
@@ -300,119 +330,187 @@
                     "go to default opening mode -- see `org-startup-folded'"
                     (interactive)
                     (funcall-interactively 'org-global-cycle '(4))))
+      (setq org-babel-default-header-args:jq
+            '((:results . "output")
+              (:compact . "no")
+              (:wrap . "src json")))
       
       ;; NOWEB AGENDA START
-      (defun qz/agenda-files-update (&rest _)
-        "Update the value of `org-agenda-files' with relevant candidates"
-        (interactive)
-        (setq org-agenda-files (qz/files-agenda)
-              qz/agenda-daily-files (qz/agenda-daily-files-f)))
-      (defun qz/agenda-files-update-clock (&rest _)
-        "An optimisation for org-clock, which is SO SLOW.
-       Returns a LIST of files that contain CLOCK, which reduces
-      processing a lot"
-        (interactive)
-        (setq org-agenda-files (qz/clock-files)))
-      (list
-       ;; optimisation setup: setup subset of clock files
-       (qz/advice- org-clock-resolve :before qz/agenda-files-update-clock)
-       ;; optimisation teardown: restore full set of agenda-files
-       (qz/advice- org-clock-resolve :after qz/agenda-files-update))
-      (setq qz/daily-title-regexp ".?[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}.?")
       
-      (defun qz/agenda-daily-files-f ()
-        (seq-filter (lambda (s) (string-match qz/daily-title-regexp s))
-                    org-agenda-files))
+      (with-eval-after-load 'org-agenda
+        (message "AGENDA start")
+        (defun qz/agenda-files-update (&rest _)
+          "Update the value of `org-agenda-files' with relevant candidates"
+          (interactive)
+          (setq org-agenda-files (qz/files-agenda)
+                qz/agenda-daily-files (qz/agenda-daily-files-f)))
+        (defun qz/agenda-files-update-clock (&rest _)
+          "An optimisation for org-clock, which is SO SLOW.
+         Returns a LIST of files that contain CLOCK, which reduces
+        processing a lot"
+          (interactive)
+          (setq org-agenda-files (qz/clock-files)))
+        (list
+         ;; optimisation setup: setup subset of clock files
+         (qz/advice- org-clock-resolve :before qz/agenda-files-update-clock)
+         ;; optimisation teardown: restore full set of agenda-files
+         (qz/advice- org-clock-resolve :after qz/agenda-files-update))
+        (setq qz/daily-title-regexp ".?[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}.?")
+        
+        (defun qz/agenda-daily-files-f ()
+          (seq-filter (lambda (s) (string-match qz/daily-title-regexp s))
+                      org-agenda-files))
+        
+        ;;(qz/agenda-daily-files-f)
+        (defun qz/clock-files ()
+          (split-string
+           (shell-command-to-string
+            "rg CLOCK ~/life/roam/ -c | grep -v 'org#' | awk -F '[,:]' '{print $1}'")))
+        (defun qz/files-agenda ()
+          (seq-uniq (append qz/org-agenda-files (qz/project-files))))
+        (defun qz/project-files ()
+          "Return a list of note files containing Project tag."
+          (seq-map
+           'car
+           (org-roam-db-query
+            '(:select :distinct file
+                      :from tags
+                      :inner :join nodes
+                      :on (= tags:node_id nodes:id)
+                      :where (= tags:tag "project")))))
+        (defun qz/org-roam-private-files ()
+          "Return a list of note files containing tag =private="
+          (seq-map
+           #'car
+           (org-roam-db-query
+            [:select :distinct file
+                     :from tags
+                     :inner :join nodes
+                     :on (= tags:node_id nodes:id)
+                     :where (= tags:tag "private")])))
+        ;; current (default) sorting strat
+        '((agenda habit-down time-up priority-down category-keep)
+          (todo priority-down category-keep)
+          (tags priority-down category-keep)
+          (search category-keep))
+        
+        
+        (defun qz/agenda-todo-dailies ()
+          "the most necessary simple invention in months.
+        (as of [2022-01-19 Wed])
+        
+        get a list of `TODO' entries, from daily files, ordered by date (from filename/category) DESCENDING.
+        
+        - see `qz/agenda-daily-files-f' for the subset view of `org-agenda-files'
+        - see `org-agenda-sorting-strategy' for sort permutations."
+          (interactive)
+          (let* ((org-agenda-files (qz/agenda-daily-files-f))
+                 (org-agenda-sorting-strategy '(timestamp-down category-down)))
+            (org-todo-list)))
+        
+        (define-key global-map (kbd "C-c n t") 'qz/agenda-todo-dailies)
+        (defun qz/org-agenda-gtd ()
+          (interactive)
+          (org-agenda nil "g")
+          (goto-char (point-min))
+          (org-agenda-goto-today))
+        
+        ;;(setq org-agenda-custom-commands nil)
+        (require 'org-roam)
+        
+        (message "agenda: setting custom commands\n%s" org-agenda-custom-commands)
+        (add-to-list
+         'org-agenda-custom-commands
+         `("g" "GTD"
+           ((agenda "" ((org-agenda-span 'day) (org-deadline-warning-days 60)))
+            (tags-todo "now"
+                       ((org-agenda-overriding-header "\nnow\n")))
+            (tags-todo "wip"
+                       ((org-agenda-overriding-header "\nwip\n")))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "\nto process\n")
+                   (org-agenda-files '(,(format "%s/%s" org-roam-directory "inbox.org")))))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "\ndaily inbox\n")
+                   (org-agenda-files qz/agenda-daily-files)))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "\nemails\n")
+                   (org-agenda-files '(,(format "%s/%s" org-roam-directory "emails.org")))))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "\none-off Tasks\n")
+                   (org-agenda-files '(,(format "%s/%s" org-roam-directory "next.org")))))
+            (todo "TODO"
+                  ((org-agenda-overriding-header "\nto yak shave\n")
+                   (org-agenda-files '(,(format "%s/%s" org-roam-directory "emacs.org"))))))))
+        (add-to-list
+         'org-agenda-custom-commands
+         `("c" "create"
+           ((agenda "" ((org-agenda-span 'day) (org-deadline-warning-days 60)))
+            (tags-todo "diy+create+do+buy+make+wip"
+                       ((org-agenda-overriding-header "wip")))
+            (tags-todo "diy+create+do"
+                       ((org-agenda-overriding-header "create")))
+            (tags-todo "buy"
+                       ((org-agenda-overriding-header "buy")))
+            (tags-todo "make"
+                       ((org-agenda-overriding-header "make"))))))
+        (add-to-list
+         'org-agenda-custom-commands
+         `("w" "work"
+           ((tags-todo "{work}+wip"
+                       ((org-agenda-overriding-header "wip")
+                        (org-tags-match-list-sublevels nil) ;; show subheadings!!!! inherited!!!!
+                        ;; (org-agenda-hide-tags-regexp
+                        ;;  (concat org-agenda-hide-tags-regexp "\\|work"))
+                        ))
+            (tags-todo "{work}"
+                       ((org-agenda-overriding-header "work")))
+            )))
+        
+        ;;(pp org-agenda-custom-commands)
+        (defvar qz/agenda-daily-files nil)
+        (setq qz/org-agenda-prefix-length 20
+              org-agenda-prefix-format nil)
+        ;; '((agenda . " %i Emacs Configuration %?-12t% s")
+        ;;   (todo . " %i Emacs Configuration  ")
+        ;;   (tags . " %i Emacs Configuration  ")
+        ;;   (search . " %i Emacs Configuration  "))
+        
+        (defun vulpea-agenda-category (&optional len)
+          "Get category of item at point for agenda.
+        
+        Category is defined by one of the following items:
+        - CATEGORY property
+        - TITLE keyword
+        - TITLE property
+        - filename without directory and extension
+        
+        When LEN is a number, resulting string is padded right with
+        spaces and then truncated with ... on the right if result is
+        longer than LEN.
+        
+        Usage example:
+        
+          (setq org-agenda-prefix-format
+                '((agenda . \" Emacs Configuration %?-12t %12s\")))
+        
+        Refer to `org-agenda-prefix-format' for more information."
+          (let* ((file-name (when buffer-file-name
+                              (file-name-sans-extension
+                               (file-name-nondirectory buffer-file-name))))
+                 (title (qz/node-title))
+                 (category (org-get-category))
+                 (result
+                  (or (if (and title
+                               (string-equal category file-name))
+                          title
+                        category)
+                      "")))
+            (if (numberp len)
+                (s-truncate len (s-pad-right len " " result))
+              result)))
+        )
       
-      ;;(qz/agenda-daily-files-f)
-      (defun qz/clock-files ()
-        (split-string
-         (shell-command-to-string
-          "rg CLOCK ~/life/roam/ -c | grep -v 'org#' | awk -F '[,:]' '{print $1}'")))
-      (defun qz/files-agenda ()
-        (seq-uniq (append qz/org-agenda-files (qz/project-files))))
-      (defun qz/project-files ()
-        "Return a list of note files containing Project tag."
-        (seq-map
-         'car
-         (org-roam-db-query
-          '(:select :distinct file
-                    :from tags
-                    :inner :join nodes
-                    :on (= tags:node_id nodes:id)
-                    :where (= tags:tag "project")))))
-      (defun qz/org-roam-private-files ()
-        "Return a list of note files containing tag =private="
-        (seq-map
-         #'car
-         (org-roam-db-query
-          [:select :distinct file
-                   :from tags
-                   :inner :join nodes
-                   :on (= tags:node_id nodes:id)
-                   :where (= tags:tag "private")])))
-      ;; current (default) sorting strat
-      '((agenda habit-down time-up priority-down category-keep)
-        (todo priority-down category-keep)
-        (tags priority-down category-keep)
-        (search category-keep))
-      
-      
-      (defun qz/agenda-todo-dailies ()
-        "the most necessary simple invention in months.
-      (as of [2022-01-19 Wed])
-      
-      get a list of `TODO' entries, from daily files, ordered by date (from filename/category) DESCENDING.
-      
-      - see `qz/agenda-daily-files-f' for the subset view of `org-agenda-files'
-      - see `org-agenda-sorting-strategy' for sort permutations."
-        (interactive)
-        (let* ((org-agenda-files (qz/agenda-daily-files-f))
-               (org-agenda-sorting-strategy '(timestamp-down category-down)))
-          (org-todo-list)))
-      
-      (define-key global-map (kbd "C-c n t") 'qz/agenda-todo-dailies)
-      (setq qz/org-agenda-prefix-length 20
-            org-agenda-prefix-format nil)
-      ;; '((agenda . " %i Emacs Configuration %?-12t% s")
-      ;;   (todo . " %i Emacs Configuration  ")
-      ;;   (tags . " %i Emacs Configuration  ")
-      ;;   (search . " %i Emacs Configuration  "))
-      
-      (defun vulpea-agenda-category (&optional len)
-        "Get category of item at point for agenda.
-      
-      Category is defined by one of the following items:
-      - CATEGORY property
-      - TITLE keyword
-      - TITLE property
-      - filename without directory and extension
-      
-      When LEN is a number, resulting string is padded right with
-      spaces and then truncated with ... on the right if result is
-      longer than LEN.
-      
-      Usage example:
-      
-        (setq org-agenda-prefix-format
-              '((agenda . \" Emacs Configuration %?-12t %12s\")))
-      
-      Refer to `org-agenda-prefix-format' for more information."
-        (let* ((file-name (when buffer-file-name
-                            (file-name-sans-extension
-                             (file-name-nondirectory buffer-file-name))))
-               (title (qz/node-title))
-               (category (org-get-category))
-               (result
-                (or (if (and
-                         title
-                         (string-equal category file-name))
-                        title
-                      category)
-                    "")))
-          (if (numberp len)
-              (s-truncate len (s-pad-right len " " result))
-            result)))
       ;; NOWEB AGENDA END
       
       (require 'ob-async)
@@ -439,6 +537,7 @@
          (lisp . t)
          ;;(jupyter . t)
          (python . t)
+         (jq . t)
          ;;(ipython . t)
          (scheme . t)
          (sql . t)
@@ -588,60 +687,6 @@
           (mapcar (lambda (s) `(,s . (,(progn (funcall s)
                                               (qz/inspect-agenda-files)))))
                   '(qz/agenda-files-update qz/agenda-files-update-clock)))
-        (defun qz/org-agenda-gtd ()
-          (interactive)
-          (org-agenda nil "g")
-          (goto-char (point-min))
-          (org-agenda-goto-today))
-        
-        ;;(setq org-agenda-custom-commands nil)
-        
-        (add-to-list
-         'org-agenda-custom-commands
-         `("g" "GTD"
-           ((agenda "" ((org-agenda-span 'day) (org-deadline-warning-days 60)))
-            (tags-todo "now"
-                       ((org-agenda-overriding-header "\nnow\n")))
-            (tags-todo "wip"
-                       ((org-agenda-overriding-header "\nwip\n")))
-            (todo "TODO"
-                  ((org-agenda-overriding-header "\nto process\n")
-                   (org-agenda-files '(,(format "%s/%s" org-roam-directory "inbox.org")))))
-            (todo "TODO"
-                  ((org-agenda-overriding-header "\ndaily inbox\n")
-                   (org-agenda-files qz/agenda-daily-files)))
-            (todo "TODO"
-                  ((org-agenda-overriding-header "\nemails\n")
-                   (org-agenda-files '(,(format "%s/%s" org-roam-directory "emails.org")))))
-            (todo "TODO"
-                  ((org-agenda-overriding-header "\none-off Tasks\n")
-                   (org-agenda-files '(,(format "%s/%s" org-roam-directory "next.org")))))
-            (todo "TODO"
-                  ((org-agenda-overriding-header "\nto yak shave\n")
-                   (org-agenda-files '(,(format "%s/%s" org-roam-directory "emacs.org"))))))))
-        
-        (add-to-list
-         'org-agenda-custom-commands
-         `("c" "create"
-           ((agenda "" ((org-agenda-span 'day) (org-deadline-warning-days 60)))
-            (tags-todo "diy+create+do+buy+make+wip"
-                       ((org-agenda-overriding-header "wip")))
-            (tags-todo "diy+create+do"
-                       ((org-agenda-overriding-header "create")))
-            (tags-todo "buy"
-                       ((org-agenda-overriding-header "buy")))
-            (tags-todo "make"
-                       ((org-agenda-overriding-header "make"))))))
-        
-        (add-to-list
-         'org-agenda-custom-commands
-         `("w" "work"
-           ((tags "@work+wip"
-                  ((org-agenda-overriding-header "wip")))
-            (tags-todo "@work"
-                       ((org-agenda-overriding-header "work"))))))
-        
-        ;;(pp org-agenda-custom-commands)
         (setq qz/org-agenda-files
               (mapcar (lambda (f) (expand-file-name (format "%s/%s" org-roam-directory f)))
                       '("calendar-home.org" "calendar-work.org" "schedule.org")))
@@ -649,7 +694,7 @@
           (append (mapcar (lambda (s)
                             (when-let ((n (org-roam-node-from-title-or-alias s)))
                               (org-roam-node-file n)))
-                          '("NewStore" "kubernetes"))
+                          '("NewStore" "kubernetes" "postgres"))
                   ;; .. other files
                   nil
                   ;; ..
@@ -666,12 +711,12 @@
         (setq org-capture-templates
               `(("i" "inbox" entry
                  (file ,(concat org-agenda-directory "/inbox.org"))
-                 "* TODO %? \nCREATED: %u\nFROM: %a")
+                 "* TODO %? \n\n - from :: %a")
                 ;; spanish language capturing
                 ("v" "vocab; spanish" entry
                  (file+headline ,(concat org-roam-directory "/spanish_language.org") "vocab, phrases")
                  ,(s-join "\n" '("** \"%?\" :es:"
-                                 "FROM: %a" ""
+                                 "- from :: %a" ""
                                  "*** :en:" "")))
                 ;; capture link to live `org-roam' thing
                 ("n" "now, as in NOW" entry (file ,(concat org-agenda-directory "/wip.org"))
@@ -680,8 +725,7 @@
                                  "CREATED: %u")))
                 ;; fire directly into inbox
                 ("c" "org-protocol-capture" entry (file ,(concat org-agenda-directory "/inbox.org"))
-                 ,(s-join "\n" '("* TODO [[%:link][%:description]]"
-                                 "CREATED: %u" ""
+                 ,(s-join "\n" '("* TODO [[%:link][%:description]]" ""
                                  "#+begin_quote" ""
                                  "%i"
                                  "#+end_quote"))
@@ -734,7 +778,7 @@
         (defun qz/utc-timestamp ()
           (format-time-string "%Y%m%dT%H%M%SZ" (current-time) t))
         (setq qz/org-roam-capture-head "#+title: ${title}\n")
-        (setq qz/capture-title-timestamp-roam "%(qz/utc-timestamp)-${slug}")
+        (setq qz/capture-title-timestamp-roam "%(qz/utc-timestamp)-${slug}.org")
         
         (setq org-roam-capture-templates
               `(("d" "default" plain "%?" 
@@ -749,8 +793,8 @@
         (setq org-roam-dailies-capture-templates
               `(("d" "default" entry
                  ,(s-join "\n" '("* [%<%H:%M>] %?"
-                                 "CREATED: <%<%Y-%m-%d %H:%M>>"
-                                 "FROM: %a"))
+                                 ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
+                                 "- from :: %a"))
                  :if-new (file+head+olp
                           ,qz/org-roam-dailies-filespec
                           ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
@@ -762,8 +806,8 @@
         (setq qz/org-roam-dailies-capture-templates--tangent
               '("d" "default" entry
                 ,(s-join "\n" '("* TANGENT [%<%H:%M>] %?"
-                                "CREATED: <%<%Y-%m-%d %H:%M>>"
-                                "FROM: %a"))
+                                ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
+                                "- from :: %a"))
                 :if-new (file+head+olp
                          ,qz/org-roam-dailies-filespec
                          ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
@@ -844,22 +888,15 @@
         (defun qz/title->roam-id (title)
           (org-roam-node-id (org-roam-node-from-title-or-alias title)))
         (defun qz/ensure-tag (tagstring tag)
-          "Apply `org-roam-tag-add' for `tag' to node with existing tags
-        `tagstring'
-        
-        HACK: using `re-search-backward' to jump back to applicable
-        point (implicitly, `point-min' for file-level; :PROPERTIES: drawer for
-        entry); covering 'inherited match'.
-        
-        this could be updated to jump back, but only 'landing' final on
-        PROPERTIES with non-nil :ID:"
-          (let ((ltag (-flatten (or (and (listp tag) tag) (list tag)))))
-            (progn (message "ensuring tag for %s" ltag)
-                   (org-roam-tag-add ltag))))
+          "Apply `org-roam-tag-add' for `tag' to `(OR node@pt NODE)'"
+          (let ((ltag (-flatten (or (and (listp tag) tag)
+                                    (list tag)))))
+            (message "ensuring tag for %s" ltag)
+            (org-roam-tag-add ltag)))
         
         (defun qz/org-roam--insert-timestamp (&rest args)
           (when (not (org-entry-get nil "CREATED"))
-            (org-entry-put nil "CREATED" (format-time-string "<%Y-%m-%d %a %H:%M>")))
+            (org-entry-put nil "CREATED" (format-time-string "[%Y-%m-%d %a %H:%M]")))
           (qz/org-roam--updated-timestamp))
         
         (defun qz/org-roam--updated-timestamp (&rest args)
@@ -869,7 +906,7 @@
                     (when pt
                       (org-entry-put
                        pt "UPDATED"
-                       (format-time-string "<%Y-%m-%d %a %H:%M>"))))
+                       (format-time-string "[%Y-%m-%d %a %H:%M]"))))
                   (list (and (org-roam-node-at-point)
                              (org-roam-node-point (org-roam-node-at-point)))
                         (save-excursion
@@ -886,14 +923,17 @@
           (setq org-file-tags nil)      ; blast the cache
           (org-set-regexps-and-options) ; regen property detection regexp
           (org-get-tags))               ; write to cache
-        (defun qz/title-to-tag (title)
+        (defun qz/title-to-tag (title &optional capitalize?)
           "Convert TITLE to tag."
-          (if (equal "@" (subseq title 0 1))
+          (if (equal "@" (cl-subseq title 0 1))
               title
-            (concat "@" (s-replace " " "" title))))
+            (concat "@" (s-replace " " ""
+                                   (or (and capitalize?
+                                            (capitalize title))
+                                       title)))))
         (defun qz/org-roam-node-from-tag (tag)
           (seq-map
-           #'car
+           'car
            (org-roam-db-query
             [:select :distinct file
                      :from tags
@@ -944,7 +984,7 @@
         ;;; ref capture
         (setq org-roam-capture-ref-templates
               `(("r" "ref" plain
-                 "%?"
+                 "\n#+begin_quote\n${body}\n#+end_quote\n%?"
                  :if-new (file+head ,qz/capture-title-timestamp-roam
                                     "#+title: ${title}\n")
                  :unnarrowed t)))
@@ -965,8 +1005,13 @@
                                  ("inbox.org" :level . 0)
                                  ("sample.org" :level . 0)
                                  ("wip.org" :level . 0)))
-      (setq org-log-done 'time)
+      (setq org-log-refile 'note)
+      (setq org-log-redeadline 'note)
+      (setq org-log-reschedule 'note)
+      (setq org-log-done 'note)
       (setq org-startup-folded 'content)
+      (setq org-enforce-todo-dependencies t)
+      (setq org-enforce-todo-checkbox-dependencies t)
       (require 'org-download)
       (defun qz/org-choose-current-attachment ()
         (let ((attach-dir (org-attach-dir)))
@@ -1003,9 +1048,9 @@
                             'qz/create-excluded-ids-for-headlines-in-buffer nil 'local)))
       
       (setq org-id-link-to-org-use-id t)
-      ;; NOWEB ORG END
-      (message "post org: %s" (shell-command-to-string "date"))
       )
+    (message "post org: %s" (shell-command-to-string "date"))
+    ;; NOWEB ORG END
     (setq org-image-actual-width 640)
     
     ;; (setq minibuffer-mode-hook nil)
@@ -1152,6 +1197,7 @@
           perfect-margin-ignore-filters nil)
     (custom-set-variables
      '(cursor-type 'hbar))
+    (setq outline-default-state 'outline-show-only-headings)
     (defun hi-lock-face-symbol-at-point ()
       "Highlight each instance of the symbol at point.
     Uses the next face from `hi-lock-face-defaults' without prompting,

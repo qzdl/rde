@@ -1,9 +1,10 @@
 :PROPERTIES:
-:UPDATED:  <2022-03-04 Fri 12:57>
+:UPDATED:  [2022-04-11 Mon 18:50]
 :ID:       84700327-3a84-4d33-9918-dd06a809c28f
 :CREATED:  <2022-03-03 Thu 12:06>
 :END:
 #+title: emacs config
+#+filetags: hello
 #+auto-tangle: yes
 #+PROPERTY: header-args    :tangle-mode (identity #o444)
 #+PROPERTY: header-args:sh :tangle-mode (identity #o755)
@@ -66,9 +67,11 @@
 :ID:       160d55fa-62fc-4742-880d-1dbade1ce186
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-08 Fri 10:32]
 :END:
 #+begin_src emacs-lisp :tangle no
 (org-tags-sparse-tree)
+;; (org-match-sparse-tree nil "^\\{(C|s|M)") ; for binding headlines {C-c C-u}
 #+end_src
 
 **** tag
@@ -132,6 +135,7 @@
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
+
 *** {C-c C-j} +org-goto+ -> consult-org-heading
 :PROPERTIES:
 :ID:       4ab6afa3-817d-4039-82e0-27340483d081
@@ -199,6 +203,7 @@ nil
 :ID:       a2e3f5db-5cc5-4531-9c9d-470183f5e8aa
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-04 Mon 13:27]
 :END:
 #+begin_src emacs-lisp :noweb-ref org
 (defvar qz/org-babel-indent-exclude-lang nil "org-babel languages to exclude from auto indent/format with ")
@@ -240,6 +245,7 @@ nil
 :ID:       4d9573c9-c758-40a1-9af3-8d61f65e97bd
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-04 Mon 13:09]
 :END:
 #+begin_src emacs-lisp :noweb-ref org
 (defun qz/org-refresh-inline-images (&rest args)
@@ -272,8 +278,8 @@ nil
   (message "%s" (list current-cand c (length cands)))
 
   (append
-   (subseq cands (1- c) (length cands))
-   (subseq cands 0 (- c 2)))
+   (cl-subseq cands (1- c) (length cands))
+   (cl-subseq cands 0 (- c 2)))
 
   ;;  (nth (1- c) cands)
   ;; (message
@@ -370,6 +376,18 @@ buffer are offered."
 
 #+RESULTS:
 | qz/vertico-set-initial-position |
+*** {C-M-y} consult-yank
+:PROPERTIES:
+:ID:       bad4e8e6-d723-4422-8053-9ed48d6196b1
+:CREATED:  [2022-04-08 Fri 10:29]
+:UPDATED:  [2022-04-08 Fri 10:33]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref kbd
+(define-key global-map (kbd "C-M-y") 'consult-yank-from-kill-ring)
+#+end_src
+
 *** {C-c C-M-i} org-global-cycle
 :PROPERTIES:
 :ID:       9a8fc009-7e01-46ab-a467-4d639723a060
@@ -393,6 +411,7 @@ buffer are offered."
 :ROAM_EXCLUDE: t
 :UPDATED:  <2022-02-28 Mon 09:43>
 :END:
+
 #+begin_src emacs-lisp :noweb-ref kbd
 (define-key global-map (kbd "C-x C-M-f") 'consult-recent-file)
 #+end_src
@@ -469,6 +488,7 @@ I don't use this very much, as it curls my whole left hand up (qwerty troubles)
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
+
 #+begin_src emacs-lisp :noweb yes :noweb-ref conf
 ;; NOWEB KBD START
 <<kbd>>
@@ -515,16 +535,17 @@ I don't use this very much, as it curls my whole left hand up (qwerty troubles)
 :ID:       75441f13-8830-42fe-b3fe-b22b2dbf4275
 :CREATED:  <2022-02-25 Fri 10:11>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-05 Tue 09:06]
 :END:
 #+begin_src emacs-lisp :noweb-ref kbd
 ;; Activate occur easily inside isearch
-(define-key isearch-mode-map (kbd "C-o")
-            (lambda () (interactive)
-              (let ((case-fold-search isearch-case-fold-search))
-                (occur (if isearch-regexp
-                           isearch-string
-                         (regexp-quote isearch-string))))))
-#+end_src
+(define-key isearch-mode-map (kbd "<return>")
+(lambda () (interactive)
+(let ((case-fold-search isearch-case-fold-search))
+(occur (if isearch-regexp
+isearch-string
+(regexp-quote isearch-string))))))
+#+end_srcq
 
 #+RESULTS:
 | lambda | nil | (interactive) | (let ((case-fold-search isearch-case-fold-search)) (occur (if isearch-regexp isearch-string (regexp-quote isearch-string)))) |
@@ -614,7 +635,7 @@ not elegant AT ALL, but the API to ripgrep from consult uses
 #+RESULTS:
 : qz/consult-ripgrep-files
 
-*** consult-ripgrep-bookmark :func:kbd:
+*** {C-c b s} consult-ripgrep-bookmark                           :func:kbd:
 :PROPERTIES:
 :ID:       1ec5c6fe-e672-457a-ab67-82e358244df3
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -636,11 +657,22 @@ consuming
 #+RESULTS:
 : qz/consult-ripgrep-bookmark
 
+*** {C-x C-M-SPC} consult-mark
+:PROPERTIES:
+:ID:       a4470ca2-9b0e-4ab4-a1d0-32b86da18abd
+:CREATED:  [2022-03-31 Thu 11:07]
+:UPDATED:  [2022-03-31 Thu 11:08]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb-ref consult
+(define-key global-map (kbd "C-x C-M-SPC") 'consult-global-mark)
+#+end_src
 *** basic remaps
 :PROPERTIES:
 :ID:       0209d41e-b385-4428-a6c5-a95929250975
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-03-31 Thu 11:08]
 :END:
 #+begin_src emacs-lisp :noweb-ref consult
 (mapcar (lambda (bind)
@@ -689,11 +721,12 @@ consuming
 
 (setq org-goto-interface 'outline-path-completionp)
 (setq org-outline-path-complete-in-steps nil)
-**** NOTE it would be nice to have individual headings present, not just 'leaves'
+**** COMMENT it would be nice to have individual headings present, not just 'leaves'
 :PROPERTIES:
 :ID:       927d486d-50ae-4e2e-806c-ab6776485c6f
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-03-25 Fri 10:39]
 :END:
 #+begin_src emacs-lisp :results code
 (org-imenu-get-tree)
@@ -797,6 +830,7 @@ consuming
 :ID:       43699aa6-0e26-487b-a597-902577ddf22a
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-03-30 Wed 09:36]
 :END:
 #+begin_src emacs-lisp :noweb yes :noweb-ref conf
 ;; NOWEB ES START
@@ -805,6 +839,36 @@ consuming
   )
 ;; NOWEB ES END
 #+end_src
+
+
+#+begin_src clojure
+{ :key value
+ :key value }
+#+end_src
+
+#+begin_src emacs-lisp :results code
+(list :cons (car '(a :hello . "a"))
+      :cons-list (car '((a . (b :hi))))
+      :hash-map (make-hash-table)
+      :lisp-1 (let ((a (lambda (f) (1+ f))))
+                (funcall a 5))
+      :symbol-types (type-of 'a)
+
+      :plist-get (plist-get '(:a 1 :b 2) :b))
+
+;; (setq :why-do-this 5)
+#+end_src
+
+#+RESULTS:
+#+begin_src emacs-lisp
+(:cons a :cons-list
+       (a b :hi)
+       :hash-map #s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data
+                               ())
+       :lisp-1 6 :symbol-types symbol :plist-get 2)
+#+end_src
+
+
 
 **** settings
 :PROPERTIES:
@@ -911,6 +975,66 @@ consuming
 
 #+RESULTS:
 : qz/advice-
+*** org-babel: elisp: cons->table
+:PROPERTIES:
+:ID:       4841fe9c-4a58-48a2-8882-efcc289ead9f
+:CREATED:  [2022-04-11 Mon 10:46]
+:UPDATED:  [2022-04-11 Mon 11:02]
+:ROAM_EXCLUDE: t
+:END:
+:LOGBOOK:
+CLOCK: [2022-04-11 Mon 10:07]--[2022-04-11 Mon 10:47] =>  0:40
+:END:
+
+- see also :: [[id:317eb3df-458c-411b-a8d3-32507d3f025e][org-table]]
+
+just kind of wack to see  
+: ((1 . a) (2 . b))
+all the time, especially when the results are massive 
+
+#+name: elisp-cons->table
+#+begin_src elisp :noweb-ref general
+(defun cons->table (body &optional &key cols tail-fn)
+  "a transformation helper for org-babel, which has defaults
+to parse robustly the proper-list[1] over the simple cons[2]
+
+body      *values you wish to transform*: a list; cons, proper,
+          a-, etc.
+:cols     *column headers for the results*: wrap the result in
+          ((co1 col2) . (hline . (..res..)); as such, they will
+          be made in addition to any headers and/or `hlines'
+          applied by `org-babel' (esp. those from `:colnames').
+:tail-fn  *control the parsing of each entry of `body'*:
+          by default, `cdr' because for a simple `cons' '(a . b),
+          cdr will yield 'b -> (cdr '(a . b)).  If operating on
+          some `list' '(a b), then the analog for `'b' is `cadr'
+          -> (cadr '(a b)) -> `'b'
+
+[1] proper-list: '(a b)   ; '(a . (b . nil))
+[2] simple-cons: '(a . b) ; '(a . b)"
+  (let ((res (mapcar (lambda (c)
+                       (list (car c)
+                             (funcall (or tail-fn 'cdr) c)))
+                     body)))
+    (if cols
+        (cons cols (cons 'hline res))
+      res)))
+
+;;; e.g  {C-n C-SPC M-e C-p C-x C-;}
+;; (cons->table
+;;  '((56 . "/home/samuel/life/roam/20210420T114708Z-newstore.org") 
+;;    (11 . "/home/samuel/life/roam/20210813T161035Z-kubernetes.org")
+;;    (10 . "/home/samuel/life/roam/20200515T151822Z-postgresql.org"))
+;;  :cols '(count file))
+#+end_src
+
+#+RESULTS: elisp-cons->table
+| count | file                                                   |
+|-------+--------------------------------------------------------|
+|    56 | /home/samuel/life/roam/20210420T114708Z-newstore.org   |
+|    11 | /home/samuel/life/roam/20210813T161035Z-kubernetes.org |
+|    10 | /home/samuel/life/roam/20200515T151822Z-postgresql.org |
+
 *** ensure-list
 :PROPERTIES:
 :ID:       8861b226-59df-4ce4-a54d-24695f1a5d4c
@@ -1046,6 +1170,47 @@ to populate, just fill a `pass' entry like so echo mypass | pass
   (interactive)
   (revert-buffer :ignore-auto :noconfirm))
 #+end_src
+*** dwim-narrow
+:PROPERTIES:
+:ID:       33f19a38-eb70-473d-8445-c916b7c3c2ff
+:CREATED:  <2022-03-11 Fri 11:53>
+:UPDATED:  <2022-03-11 Fri 11:58>
+:ROAM_EXCLUDE: t
+:END:
+
+- :: [[id:23f2a12f-8537-4eb7-a150-adb82ba182d6][ergonomics: emacs: dwim narrowing]]
+  - :: https://writequit.org/articles/working-with-logs-in-emacs.html
+
+#+begin_src emacs-lisp :noweb-ref conf
+(defun eos/narrow-or-widen-dwim (p)
+  "Widen if buffer is narrowed, narrow-dwim otherwise.
+Dwim means: region, org-src-block, org-subtree, or
+defun, whichever applies first. Narrowing to
+org-src-block actually calls `org-edit-src-code'.
+
+With prefix P, don't widen, just narrow even if buffer
+is already narrowed."
+  (interactive "P")
+  (declare (interactive-only))
+  (cond ((and (buffer-narrowed-p) (not p)) (widen))
+        ((region-active-p)
+         (narrow-to-region (region-beginning)
+                           (region-end)))
+        ((derived-mode-p 'org-mode)
+         ;; `org-edit-src-code' is not a real narrowing
+         ;; command. Remove this first conditional if
+         ;; you don't want it.
+         (cond ((ignore-errors (org-edit-src-code) t)
+                (delete-other-windows))
+               ((ignore-errors (org-narrow-to-block) t))
+               (t (org-narrow-to-subtree))))
+        ((derived-mode-p 'latex-mode)
+         (LaTeX-narrow-to-environment))
+        (t (narrow-to-defun))))
+
+(define-key global-map (kbd "C-x C-n") 'eos/narrow-or-widen-dwim)
+#+end_src
+
 *** yq-interactively
 :PROPERTIES:
 :ID:       d31efc58-0563-43df-b372-61428272022f
@@ -1083,6 +1248,138 @@ to populate, just fill a `pass' entry like so echo mypass | pass
 
 #+RESULTS:
 : hkey-either
+** programming
+:PROPERTIES:
+:ID:       5fe66077-8fc2-4d04-905d-d0b5ef925a6d
+:CREATED:  [2022-03-17 Thu 10:06]
+:UPDATED:  [2022-03-17 Thu 10:06]
+:ROAM_EXCLUDE: t
+:END:
+*** sql
+:PROPERTIES:
+:ID:       7be3838d-a859-469e-ae8c-049a299b658a
+:CREATED:  [2022-03-17 Thu 10:06]
+:UPDATED:  [2022-03-17 Thu 10:06]
+:ROAM_EXCLUDE: t
+:END:
+**** sql-indent
+:PROPERTIES:
+:ID:       d8965285-d090-4286-a4b5-e43e593b913b
+:CREATED:  [2022-03-17 Thu 10:06]
+:UPDATED:  [2022-03-17 Thu 10:06]
+:ROAM_EXCLUDE: t
+:END:
+:LOGBOOK:
+CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
+:END:
+***** TODO add-hook ;
+:PROPERTIES:
+:ID:       ed32b595-8b57-4f28-86b7-0a5e97651ae0
+:CREATED:  [2022-03-17 Thu 10:06]
+:UPDATED:  [2022-03-17 Thu 10:06]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb-ref conf
+
+#+end_src
+*** [[id:091ac573-6b34-4e0e-88b8-415785d5ae85][python]]
+:PROPERTIES:
+:ID:       ed0b9a5d-4287-48f0-a518-4303fb2efe32
+:CREATED:  [2022-03-24 Thu 10:24]
+:UPDATED:  [2022-03-30 Wed 11:59]
+:ROAM_EXCLUDE: t
+:END:
+**** add-py-debug (                                                 :func:
+:PROPERTIES:
+:ID:       a8049444-d35b-4b3c-a3eb-54678a3a17aa
+:CREATED:  [2022-03-24 Thu 10:24]
+:UPDATED:  [2022-03-24 Thu 10:26]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+(defun qz/add-py-debug ()
+  "add debug code and move line down"
+  (interactive)
+  (move-beginning-of-line 1)
+  (insert "import pdb; pdb.set_trace();\n"))
+#+end_src
+*** [[id:0c02b1ad-3964-4b51-ba59-d2de0e05428f][golang]]
+:PROPERTIES:
+:ID:       f38578c6-09c1-4da0-8da0-90e0899a2ab1
+:CREATED:  [2022-03-30 Wed 11:59]
+:UPDATED:  [2022-03-30 Wed 11:59]
+:ROAM_EXCLUDE: t
+:END:
+**** [[id:0aea7eaa-6d92-4eac-b575-64cea859302c][golines: emacs: set =gofmt-command= to =golines=, > =gofmt=]]
+:PROPERTIES:
+:ID:       68efdd3b-c5d0-4358-8e19-5db46d0685c6
+:CREATED:  [2022-03-30 Wed 12:01]
+:UPDATED:  [2022-03-30 Wed 12:01]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref golang
+(setq gofmt-command "golines")
+#+end_src
+
+**** [[id:b387816a-6048-4378-b2f6-a40fd82858c4][gofmt: emacs: before-save hook]]
+:PROPERTIES:
+:ID:       05c0788d-0df4-472f-920d-e21d0b68d0ad
+:CREATED:  [2022-03-30 Wed 11:59]
+:UPDATED:  [2022-03-31 Thu 09:40]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref golang
+(add-hook 'go-mode-hook
+          (lambda () (add-hook 'before-save-hook
+                               'gofmt-before-save
+                               nil 'local)))
+#+end_src
+
+**** noweb tangler
+:PROPERTIES:
+:ID:       83d3fafb-7891-4dd6-bbca-4a4b1ca2f042
+:CREATED:  [2022-03-30 Wed 12:01]
+:UPDATED:  [2022-03-30 Wed 12:01]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb yes :noweb-ref conf
+;; NOWEB GOLANG START
+(with-eval-after-load 'go-mode
+  <<golang>>
+  )
+;; NOWEB GOLANG END
+#+end_src
+*** jq
+:PROPERTIES:
+:ID:       c2c34c3c-55e3-4854-b902-5ad11d3a58b4
+:CREATED:  [2022-04-05 Tue 12:49]
+:UPDATED:  [2022-04-05 Tue 12:49]
+:ROAM_EXCLUDE: t
+:END:
+
+**** org-babel-default-header-args:jq
+:PROPERTIES:
+:ID:       eddd1740-904d-4bfe-becc-d662a43f0447
+:CREATED:  [2022-04-05 Tue 12:49]
+:UPDATED:  [2022-04-05 Tue 12:49]
+:ROAM_EXCLUDE: t
+:END:
+
+it's nice to get a consistent wrap of the result
+
+#+begin_src emacs-lisp :noweb-ref org
+(setq org-babel-default-header-args:jq
+      '((:results . "output")
+        (:compact . "no")
+        (:wrap . "src json")))
+#+end_src
+
+#+RESULTS:
+: ((:results . output) (:compact . no) (:wrap . src baba))
 
 ** [[id:6baf4bff-d5fe-4ce0-a130-0464e49de67d][org]]
 :PROPERTIES:
@@ -1384,7 +1681,7 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp :noweb-ref roam
+#+begin_src emacs-lisp :noweb-ref agenda
 (defun qz/org-agenda-gtd ()
   (interactive)
   (org-agenda nil "g")
@@ -1392,7 +1689,9 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
   (org-agenda-goto-today))
 
 ;;(setq org-agenda-custom-commands nil)
+(require 'org-roam)
 
+(message "agenda: setting custom commands\n%s" org-agenda-custom-commands)
 (add-to-list
  'org-agenda-custom-commands
  `("g" "GTD"
@@ -1416,7 +1715,9 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
     (todo "TODO"
           ((org-agenda-overriding-header "\nto yak shave\n")
            (org-agenda-files '(,(format "%s/%s" org-roam-directory "emacs.org"))))))))
+#+end_src
 
+#+begin_src emacs-lisp :noweb-ref agenda
 (add-to-list
  'org-agenda-custom-commands
  `("c" "create"
@@ -1429,22 +1730,137 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
                ((org-agenda-overriding-header "buy")))
     (tags-todo "make"
                ((org-agenda-overriding-header "make"))))))
+#+end_src
 
+***** w ; work
+:PROPERTIES:
+:ID:       02a112d7-ef32-44d3-b06b-cde3d0df4038
+:CREATED:  [2022-03-31 Thu 09:41]
+:UPDATED:  [2022-04-04 Mon 12:06]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb-ref agenda
 (add-to-list
  'org-agenda-custom-commands
  `("w" "work"
-   ((tags "@work+wip"
-          ((org-agenda-overriding-header "wip")))
-    (tags-todo "@work"
-               ((org-agenda-overriding-header "work"))))))
+   ((tags-todo "{work}+wip"
+               ((org-agenda-overriding-header "wip")
+                (org-tags-match-list-sublevels nil) ;; show subheadings!!!! inherited!!!!
+                ;; (org-agenda-hide-tags-regexp
+                ;;  (concat org-agenda-hide-tags-regexp "\\|work"))
+                ))
+    (tags-todo "{work}"
+               ((org-agenda-overriding-header "work")))
+    )))
 
 ;;(pp org-agenda-custom-commands)
 #+end_src
 
 #+RESULTS:
-| w | work   | ((tags @work+wip ((org-agenda-overriding-header wip))) (tags-todo @work ((org-agenda-overriding-header work))))                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| c | create | ((agenda  ((org-agenda-span 'day) (org-deadline-warning-days 60))) (tags-todo diy+create+do+buy+make+wip ((org-agenda-overriding-header wip))) (tags-todo diy+create+do ((org-agenda-overriding-header create))) (tags-todo buy ((org-agenda-overriding-header buy))) (tags-todo make ((org-agenda-overriding-header make))))                                                                                                                                                                                                                                                                                                                                                                        |
-| g | GTD    | ((agenda  ((org-agenda-span 'day) (org-deadline-warning-days 60))) (tags-todo now ((org-agenda-overriding-header now))) (tags-todo wip ((org-agenda-overriding-header wip))) (todo TODO ((org-agenda-overriding-header to process) (org-agenda-files '(~/life//roam/inbox.org)))) (todo TODO ((org-agenda-overriding-header daily inbox) (org-agenda-files qz/agenda-daily-files))) (todo TODO ((org-agenda-overriding-header emails) (org-agenda-files '(~/life//roam/emails.org)))) (todo TODO ((org-agenda-overriding-header one-off Tasks) (org-agenda-files '(~/life//roam/next.org)))) (todo TODO ((org-agenda-overriding-header to yak shave) (org-agenda-files '(~/life//roam/emacs.org))))) |
+| w | work   | ((tags-todo {work}+wip ((org-agenda-overriding-header wip) (org-tags-match-list-sublevels nil))) (tags-todo {work} ((org-agenda-overriding-header work))))                                                                                                                                                                    |
+| c | create | ((agenda  ((org-agenda-span 'day) (org-deadline-warning-days 60))) (tags-todo diy+create+do+buy+make+wip ((org-agenda-overriding-header wip))) (tags-todo diy+create+do ((org-agenda-overriding-header create))) (tags-todo buy ((org-agenda-overriding-header buy))) (tags-todo make ((org-agenda-overriding-header make)))) |
+| g | GTD    | ((agenda  ((org-agenda-span 'day) (org-deadline-warning-days 60))) (tags-todo now ((org-agenda-overriding-header                                                                                                                                                                                                              |
+
+#+begin_src emacs-lisp  :results code
+;; remove keyed by KEY
+(defun qz/filter-agenda-key (key &optional agenda-commands)
+  (let ((agenda-commands (or agenda-commands
+                             org-agenda-custom-commands)))
+    (seq-filter (lambda (a) (not (equal key (car a))))
+                org-agenda-custom-commands)))
+
+(setq org-agenda-custom-commands (qz/filter-agenda-key "w"))
+#+end_src
+
+#+RESULTS:
+#+begin_src emacs-lisp
+(("c" "create"
+  ((agenda ""
+           ((org-agenda-span 'day)
+            (org-deadline-warning-days 60)))
+   (tags-todo "diy+create+do+buy+make+wip"
+              ((org-agenda-overriding-header "wip")))
+   (tags-todo "diy+create+do"
+              ((org-agenda-overriding-header "create")))
+   (tags-todo "buy"
+              ((org-agenda-overriding-header "buy")))
+   (tags-todo "make"
+              ((org-agenda-overriding-header "make")))))
+ ("g" "GTD"
+  ((agenda ""
+           ((org-agenda-span 'day)
+            (org-deadline-warning-days 60)))
+   (tags-todo "now"
+              ((org-agenda-overriding-header "\nnow\n")))
+   (tags-todo "wip"
+              ((org-agenda-overriding-header "\nwip\n")))
+   (todo "TODO"
+         ((org-agenda-overriding-header "\nto process\n")
+          (org-agenda-files
+           '("~/life//roam/inbox.org"))))
+   (todo "TODO"
+         ((org-agenda-overriding-header "\ndaily inbox\n")
+          (org-agenda-files qz/agenda-daily-files)))
+   (todo "TODO"
+         ((org-agenda-overriding-header "\nemails\n")
+          (org-agenda-files
+           '("~/life//roam/emails.org"))))
+   (todo "TODO"
+         ((org-agenda-overriding-header "\none-off Tasks\n")
+          (org-agenda-files
+           '("~/life//roam/next.org"))))
+   (todo "TODO"
+         ((org-agenda-overriding-header "\nto yak shave\n")
+          (org-agenda-files
+           '("~/life//roam/emacs.org"))))))
+ ("" "Overview"
+  ((agenda ""
+           ((org-agenda-time-grid nil)
+            (org-agenda-start-on-weekday nil)
+            (org-agenda-start-day "+1d")
+            (org-agenda-span 14)
+            (org-agenda-show-all-dates nil)
+            (org-agenda-time-grid nil)
+            (org-deadline-warning-days 0)
+            (org-agenda-block-separator nil)
+            (org-agenda-entry-types
+             '(:deadline))
+            (org-agenda-skip-function
+             '(org-agenda-skip-entry-if 'done))
+            (org-agenda-overriding-header "\nUpcoming deadlines (+14d)\n")))
+   (agenda "*"
+           ((org-agenda-block-separator nil)
+            (org-agenda-span 14)
+            (org-agenda-overriding-header "\nAgenda\n")))
+   (alltodo ""
+            ((org-agenda-block-separator nil)
+             (org-agenda-skip-function
+              '(or
+                (org-agenda-skip-if nil
+                                    '(scheduled deadline))))
+             (org-agenda-overriding-header "\nBacklog\n")))))
+ ("" "Agenda for the day"
+  ((agenda ""
+           ((org-agenda-span 1)
+            (org-agenda-scheduled-leaders
+             '("" "Sched.%2dx: "))
+            (org-agenda-block-separator nil)
+            (org-agenda-entry-types
+             '(:scheduled :timestamp :sexp))
+            (org-scheduled-past-days 0)
+            (org-agenda-day-face-function
+             (lambda
+               (date)
+               'org-agenda-date))
+            (org-agenda-format-date "%A %-e %B %Y")
+            (org-agenda-overriding-header "\nAgenda for the day\n")))
+   (todo "NEXT"
+         ((org-agenda-block-separator nil)
+          (org-agenda-overriding-header "\nCurrent Tasks\n")))))
+ ("n" "Agenda and all TODOs"
+  ((agenda "")
+   (alltodo ""))))
+#+end_src
 
 **** noweb tangler
 :PROPERTIES:
@@ -1455,12 +1871,17 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
 #+begin_src emacs-lisp :noweb yes :noweb-ref org
 
 ;; NOWEB AGENDA START
-<<agenda>>
+
+(with-eval-after-load 'org-agenda
+  (message "AGENDA start")
+  <<agenda>>
+  )
+
 ;; NOWEB AGENDA END
 
 #+end_src
 
-**** settings
+**** settings :var:
 :PROPERTIES:
 :ID:       359219d7-3d55-44aa-b8f2-c5046125bb29
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -1480,7 +1901,29 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
 
 #+RESULTS:
 | /home/samuel/life/roam/calendar-home.org | /home/samuel/life/roam/calendar-work.org | /home/samuel/life/roam/schedule.org |
+***** org-agenda-daily-files
+:PROPERTIES:
+:ID:       77414dfd-4a4c-440a-be63-5241d5e5407c
+:CREATED:  [2022-03-16 Wed 08:51]
+:UPDATED:  [2022-03-16 Wed 08:51]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb-ref agenda
+(defvar qz/agenda-daily-files nil)
+#+end_src
+***** org-agenda-hide-tags-regexp
+:PROPERTIES:
+:ID:       42309c7b-5946-4c86-b2bc-3f1c92e88d21
+:CREATED:  [2022-03-31 Thu 10:49]
+:UPDATED:  [2022-03-31 Thu 10:49]
+:ROAM_EXCLUDE: t
+:END:
 
+because a mechanism for the discovery of =TODO= entries is 
+
+#+begin_src emacs-lisp
+(setq org-agenda-hide-tags-regexp "project")
+#+end_src
 **** visual
 :PROPERTIES:
 :ID:       a9e4cf66-2163-4b4e-a523-53c4a1ff47fc
@@ -1526,9 +1969,8 @@ Refer to `org-agenda-prefix-format' for more information."
          (title (qz/node-title))
          (category (org-get-category))
          (result
-          (or (if (and
-                   title
-                   (string-equal category file-name))
+          (or (if (and title
+                       (string-equal category file-name))
                   title
                 category)
               "")))
@@ -1605,6 +2047,7 @@ fuck the speed my man; {M-x load-library RET ob-} is so annoying
    (lisp . t)
    ;;(jupyter . t)
    (python . t)
+   (jq . t)
    ;;(ipython . t)
    (scheme . t)
    (sql . t)
@@ -1631,15 +2074,21 @@ CREATED: <2021-11-29 Mon>
 :ID:       05415208-95bf-4153-b65c-32e10112c582
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-11 Mon 10:07]
 :END:
 CREATED: <2021-11-29 Mon>
 
-#+begin_src emacs-lisp :noweb-ref roam
+
+#+begin_src emacs-lisp :noweb-ref roam :colnames '(count file)
 (defvar qz/org-babel-lob-ingest-files
   (append (mapcar (lambda (s)
                     (when-let ((n (org-roam-node-from-title-or-alias s)))
                       (org-roam-node-file n)))
-                  '("NewStore" "kubernetes"))
+                  '("NewStore"
+                    "kubernetes"
+                    "postgres"
+                    "elisp"
+                    ))
           ;; .. other files
           nil
           ;; ..
@@ -1648,13 +2097,20 @@ CREATED: <2021-11-29 Mon>
 
 (defun qz/org-babel-do-lob-ingest-files (&optional files)
   (interactive)
-  (mapcar (lambda (f) (org-babel-lob-ingest f))
+  (mapcar (lambda (f) (cons (org-babel-lob-ingest f) f))
           (append qz/org-babel-lob-ingest-files files)))
 
-(qz/org-babel-do-lob-ingest-files)
+(cons->table
+ (qz/org-babel-do-lob-ingest-files))
 #+end_src
 
 #+RESULTS:
+| count | file                                                   |
+|-------+--------------------------------------------------------|
+|    56 | /home/samuel/life/roam/20210420T114708Z-newstore.org   |
+|    11 | /home/samuel/life/roam/20210813T161035Z-kubernetes.org |
+|    10 | /home/samuel/life/roam/20200515T151822Z-postgresql.org |
+
 
 ***** choose babel block                                           :func:
 :PROPERTIES:
@@ -1760,8 +2216,8 @@ use a prefix arg to shortcut (org-table-get-constant \"bonk\"
 :END:
 we use LOB blocks as
 
- ,#+name: call-my-block-name
- ,#+call: my-block-name(arg="value")
+,#+name: call-my-block-name
+,#+call: my-block-name(arg="value")
 
 so with the point on =my-block-name=, of the =call= we can invoke:
 - {M-x qz/lob-restclient-copy-curl-command}
@@ -1817,7 +2273,6 @@ CREATED: <2021-11-29 Mon>
 
 #+RESULTS:
 : qz/org-babel-choose-block
-
 
 ***** {M-g} bind lob-goto-named-src-block to insert convention      :kbd:
 :PROPERTIES:
@@ -1969,7 +2424,7 @@ the major mode specifies support for Font Lock."
 :ID:       26499611-33f9-46a4-b46d-f6fe004a6620
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  <2022-03-03 Thu 13:04>
+:UPDATED:  [2022-03-24 Thu 10:20]
 :END:
 these are regular [[id:6baf4bff-d5fe-4ce0-a130-0464e49de67d][org-mode]] capture templates, but we will defer to
 org-roam loading, as we use it's variables.
@@ -1981,12 +2436,12 @@ org-roam loading, as we use it's variables.
 (setq org-capture-templates
       `(("i" "inbox" entry
          (file ,(concat org-agenda-directory "/inbox.org"))
-         "* TODO %? \nCREATED: %u\nFROM: %a")
+         "* TODO %? \n\n - from :: %a")
         ;; spanish language capturing
         ("v" "vocab; spanish" entry
          (file+headline ,(concat org-roam-directory "/spanish_language.org") "vocab, phrases")
          ,(s-join "\n" '("** \"%?\" :es:"
-                         "FROM: %a" ""
+                         "- from :: %a" ""
                          "*** :en:" "")))
         ;; capture link to live `org-roam' thing
         ("n" "now, as in NOW" entry (file ,(concat org-agenda-directory "/wip.org"))
@@ -1995,8 +2450,7 @@ org-roam loading, as we use it's variables.
                          "CREATED: %u")))
         ;; fire directly into inbox
         ("c" "org-protocol-capture" entry (file ,(concat org-agenda-directory "/inbox.org"))
-         ,(s-join "\n" '("* TODO [[%:link][%:description]]"
-                         "CREATED: %u" ""
+         ,(s-join "\n" '("* TODO [[%:link][%:description]]" ""
                          "#+begin_quote" ""
                          "%i"
                          "#+end_quote"))
@@ -2029,15 +2483,14 @@ org-roam loading, as we use it's variables.
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src emacs-lisp :noweb yes :noweb-ref conf
+;; NOWEB ORG START
 (message "pre org: %s" (shell-command-to-string "date"))
 (with-eval-after-load 'org
-  (message "mid org: %s" (
-                          shell-command-to-string "date"))
-  ;; NOWEB ORG START
+  (message "mid org: %s" (shell-command-to-string "date"))
   <<org>>
-  ;; NOWEB ORG END
-  (message "post org: %s" (shell-command-to-string "date"))
   )
+(message "post org: %s" (shell-command-to-string "date"))
+;; NOWEB ORG END
 #+end_src
 
 *** [[id:b33372ae-f731-4482-8e3a-0c5e986ac70a][roam]]
@@ -2127,11 +2580,12 @@ org-roam loading, as we use it's variables.
 :ID:       5a0c855e-f0ed-4dee-bf03-b7dfec2f023b
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  <2022-03-03 Thu 12:30>
+:UPDATED:  [2022-03-14 Mon 10:53]
 :END:
+
 #+begin_src emacs-lisp :noweb yes :noweb-ref roam
 (setq qz/org-roam-capture-head "#+title: ${title}\n")
-(setq qz/capture-title-timestamp-roam "%(qz/utc-timestamp)-${slug}")
+(setq qz/capture-title-timestamp-roam "%(qz/utc-timestamp)-${slug}.org")
 
 (setq org-roam-capture-templates
       `(("d" "default" plain "%?" 
@@ -2146,7 +2600,7 @@ org-roam loading, as we use it's variables.
 #+end_src
 
 #+RESULTS:
-| d | default | plain | %? | :if-new | (file+head %<%Y%m%d%H%M%S>-${slug}.org #+title: ${title} |
+| d | default | plain | %? | :if-new | (file+head %(qz/utc-timestamp)-${slug}.org #+title: ${title} |
 
 **** dailies
 :PROPERTIES:
@@ -2165,13 +2619,14 @@ org-roam loading, as we use it's variables.
 :ID:       46fed150-b670-4899-aaa2-b029262db572
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-03-24 Thu 10:19]
 :END:
 #+begin_src emacs-lisp :noweb-ref roam
 (setq org-roam-dailies-capture-templates
       `(("d" "default" entry
          ,(s-join "\n" '("* [%<%H:%M>] %?"
-                         "CREATED: <%<%Y-%m-%d %H:%M>>"
-                         "FROM: %a"))
+                         ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
+                         "- from :: %a"))
          :if-new (file+head+olp
                   ,qz/org-roam-dailies-filespec
                   ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
@@ -2183,8 +2638,8 @@ org-roam loading, as we use it's variables.
 (setq qz/org-roam-dailies-capture-templates--tangent
       '("d" "default" entry
         ,(s-join "\n" '("* TANGENT [%<%H:%M>] %?"
-                        "CREATED: <%<%Y-%m-%d %H:%M>>"
-                        "FROM: %a"))
+                        ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
+                        "- from :: %a"))
         :if-new (file+head+olp
                  ,qz/org-roam-dailies-filespec
                  ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
@@ -2421,18 +2876,11 @@ so we can use it as a COMMAND. better traceability than a lambda
 :END:
 #+begin_src emacs-lisp :noweb-ref roam
 (defun qz/ensure-tag (tagstring tag)
-  "Apply `org-roam-tag-add' for `tag' to node with existing tags
-`tagstring'
-
-HACK: using `re-search-backward' to jump back to applicable
-point (implicitly, `point-min' for file-level; :PROPERTIES: drawer for
-entry); covering 'inherited match'.
-
-this could be updated to jump back, but only 'landing' final on
-PROPERTIES with non-nil :ID:"
-  (let ((ltag (-flatten (or (and (listp tag) tag) (list tag)))))
-    (progn (message "ensuring tag for %s" ltag)
-           (org-roam-tag-add ltag))))
+  "Apply `org-roam-tag-add' for `tag' to `(OR node@pt NODE)'"
+  (let ((ltag (-flatten (or (and (listp tag) tag)
+                            (list tag)))))
+    (message "ensuring tag for %s" ltag)
+    (org-roam-tag-add ltag)))
 #+end_src
 
 #+RESULTS:
@@ -2484,8 +2932,8 @@ PROPERTIES with non-nil :ID:"
 ***** make metadata on node created/updated
 :PROPERTIES:
 :ID:       5aa025eb-cc43-4866-9401-bd043ecf971b
-:CREATED:  <2021-12-12 Sun 22:34>
-:UPDATED:  <2022-02-27 Sun 14:54>
+:CREATED:  [2021-12-12 Sun 22:34]
+:UPDATED:  [2022-03-10 Thu 18:48]
 :END:
 
 - :: [[id:6ae36e2f-ab6d-45bc-9448-8dce233c8528][data-driven automatic actions in org roam]]
@@ -2500,7 +2948,7 @@ as this is my current mechanism for making a [[id:5d31286f-eef2-490a-8d44-0cded2
 
 (defun qz/org-roam--insert-timestamp (&rest args)
   (when (not (org-entry-get nil "CREATED"))
-    (org-entry-put nil "CREATED" (format-time-string "<%Y-%m-%d %a %H:%M>")))
+    (org-entry-put nil "CREATED" (format-time-string "[%Y-%m-%d %a %H:%M]")))
   (qz/org-roam--updated-timestamp))
 
 (defun qz/org-roam--updated-timestamp (&rest args)
@@ -2510,7 +2958,7 @@ as this is my current mechanism for making a [[id:5d31286f-eef2-490a-8d44-0cded2
             (when pt
               (org-entry-put
                pt "UPDATED"
-               (format-time-string "<%Y-%m-%d %a %H:%M>"))))
+               (format-time-string "[%Y-%m-%d %a %H:%M]"))))
           (list (and (org-roam-node-at-point)
                      (org-roam-node-point (org-roam-node-at-point)))
                 (save-excursion
@@ -2528,9 +2976,17 @@ as this is my current mechanism for making a [[id:5d31286f-eef2-490a-8d44-0cded2
 | qz/advice-enable--org-id-get-create--qz/org-roam--insert-timestamp | qz/advice-disable--org-id-get-create--qz/org-roam--insert-timestamp |
 ***** auto-tagging
 :PROPERTIES:
+:ID:       462b81b9-c746-4299-987c-70f2f5ce7e28
+:CREATED:  [2022-03-10 Thu 18:47]
+:UPDATED:  [2022-03-10 Thu 18:47]
+:ROAM_EXCLUDE: t
+:END:
+:PROPERTIES:
 :ID:       bac18b83-9a07-4c4b-ac68-82a4ba1b480c
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+
+
 :END:
 ****** test
 :PROPERTIES:
@@ -2605,11 +3061,14 @@ addressing caching & consistency problems with :PROPERTIES: drawer and #+propert
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src emacs-lisp :noweb-ref roam
-(defun qz/title-to-tag (title)
+(defun qz/title-to-tag (title &optional capitalize?)
   "Convert TITLE to tag."
-  (if (equal "@" (subseq title 0 1))
+  (if (equal "@" (cl-subseq title 0 1))
       title
-    (concat "@" (s-replace " " "" title))))
+    (concat "@" (s-replace " " ""
+                           (or (and capitalize?
+                                    (capitalize title))
+                               title)))))
 #+end_src
 
 #+RESULTS:
@@ -2626,10 +3085,11 @@ addressing caching & consistency problems with :PROPERTIES: drawer and #+propert
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
+
 #+begin_src emacs-lisp :noweb-ref roam
 (defun qz/org-roam-node-from-tag (tag)
   (seq-map
-   #'car
+   'car
    (org-roam-db-query
     [:select :distinct file
              :from tags
@@ -2641,20 +3101,22 @@ addressing caching & consistency problems with :PROPERTIES: drawer and #+propert
 #+RESULTS:
 : qz/org-roam-node-from-tag
 
-********* do
+********* test
 :PROPERTIES:
 :ID:       6a2330ff-8636-4eb8-8af9-7fe43c2ae1c9
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-03-31 Thu 11:44]
 :END:
+
 #+begin_src emacs-lisp :tangle no
 (let ((s (qz/org-roam-node-from-tag "project")))
   (list (length s)
-        s))
+        (car s)))
 #+end_src
 
 #+RESULTS:
-| 497 | (/home/samuel/life/roam/20200706T122138Z-meeting_epic_cleanup.org /home/samuel/life/roam/20201014T112751Z-bread.org /home/samuel/life/roam/20200605T122503Z-meeting_innovation_et_al_0.org /home/samuel/life/roam/20200609T154023Z-cirosantilli.org /home/samuel/life/roam/20210426T075531Z-alice_harford.org /home/samuel/life/roam/20200710T095038Z-alonzo_church.org /home/samuel/life/roam/20210813T161035Z-luis_eduardo_velez_montoya.org /home/samuel/life/roam/20200513T103003Z-human.org /home/samuel/life/roam/20210503T085723Z-newstore_coding_challenge.org /home/samuel/life/roam/20200515T152023Z-pl_pgsql.org /home/samuel/life/roam/20200701T080711Z-aha.org /home/samuel/life/roam/20210430T110535Z-ricardo_lopez.org /home/samuel/life/roam/20200623T075047Z-meeting_team_a_refinement_2020_06_23.org /home/samuel/life/roam/20210420T133136Z-edmund_j_gettier.org /home/samuel/life/roam/20210813T161035Z-adler_how_to_read_a_book.org /home/samuel/life/roam/20210404T170636Z-computer_scientist.org /home/samuel/life/roam/20210524T171731Z-automated_routing_of_muscle_fibers_for_soft_robots_youtube.org /home/samuel/life/roam/20210628T095151Z-on_reading.org /home/samuel/life/roam/20210524T191313Z-topology_optimisation.org /home/samuel/life/roam/20210330T072217Z-data_guild.org /home/samuel/life/roam/20210422T104455Z-org_roam_database_machinations.org /home/samuel/life/roam/20201001T082253Z-iueodoe.org /home/samuel/life/roam/20200518T112756Z-christian_eisenhammer.org /home/samuel/life/roam/20210427T143800Z-disturbing_films.org /home/samuel/life/roam/emacs.org /home/samuel/life/roam/20201007T090252Z-elliot_dable.org /home/samuel/life/roam/20210525T075747Z-ben_weiner.org /home/samuel/life/roam/20210531T083456Z-gigantic_optical_forces_on_diffractive_light_sails_for_in_space_propulsion.org /home/samuel/life/roam/20210404T151328Z-stalin.org /home/samuel/life/roam/20210813T161035Z-sanskrit.org /home/samuel/life/roam/reading.org /home/samuel/life/roam/20210813T161035Z-kshitij_saxena.org /home/samuel/life/roam/20210628T090758Z-human_computer_interaction.org /home/samuel/life/roam/daily/private-2021-10-22.org /home/samuel/life/roam/daily/private-2020-07-01.org /home/samuel/life/roam/daily/private-2021-06-22.org /home/samuel/life/roam/daily/private-2020-10-17.org /home/samuel/life/roam/daily/private-2021-04-04.org /home/samuel/life/roam/daily/private-2021-08-09.org /home/samuel/life/roam/daily/private-2020-06-05.org /home/samuel/life/roam/daily/private-2021-03-24.org /home/samuel/life/roam/daily/private-2020-05-27.org /home/samuel/life/roam/daily/private-2020-11-13.org /home/samuel/life/roam/daily/private-2021-11-24.org /home/samuel/life/roam/daily/private-2021-04-23.org /home/samuel/life/roam/daily/private-2021-02-12.org /home/samuel/life/roam/daily/private-2020-12-09.org /home/samuel/life/roam/daily/private-2021-04-01.org /home/samuel/life/roam/daily/private-2020-12-14.org /home/samuel/life/roam/daily/private-2021-05-23.org /home/samuel/life/roam/daily/private-2021-05-07.org /home/samuel/life/roam/daily/private-2021-04-12.org /home/samuel/life/roam/daily/private-2021-03-25.org /home/samuel/life/roam/daily/private-2020-04-03.org /home/samuel/life/roam/daily/private-2021-11-05.org /home/samuel/life/roam/daily/private-2020-10-20.org /home/samuel/life/roam/daily/private-2020-06-02.org /home/samuel/life/roam/daily/private-2021-10-20.org /home/samuel/life/roam/daily/private-2020-11-20.org /home/samuel/life/roam/daily/private-2021-06-15.org /home/samuel/life/roam/daily/private-2021-11-02.org /home/samuel/life/roam/daily/private-2021-05-06.org /home/samuel/life/roam/daily/private-2021-11-08.org /home/samuel/life/roam/daily/private-2020-09-21.org /home/samuel/life/roam/daily/private-2021-08-12.org /home/samuel/life/roam/daily/private-2021-05-20.org /home/samuel/life/roam/daily/private-2021-03-17.org /home/samuel/life/roam/daily/private-2021-11-26.org /home/samuel/life/roam/daily/private-2021-10-26.org /home/samuel/life/roam/daily/private-2021-06-10.org /home/samuel/life/roam/daily/private-2020-04-02.org /home/samuel/life/roam/daily/private-2021-08-06.org /home/samuel/life/roam/daily/private-2020-08-07.org /home/samuel/life/roam/daily/private-2020-10-23.org /home/samuel/life/roam/daily/private-20200512T083133Z-1_on_1_20200511.org /home/samuel/life/roam/daily/private-2021-02-09.org /home/samuel/life/roam/daily/private-2021-10-06.org /home/samuel/life/roam/daily/private-2020-07-16.org /home/samuel/life/roam/daily/private-2021-02-11.org /home/samuel/life/roam/daily/private-2021-10-25.org /home/samuel/life/roam/daily/private-2021-06-09.org /home/samuel/life/roam/daily/private-2021-06-30.org /home/samuel/life/roam/daily/private-2021-06-01.org /home/samuel/life/roam/daily/private-2020-04-04.org /home/samuel/life/roam/daily/private-2020-05-12.org /home/samuel/life/roam/daily/private-2020-06-24.org /home/samuel/life/roam/daily/private-2021-10-27.org /home/samuel/life/roam/daily/private-2021-03-22.org /home/samuel/life/roam/daily/private-2021-03-03.org /home/samuel/life/roam/daily/private-2021-08-25.org /home/samuel/life/roam/daily/private-2021-03-05.org /home/samuel/life/roam/daily/private-2020-10-01.org /home/samuel/life/roam/daily/private-2020-07-03.org /home/samuel/life/roam/daily/private-2021-09-26.org /home/samuel/life/roam/daily/private-2021-08-16.org /home/samuel/life/roam/daily/private-2020-09-03.org /home/samuel/life/roam/daily/private-2021-11-03.org /home/samuel/life/roam/daily/private-2021-06-04.org /home/samuel/life/roam/daily/private-2020-10-30.org /home/samuel/life/roam/daily/private-2020-11-17.org /home/samuel/life/roam/daily/private-2020-05-26.org /home/samuel/life/roam/daily/private-2021-08-23.org /home/samuel/life/roam/daily/private-2021-04-06.org /home/samuel/life/roam/daily/private-2020-09-14.org /home/samuel/life/roam/daily/private-2021-09-13.org /home/samuel/life/roam/daily/private-2020-10-08.org /home/samuel/life/roam/daily/private-2020-10-15.org /home/samuel/life/roam/daily/private-2020-06-26.org /home/samuel/life/roam/daily/private-2021-08-24.org /home/samuel/life/roam/daily/private-2020-11-09.org /home/samuel/life/roam/daily/private-2021-09-02.org /home/samuel/life/roam/daily/private-2021-04-28.org /home/samuel/life/roam/daily/private-2021-03-09.org /home/samuel/life/roam/daily/private-2020-11-12.org /home/samuel/life/roam/daily/private-2020-07-11.org /home/samuel/life/roam/daily/private-2020-07-23.org /home/samuel/life/roam/daily/private-20200612T105000Z-2019_09_01.org /home/samuel/life/roam/daily/private-2021-04-30.org /home/samuel/life/roam/daily/private-2021-07-12.org /home/samuel/life/roam/daily/private-2020-08-06.org /home/samuel/life/roam/daily/private-2021-04-27.org /home/samuel/life/roam/daily/private-2020-09-30.org /home/samuel/life/roam/daily/private-2020-08-02.org /home/samuel/life/roam/daily/private-2020-11-11.org /home/samuel/life/roam/daily/private-2021-07-01.org /home/samuel/life/roam/daily/private-2020-08-31.org /home/samuel/life/roam/daily/private-2020-08-12.org /home/samuel/life/roam/daily/private-20200512T085434Z-1_on_1_meeting.org /home/samuel/life/roam/daily/private-2020-06-20.org /home/samuel/life/roam/daily/private-2021-08-20.org /home/samuel/life/roam/daily/private-2021-08-26.org /home/samuel/life/roam/daily/private-2020-06-08.org /home/samuel/life/roam/daily/private-20200518T093033Z-meeting_cross_project_search.org /home/samuel/life/roam/daily/private-2020-06-07.org /home/samuel/life/roam/daily/private-2020-06-15.org /home/samuel/life/roam/daily/private-2020-09-17.org /home/samuel/life/roam/daily/private-2021-11-23.org /home/samuel/life/roam/daily/private-2020-10-05.org /home/samuel/life/roam/daily/private-2021-09-27.org /home/samuel/life/roam/daily/private-2020-06-21.org /home/samuel/life/roam/daily/private-2021-04-18.org /home/samuel/life/roam/daily/private-2021-05-10.org /home/samuel/life/roam/daily/private-2020-07-06.org /home/samuel/life/roam/daily/private-2020-04-01.org /home/samuel/life/roam/daily/private-2021-08-27.org /home/samuel/life/roam/daily/private-2021-11-04.org /home/samuel/life/roam/daily/private-2021-06-24.org /home/samuel/life/roam/daily/private-2021-09-14.org /home/samuel/life/roam/daily/private-2020-07-21.org /home/samuel/life/roam/daily/private-2020-06-19.org /home/samuel/life/roam/daily/private-2021-06-28.org /home/samuel/life/roam/daily/private-2020-05-14.org /home/samuel/life/roam/daily/private-2020-05-28.org /home/samuel/life/roam/daily/private-2021-09-28.org /home/samuel/life/roam/daily/private-2021-02-15.org /home/samuel/life/roam/daily/private-2021-07-31.org /home/samuel/life/roam/daily/private-2021-10-07.org /home/samuel/life/roam/daily/private-2020-06-03.org /home/samuel/life/roam/daily/private-2021-11-30.org /home/samuel/life/roam/daily/private-2021-07-30.org /home/samuel/life/roam/daily/private-2021-06-29.org /home/samuel/life/roam/daily/private-2021-08-11.org /home/samuel/life/roam/daily/private-2020-09-08.org /home/samuel/life/roam/daily/private-2020-07-20.org /home/samuel/life/roam/daily/private-2020-07-22.org /home/samuel/life/roam/daily/private-2020-09-04.org /home/samuel/life/roam/daily/private-2020-08-11.org /home/samuel/life/roam/daily/private-2021-10-04.org /home/samuel/life/roam/daily/private-2021-03-29.org /home/samuel/life/roam/daily/private-2021-01-18.org /home/samuel/life/roam/daily/private-2021-10-12.org /home/samuel/life/roam/daily/private-2021-01-25.org /home/samuel/life/roam/daily/private-2021-06-18.org /home/samuel/life/roam/daily/private-20200612T110105Z-2020_05_01.org /home/samuel/life/roam/daily/private-2021-11-09.org /home/samuel/life/roam/daily/private-2021-05-31.org /home/samuel/life/roam/daily/private-2021-08-03.org /home/samuel/life/roam/daily/private-2020-06-17.org /home/samuel/life/roam/daily/private-2021-03-11.org /home/samuel/life/roam/daily/private-2021-09-25.org /home/samuel/life/roam/daily/private-2020-07-10.org /home/samuel/life/roam/daily/private-2020-06-13.org /home/samuel/life/roam/daily/private-2020-06-12.org /home/samuel/life/roam/daily/private-2021-09-07.org /home/samuel/life/roam/daily/private-2021-10-15.org /home/samuel/life/roam/daily/private-2020-07-09.org /home/samuel/life/roam/daily/private-2020-10-28.org /home/samuel/life/roam/daily/private-2021-08-10.org /home/samuel/life/roam/daily/private-2021-07-02.org /home/samuel/life/roam/daily/private-2020-08-14.org /home/samuel/life/roam/daily/private-2020-04-19.org /home/samuel/life/roam/daily/private-2020-05-11.org /home/samuel/life/roam/daily/private-2021-04-20.org /home/samuel/life/roam/daily/private-2021-03-28.org /home/samuel/life/roam/daily/private-2021-10-29.org /home/samuel/life/roam/daily/private-2021-10-28.org /home/samuel/life/roam/daily/private-2021-03-16.org /home/samuel/life/roam/daily/private-2021-05-18.org /home/samuel/life/roam/daily/private-2021-06-23.org /home/samuel/life/roam/daily/private-2021-10-18.org /home/samuel/life/roam/daily/private-2020-07-14.org /home/samuel/life/roam/daily/private-2021-09-16.org /home/samuel/life/roam/daily/private-2021-05-24.org /home/samuel/life/roam/daily/private-2020-06-18.org /home/samuel/life/roam/daily/private-2020-10-26.org /home/samuel/life/roam/daily/private-2021-03-15.org /home/samuel/life/roam/daily/private-2020-10-21.org /home/samuel/life/roam/daily/private-2021-08-29.org /home/samuel/life/roam/daily/private-2020-10-13.org /home/samuel/life/roam/daily/private-2020-08-24.org /home/samuel/life/roam/daily/private-2020-06-10.org /home/samuel/life/roam/daily/private-2021-04-29.org /home/samuel/life/roam/daily/private-2020-06-16.org /home/samuel/life/roam/daily/private-2021-09-06.org /home/samuel/life/roam/daily/private-2021-01-11.org /home/samuel/life/roam/daily/private-2020-06-23.org /home/samuel/life/roam/daily/private-2021-09-03.org /home/samuel/life/roam/daily/private-2020-11-23.org /home/samuel/life/roam/daily/private-2021-09-15.org /home/samuel/life/roam/daily/private-2020-08-09.org /home/samuel/life/roam/daily/private-2021-04-21.org /home/samuel/life/roam/daily/private-2020-07-07.org /home/samuel/life/roam/daily/private-2021-11-25.org /home/samuel/life/roam/daily/private-2020-07-24.org /home/samuel/life/roam/daily/private-2021-11-15.org /home/samuel/life/roam/daily/private-2020-07-15.org /home/samuel/life/roam/daily/private-2020-09-16.org /home/samuel/life/roam/daily/private-2020-05-25.org /home/samuel/life/roam/daily/private-2020-10-12.org /home/samuel/life/roam/daily/private-2020-07-02.org /home/samuel/life/roam/daily/private-2020-08-05.org /home/samuel/life/roam/daily/private-2021-04-22.org /home/samuel/life/roam/daily/private-2020-09-07.org /home/samuel/life/roam/daily/private-2020-10-18.org /home/samuel/life/roam/daily/private-2021-10-19.org /home/samuel/life/roam/daily/private-2021-11-10.org /home/samuel/life/roam/daily/private-2020-09-22.org /home/samuel/life/roam/daily/private-2020-09-15.org /home/samuel/life/roam/daily/private-2020-06-11.org /home/samuel/life/roam/daily/private-2020-11-10.org /home/samuel/life/roam/daily/private-2021-11-18.org /home/samuel/life/roam/daily/private-2020-05-22.org /home/samuel/life/roam/daily/private-2021-09-01.org /home/samuel/life/roam/daily/private-2021-10-13.org /home/samuel/life/roam/daily/private-2021-09-17.org /home/samuel/life/roam/daily/private-2021-10-05.org /home/samuel/life/roam/daily/private-2021-08-17.org /home/samuel/life/roam/daily/private-2021-06-14.org /home/samuel/life/roam/daily/private-2020-10-02.org /home/samuel/life/roam/daily/private-2021-08-30.org /home/samuel/life/roam/daily/private-2021-06-21.org /home/samuel/life/roam/daily/private-2020-05-04.org /home/samuel/life/roam/daily/private-2020-05-20.org /home/samuel/life/roam/daily/private-2021-09-20.org /home/samuel/life/roam/daily/private-2020-05-18.org /home/samuel/life/roam/daily/private-2021-09-08.org /home/samuel/life/roam/daily/private-2021-03-23.org /home/samuel/life/roam/daily/private-2021-02-16.org /home/samuel/life/roam/daily/private-2021-04-19.org /home/samuel/life/roam/daily/private-2021-08-19.org /home/samuel/life/roam/daily/private-20200518T113409Z-meeting_jsonb_conception.org /home/samuel/life/roam/daily/private-2021-06-07.org /home/samuel/life/roam/daily/private-2021-03-02.org /home/samuel/life/roam/daily/private-2020-11-04.org /home/samuel/life/roam/daily/private-2021-06-12.org /home/samuel/life/roam/daily/private-2021-08-18.org /home/samuel/life/roam/daily/private-2021-09-21.org /home/samuel/life/roam/daily/private-2020-08-03.org /home/samuel/life/roam/daily/private-2021-07-03.org /home/samuel/life/roam/daily/private-2020-06-04.org /home/samuel/life/roam/daily/private-2023-03-31.org /home/samuel/life/roam/daily/private-2020-08-23.org /home/samuel/life/roam/daily/private-2020-05-13.org /home/samuel/life/roam/daily/private-2021-04-26.org /home/samuel/life/roam/daily/private-2021-07-06.org /home/samuel/life/roam/daily/private-2021-02-02.org /home/samuel/life/roam/daily/private-2021-05-05.org /home/samuel/life/roam/daily/private-2020-08-01.org /home/samuel/life/roam/daily/private-2021-05-03.org /home/samuel/life/roam/daily/private-2021-09-30.org /home/samuel/life/roam/daily/private-2021-06-03.org /home/samuel/life/roam/daily/private-2020-06-29.org /home/samuel/life/roam/daily/private-2021-10-11.org /home/samuel/life/roam/daily/private-2021-02-05.org /home/samuel/life/roam/daily/private-2020-06-25.org /home/samuel/life/roam/daily/private-2021-11-22.org /home/samuel/life/roam/daily/private-2021-09-29.org /home/samuel/life/roam/daily/private-2020-09-18.org /home/samuel/life/roam/daily/private-2020-11-24.org /home/samuel/life/roam/daily/private-2020-10-22.org /home/samuel/life/roam/daily/private-2021-02-08.org /home/samuel/life/roam/daily/private-2021-10-14.org /home/samuel/life/roam/daily/private-2020-08-04.org /home/samuel/life/roam/daily/private-2020-07-08.org /home/samuel/life/roam/daily/private-2020-08-30.org /home/samuel/life/roam/daily/private-2020-06-09.org /home/samuel/life/roam/daily/private-2021-03-30.org /home/samuel/life/roam/daily/private-2020-10-19.org /home/samuel/life/roam/daily/private-2021-11-28.org /home/samuel/life/roam/daily/private-2020-10-27.org /home/samuel/life/roam/daily/private-2021-02-03.org /home/samuel/life/roam/daily/private-2020-07-17.org /home/samuel/life/roam/daily/private-2020-06-30.org /home/samuel/life/roam/daily/private-2021-11-19.org /home/samuel/life/roam/20201014T163555Z-byron_blackford.org /home/samuel/life/roam/20210525T091717Z-how_to_study_linguistics_a_guide_to_understanding_language.org /home/samuel/life/roam/20201018T143915Z-andrew_louis.org /home/samuel/life/roam/20200511T151311Z-information_and_the_universe.org /home/samuel/life/roam/20200702T132312Z-max_thumfart.org /home/samuel/life/roam/20210524T165432Z-louis_nashelsky.org /home/samuel/life/roam/wip.org /home/samuel/life/roam/20200903T080046Z-tpcde_728_monitor_filter_performance_thinkproject_jira.org /home/samuel/life/roam/20201007T091102Z-andrea_mair.org /home/samuel/life/roam/20200408133856-the_bits_and_bytes_of_computer_networking.org /home/samuel/life/roam/20210524T165420Z-robert_l_boylestad.org /home/samuel/life/roam/20200615T082229Z-moving_to_berlin.org /home/samuel/life/roam/20200615T135629Z-tpconfluence.org /home/samuel/life/roam/jorge_luis_borges.org /home/samuel/life/roam/20200708T115605Z-atabey_kaygun.org /home/samuel/life/roam/20200609T150107Z-how_to_get_a_list_of_video_capture_devices_web_cameras_on_linux_ubuntu_c_c_stack_overflow.org /home/samuel/life/roam/20200513T103529Z-daily_meeting_20200513.org /home/samuel/life/roam/20210523T153341Z-streamlink_streamlink_streamlink_is_a_cli_utility_which_pipes_video_streams_from_various_services_into_a_video_player.org /home/samuel/life/roam/20210524T182927Z-robotsculptor_artist_directed_robotic_sculpting_of_clay_youtube.org /home/samuel/life/roam/20200701T094347Z-meeting_okr_2020_07_01.org /home/samuel/life/roam/20200611T112619Z-autovacuum.org /home/samuel/life/roam/20200511T135020Z-tpberlin.org /home/samuel/life/roam/20200419T194507Z-microgreens.org /home/samuel/life/roam/20201001T081129Z-michael_bischoff.org /home/samuel/life/roam/20200605T133126Z-gareth_burton.org /home/samuel/life/roam/20210423T104212Z-ancient_greek.org /home/samuel/life/roam/20200613T135018Z-bank_transaction_analysis.org /home/samuel/life/roam/schedule.org /home/samuel/life/roam/20210419T075838Z-luke_smith.org /home/samuel/life/roam/20210607T154402Z-circular_saw.org /home/samuel/life/roam/20201007T091003Z-andrew_tutt.org /home/samuel/life/roam/20210329T081859Z-pgdeploy_release_rollout_meeting.org /home/samuel/life/roam/20200520T111508Z-euler.org /home/samuel/life/roam/20210430T110825Z-stuart_farrimond.org /home/samuel/life/roam/20200901T104325Z-freecad.org /home/samuel/life/roam/reviews.org /home/samuel/life/roam/20200518T094013Z-meeting.org /home/samuel/life/roam/20210203T130148Z-scicloj_meeting_19_alan_dipert_common_lisp_for_the_curious_clojurian_youtube.org /home/samuel/life/roam/20200405160940-meditation_apps_are_fueling_tech_addiction_not_easing_stress.org /home/samuel/life/roam/20200828T141851Z-will_arnett.org /home/samuel/life/roam/20200414T222846Z-ian_barber.org /home/samuel/life/roam/20210427T142746Z-planconnect.org /home/samuel/life/roam/20200605T122559Z-sven_eric_schapke.org /home/samuel/life/roam/20210330T095339Z-robert_wolf.org /home/samuel/life/roam/20200623T110115Z-keybindings.org /home/samuel/life/roam/20200515T154313Z-book.org /home/samuel/life/roam/20210816T182301Z-ronaldo_moura.org /home/samuel/life/roam/20201031T163512Z-jessealdridge_electric_toothbrush_simple_client_server_notetaking_tool_inspired_by_notational_velocity.org /home/samuel/life/roam/20210527T132715Z-tobias_løfgren.org /home/samuel/life/roam/20210524T191248Z-level_set_topology_optimisation.org /home/samuel/life/roam/20200515T082816Z-org_roam_network_analysis.org /home/samuel/life/roam/20200624T102404Z-robert_tarjan_wikipedia.org /home/samuel/life/roam/20200410182435-art.org /home/samuel/life/roam/20200612T111631Z-matt_culpepper.org /home/samuel/life/roam/20200606T175037Z-marvel_movie_timeline_the_best_order_to_watch_marvel_movies.org /home/samuel/life/roam/20210524T190500Z-static_equilibrium_constraint.org /home/samuel/life/roam/20200623T081435Z-pg_deploy.org /home/samuel/life/roam/20210527T133055Z-mathematician.org /home/samuel/life/roam/learning.org /home/samuel/life/roam/20200515T113542Z-igraph.org /home/samuel/life/roam/20200518T094057Z-dirk_lutzeback.org /home/samuel/life/roam/20201012T103944Z-meetup.org /home/samuel/life/roam/20210504T142547Z-eric_jahn.org /home/samuel/life/roam/20201117T102439Z-augmenting_human_intellect.org /home/samuel/life/roam/20200622T120506Z-amit_kapila.org /home/samuel/life/roam/20210608T081923Z-latin_language.org /home/samuel/life/roam/conor_white_sullivan_f_f_f.org /home/samuel/life/roam/20201014T112934Z-niklas_luhmann.org /home/samuel/life/roam/20210423T104229Z-aristotle.org /home/samuel/life/roam/20210813T161035Z-pavel_batishchev.org /home/samuel/life/roam/20200513T104142Z-colleague.org /home/samuel/life/roam/20210427T191553Z-guy_l_steele_jr.org /home/samuel/life/roam/20200901T104600Z-atte.org /home/samuel/life/roam/20200701T093505Z-meeting_sprint_switch_2020_07_01.org /home/samuel/life/roam/20200610T093202Z-meeting_backlog_refinement_20200610.org /home/samuel/life/roam/20201117T101304Z-doug_engelbart.org /home/samuel/life/roam/20210813T161035Z-peter_stubbs.org /home/samuel/life/roam/20210524T115509Z-simulation.org /home/samuel/life/roam/20210505T162454Z-interactive_network_visualization_with_r_r_bloggers.org /home/samuel/life/roam/20201017T115021Z-greg_detre.org /home/samuel/life/roam/20210420T092520Z-xiantian_zhou.org /home/samuel/life/roam/20200619T215855Z-common_lisp_repl_diaries.org /home/samuel/life/roam/private/private-2020-04-07.org /home/samuel/life/roam/private/private-2020-04-08.org /home/samuel/life/roam/20210423T103947Z-max_weissman.org /home/samuel/life/roam/20200518T065928Z-meeting_cemar_text_searching_analysis.org /home/samuel/life/roam/20200702T132017Z-meeting_how_do_filter_work_from_the_db_side.org /home/samuel/life/roam/20210817T073807Z-bernardo_torres.org /home/samuel/life/roam/20200403151517-a_beginner_s_guide_to_graph_visualization.org /home/samuel/life/roam/20200512T082020Z-lloyd_culpepper.org /home/samuel/life/roam/20200616T090917Z-andrea_hofmann.org /home/samuel/life/roam/20200701T153403Z-common_lisp_the_language.org /home/samuel/life/roam/20210311T113202Z-chris_heimann.org /home/samuel/life/roam/20200623T104934Z-meeting_sprint_switch_2020_06_17.org /home/samuel/life/roam/20200707T072109Z-meeting_more_epic_cleaning_and_aha.org /home/samuel/life/roam/20210527T112026Z-line_line_intersection.org /home/samuel/life/roam/20210423T104238Z-socrates.org /home/samuel/life/roam/20200513T103441Z-daily_meeting.org /home/samuel/life/roam/20210505T135556Z-plantuml.org /home/samuel/life/roam/20200403172933-jethro_kuan.org /home/samuel/life/roam/20200701T093349Z-meeting_up_date_jira.org /home/samuel/life/roam/20210813T161035Z-my_email.org /home/samuel/life/roam/20210430T110455Z-vicente_ferreira.org /home/samuel/life/roam/20200610T103951Z-tpcde.org /home/samuel/life/roam/20210615T072126Z-my_recipes.org /home/samuel/life/roam/20200709T130411Z-meeting_1_on_1_2020_07_09.org /home/samuel/life/roam/20200611T115532Z-pg_stat_database.org /home/samuel/life/roam/20210813T161035Z-n26.org /home/samuel/life/roam/20210420T092449Z-carlos_ordonez.org /home/samuel/life/roam/20200513T104213Z-software_engineer.org /home/samuel/life/roam/20210507T075527Z-chopi.org /home/samuel/life/roam/20200609T132052Z-projects.org /home/samuel/life/roam/20210612181500-plywood.org /home/samuel/life/roam/20200713T091701Z-ilya_kosmodemiansky.org /home/samuel/life/roam/20200402180451-laszlo_forro.org /home/samuel/life/roam/20210518T125438Z-my_youtube_channel.org /home/samuel/life/roam/20210423T104204Z-plato.org /home/samuel/life/roam/20201117T102439Z-augmenting_human_intellect_a_conceptual_framework.org /home/samuel/life/roam/20200623T075751Z-technical_account_manager.org /home/samuel/life/roam/20200728T101310Z-jack_rusher.org /home/samuel/life/roam/20201117T103145Z-alan_kay.org /home/samuel/life/roam/20210420T091609Z-shoeb_ahmed_mogal.org /home/samuel/life/roam/20200710T100007Z-alan_turing.org /home/samuel/life/roam/20210423T110812Z-machiavelli.org /home/samuel/life/roam/20200709T090331Z-thinkprojectgroup_query_cache.org /home/samuel/life/roam/20210813T161035Z-shared.org /home/samuel/life/roam/20210813T161035Z-andrew_petelin.org /home/samuel/life/roam/20210404T152634Z-learning_mathematics.org /home/samuel/life/roam/20210813T161035Z-adam_m_grant.org /home/samuel/life/roam/20200616T091718Z-meeting_communication_launch_for_jsonb.org /home/samuel/life/roam/20200518T094303Z-wolfram_schneider.org /home/samuel/life/roam/20210524T175017Z-a_compiler_for_3d_machine_knitting_youtube.org /home/samuel/life/roam/20200729T132839Z-diederik_verkest.org /home/samuel/life/roam/20210813T161035Z-cassava_root.org /home/samuel/life/roam/20200701T103013Z-counsel_spotify.org /home/samuel/life/roam/20210420T092707Z-claudia_kerschl.org /home/samuel/life/roam/20201020T113639Z-wild_yeast.org /home/samuel/life/roam/daily/private-2021-11-01.org /home/samuel/life/roam/daily/private-2021-11-11.org /home/samuel/life/roam/20210527T113506Z-mind_power.org /home/samuel/life/roam/20210506T092125Z-samuelculpepper_com.org /home/samuel/life/roam/daily/private-2021-12-09.org /home/samuel/life/roam/daily/private-2021-11-16.org /home/samuel/life/roam/inbox.org /home/samuel/life/roam/daily/private-2021-12-10.org /home/samuel/life/roam/daily/private-2021-12-13.org /home/samuel/life/roam/daily/private-2021-12-06.org /home/samuel/life/roam/20210813T161035Z-graphics_tablets.org /home/samuel/life/roam/20210813T161035Z-publishing_my_notes.org /home/samuel/life/roam/daily/private-2021-12-16.org /home/samuel/life/roam/daily/private-2021-12-08.org /home/samuel/life/roam/systems.org /home/samuel/life/roam/daily/private-2021-12-18.org /home/samuel/life/roam/daily/private-2021-12-26.org /home/samuel/life/roam/daily/private-2021-12-30.org /home/samuel/life/roam/20210628T094551Z-my_writing.org /home/samuel/life/roam/daily/private-2021-12-15.org /home/samuel/life/roam/20201020T113920Z-making_essential_foods.org /home/samuel/life/roam/daily/private-2022-01-07.org /home/samuel/life/roam/20200515T161256Z-samuel_culpepper.org /home/samuel/life/roam/20200625T083146Z-career.org /home/samuel/life/roam/20210311T122210Z-tennet_hierarchical_lists.org /home/samuel/life/roam/daily/private-2021-05-21.org /home/samuel/life/roam/daily/private-2021-11-17.org /home/samuel/life/roam/daily/private-2022-01-11.org /home/samuel/life/roam/someday.org /home/samuel/life/roam/20200511T150956Z-git.org /home/samuel/life/roam/20200919T152005Z-gnu_guix.org /home/samuel/life/roam/20200415T145703Z-emacs_lisp.org /home/samuel/life/roam/daily/private-2022-01-13.org /home/samuel/life/roam/daily/private-2021-08-13.org /home/samuel/life/roam/daily/private-2021-11-12.org /home/samuel/life/roam/daily/private-2021-11-29.org /home/samuel/life/roam/20210420T114708Z-newstore.org /home/samuel/life/roam/watching.org /home/samuel/life/roam/daily/private-2022-01-12.org /home/samuel/life/roam/20210518T124941Z-building_living.org /home/samuel/life/roam/daily/private-2022-01-18.org /home/samuel/life/roam/daily/private-2022-01-17.org /home/samuel/life/roam/20210505T104623Z-anton_tinyakov.org /home/samuel/life/roam/daily/private-2021-10-01.org /home/samuel/life/roam/daily/private-2022-01-06.org /home/samuel/life/roam/daily/private-2021-08-31.org /home/samuel/life/roam/daily/private-2021-12-12.org /home/samuel/life/roam/daily/private-2022-01-14.org /home/samuel/life/roam/daily/private-2022-01-10.org /home/samuel/life/roam/config.org /home/samuel/life/roam/daily/private-2021-12-17.org /home/samuel/life/roam/daily/private-2021-12-14.org /home/samuel/life/roam/daily/private-2021-12-07.org /home/samuel/life/roam/daily/private-2022-01-19.org /home/samuel/life/roam/daily/private-2022-01-20.org /home/samuel/life/roam/20200401202402-org_roam.org) |
+| 563 | /home/samuel/life/roam/20200706T122138Z-meeting_epic_cleanup.org |
 ******* predicates
 :PROPERTIES:
 :ID:       c168d9bc-6095-46e3-94c9-a4b9e1bc6ebb
@@ -2729,6 +3191,7 @@ from filepath, or structural properties of the file
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
+
 #+begin_src emacs-lisp
 (defun qz/is-project-p (&optional node &rest _)
   (or (qz/file-has-todo-p node _)
@@ -2987,6 +3450,7 @@ a function of a node
 :ID:       5367ec4f-24d6-4416-a8d9-18df8cb1c0c2
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-03-10 Thu 18:50]
 :END:
 e.g https://commonplace.doubleloop.net/recentchanges
 (or updated created)
@@ -3006,7 +3470,7 @@ updated -> property:updated, file-name:updated
     (cond
      ((= p 16) (let* ((td (timezone-parse-date s))
                       (tt (timezone-parse-time (elt td 3))))
-                 (format "<%s %s>"
+                 (format "[%s %s]"
                          (s-join "-" (cl-subseq td nil 3))
                          (s-join ":" tt))))
      ((= p 14) (let* ((yy (substring s 0 4))
@@ -3015,7 +3479,7 @@ updated -> property:updated, file-name:updated
                       (hh (substring s 8 10))
                       (MM (substring s 10 12))
                       (ss (substring s 12 14)))
-                 (format "<%s-%s-%s %s:%s:%s>"
+                 (format "[%s-%s-%s %s:%s:%s]"
                          yy mm dd
                          hh MM ss))))))
 
@@ -3024,7 +3488,7 @@ updated -> property:updated, file-name:updated
         (let ((v (s-join " " (org-entry-get-multivalued-property pt "UPDATED"))))
           (when (not (string-empty-p v)) v))
         (format-time-string
-         "<%Y-%m-%d %H:%M:%S>"
+         "[%Y-%m-%d %H:%M:%S]"
          (file-attribute-modification-time (file-attributes file)))))
 
 (defun qz/org-roam-node-created-precedence (pt file)
@@ -3062,7 +3526,6 @@ updated -> property:updated, file-name:updated
 ;;(car [1 2 3])
 ;;(or (s-join "a" nil) "b")
 
-
 (let ((node (org-roam-node-from-title-or-alias "wine")))
   (list (qz/org-roam-node-updated-date node)
         (qz/org-roam-node-created-date node)))
@@ -3086,7 +3549,15 @@ updated -> property:updated, file-name:updated
 #+end_src
 
 #+RESULTS:
+: /tmp/oo
 
+****** TODO add override in ordering if DATE is 20210803
+:PROPERTIES:
+:ID:       87bd401c-7c9b-4cb4-b299-513bce1792b3
+:CREATED:  [2022-03-10 Thu 19:24]
+:UPDATED:  <2022-03-11 Fri 14:32>
+:ROAM_EXCLUDE: t
+:END:
 ****** sanity
 :PROPERTIES:
 :ID:       80cb794e-d401-4569-adb2-b68dbc285db0
@@ -3260,6 +3731,25 @@ cat /tmp/oo | awk -F, '{print $2,$3}' | sort | uniq -c | sort -rgk1 | head
 :ROAM_EXCLUDE: t
 :END:
 
+***** project-files (has todo)
+:PROPERTIES:
+:ID:       ff40dc98-d9dd-4ec5-85e6-48a33d459a79
+:CREATED:  [2022-03-31 Thu 11:03]
+:UPDATED:  [2022-03-31 Thu 11:03]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp
+(dolist (file (split-string (shell-command-to-string
+                          "rg TODO ~/life/roam -t org --files-with-matches")
+                         "\n"))
+  (unless (string-empty-p file)
+    (with-current-buffer (find-file-noselect f)
+      (org-mode)
+      (unless 
+           (qz/file-has-todo-p
+
+#+end_src
+
 **** protocol (ref)
 :PROPERTIES:
 :ID:       366af88d-6c6d-4638-970f-c00f33152ef6
@@ -3272,24 +3762,33 @@ cat /tmp/oo | awk -F, '{print $2,$3}' | sort | uniq -c | sort -rgk1 | head
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-****** templates
+****** TODO templates
 :PROPERTIES:
 :ID:       a7f7f97d-d3c7-4941-a522-f3530bc8379c
-:CREATED:  <2022-02-22 Tue 15:27>
+:CREATED:  [2022-02-22 Tue 15:27]
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-03-14 Mon 11:12]
 :END:
-#+begin_src emacs-lisp :noweb yes :noweb-ref roam
+
+#+begin_src emacs-lisp :noweb yes :noweb-ref roam  :results drawer
 ;;; ref capture
 (setq org-roam-capture-ref-templates
       `(("r" "ref" plain
-         "%?"
+         "\n#+begin_quote\n${body}\n#+end_quote\n%?"
          :if-new (file+head ,qz/capture-title-timestamp-roam
                             "#+title: ${title}\n")
          :unnarrowed t)))
 #+end_src
 
 #+RESULTS:
-| r | ref | plain | %? | :if-new | (file+head 20210813T161035Z-${slug}.org #+title: ${title} |
+:results:
+((r ref plain 
+#+begin_quote
+${body}
+#+end_quote
+%? :if-new (file+head %(qz/utc-timestamp)-${slug} #+title: ${title}
+) :unnarrowed t))
+:end:
 **** visual
 :PROPERTIES:
 :ID:       ebccab15-1c63-43fe-be76-8b43d08ecf79
@@ -3330,11 +3829,13 @@ easy peasy, only took me 20 minutes
 https://github.com/org-roam/org-roam/issues/991#issuecomment-882010053
 
 #+begin_src emacs-lisp :noweb-ref roam
-(add-to-list 'magit-section-initial-visibility-alist (cons 'org-roam-node-section 'hide))
+(cons->table
+ (add-to-list 'magit-section-initial-visibility-alist (cons 'org-roam-node-section 'hide)))
 #+end_src
 
 #+RESULTS:
-: ((org-roam-node-section . hide) (stashes . hide))
+| org-roam-node-section | hide |
+| stashes               | hide |
 
 *** settings
 :PROPERTIES:
@@ -3369,27 +3870,131 @@ https://github.com/org-roam/org-roam/issues/991#issuecomment-882010053
                            ("wip.org" :level . 0)))
 #+end_src
 
-**** org-log-done :var:
+**** TODO org-log                                                    :var:
+CLOSED: [2022-03-10 Thu 19:24]
+:PROPERTIES:
+:ID:       23e1b5e7-acac-4670-b421-4f84904c8b57
+:CREATED:  [2022-03-10 Thu 19:24]
+:UPDATED:  [2022-03-11 Fri 10:09]
+:ROAM_EXCLUDE: t
+:END:
+:LOGBOOK:
+- CLOSING NOTE [2022-03-10 Thu 19:24] \\
+  testing done notes
+:END:
+
+***** TODO org-log-repeat
+:PROPERTIES:
+:ID:       ece698ff-9204-4a2f-96ea-57b11c0649b8
+:CREATED:  [2022-03-10 Thu 19:25]
+:UPDATED:  [2022-03-10 Thu 19:26]
+:ROAM_EXCLUDE: t
+:END:
+once we find out about sequences and repeats
+
+***** org-log-refile
+:PROPERTIES:
+:ID:       882be009-a2e8-4ba1-95dd-6252b6108b2f
+:CREATED:  [2022-03-10 Thu 19:24]
+:UPDATED:  [2022-03-10 Thu 19:24]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb-ref org
+(setq org-log-refile 'note)
+#+end_src
+
+#+RESULTS:
+: note
+
+***** org-log-redeadline
+:PROPERTIES:
+:ID:       b791e4a5-9eaa-475a-9ca7-c3b2ac4325ff
+:CREATED:  [2022-03-10 Thu 19:24]
+:UPDATED:  [2022-03-10 Thu 19:24]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb-ref org
+(setq org-log-redeadline 'note)
+#+end_src
+
+#+RESULTS:
+: note
+
+***** org-log-reschedule
+:PROPERTIES:
+:ID:       c3564248-02b8-4912-8ab4-5d33c1fce5ba
+:CREATED:  [2022-03-10 Thu 19:24]
+:UPDATED:  [2022-03-10 Thu 19:24]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb-ref org
+(setq org-log-reschedule 'note)
+#+end_src
+
+#+RESULTS:
+: note
+
+***** org-log-done                                                  :var:
 :PROPERTIES:
 :ID:       1728a0dc-4e3f-4317-8d3d-4ebb3dbc0375
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src emacs-lisp :noweb-ref org
-(setq org-log-done 'time)
+(setq org-log-done 'note)
 #+end_src
 
-**** org-startup-folded :var:
+**** org-startup-folded                                              :var:
 :PROPERTIES:
 :ID:       948baebf-3fae-499d-8036-6e454de83417
 :CREATED:  <2022-02-27 Sun 15:04>
-:UPDATED:  <2022-02-28 Mon 09:41>
+:UPDATED:  [2022-04-06 Wed 11:29]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src emacs-lisp :noweb-ref org
 (setq org-startup-folded 'content)
 #+end_src
+
+**** org-enforce
+:PROPERTIES:
+:ID:       ee742dd8-192d-4901-a5f8-342a403b6094
+:CREATED:  [2022-04-06 Wed 11:39]
+:UPDATED:  [2022-04-06 Wed 11:39]
+:ROAM_EXCLUDE: t
+:END:
+
+- :: (info-apropos "org-enforce")
+  
+**** org-enforce-todo-dependencies                                   :var:
+:PROPERTIES:
+:ID:       51ff922b-e6d5-4437-9fdc-d6208de9b959
+:CREATED:  [2022-04-06 Wed 11:29]
+:UPDATED:  [2022-04-06 Wed 11:39]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref org
+(setq org-enforce-todo-dependencies t)
+#+end_src
+
+#+RESULTS:
+: t
+
+**** org-enforce-todo-checkbox-dependencies                          :var:
+:PROPERTIES:
+:ID:       496407f8-71cf-4745-a5de-d0f1817ce600
+:CREATED:  [2022-04-06 Wed 11:29]
+:UPDATED:  [2022-04-06 Wed 11:39]
+:ROAM_EXCLUDE: t
+:END:
+  
+#+begin_src emacs-lisp :noweb-ref org
+(setq org-enforce-todo-checkbox-dependencies t)
+#+end_src
+
+#+RESULTS:
+: t
 
 *** download :var:
 :PROPERTIES:
@@ -3914,6 +4519,26 @@ or
 #+begin_src emacs-lisp :noweb-ref conf
 (custom-set-variables
  '(cursor-type 'hbar))
+#+end_src
+*** outline
+:PROPERTIES:
+:ID:       b5fec793-6a50-4f9d-b88f-715df300dc2c
+:CREATED:  [2022-03-11 Fri 15:25]
+:UPDATED:  [2022-03-11 Fri 15:25]
+:ROAM_EXCLUDE: t
+:END:
+**** outline-default-state :var:
+:PROPERTIES:
+:ID:       2150f716-f377-4d9c-b1ab-f278a0400cfa
+:CREATED:  [2022-03-11 Fri 15:25]
+:UPDATED:  [2022-03-11 Fri 15:25]
+:ROAM_EXCLUDE: t
+:END:
+
+note, >= emacs 29.1
+
+#+begin_src emacs-lisp :noweb-ref conf
+(setq outline-default-state 'outline-show-only-headings)
 #+end_src
 *** hi-lock
 :PROPERTIES:
@@ -4961,6 +5586,7 @@ an [[id:6baf4bff-d5fe-4ce0-a130-0464e49de67d][org-mode]] extension for a new lin
 :ID:       8f2b6e70-b945-4021-bd88-429891641d8e
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-11 Mon 18:50]
 :END:
 #+begin_src emacs-lisp
 ;;; ol-man.el - Support for links to man pages in Org mode
@@ -5023,6 +5649,7 @@ PATH should be a topic that can be thrown at the man command."
 :ID:       476ef762-1350-4afa-a8ad-2cd3e42eb730
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  <2022-03-11 Fri 14:43>
 :END:
 
 [fn:2] example for how =:var= header args are dealt with in an
