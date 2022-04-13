@@ -1189,3 +1189,30 @@ the \"sql-indent.org\" file.
 The package also defines align rules so that the `align' function works for SQL
 statements, see `sqlind-align-rules'.")
    (license license:gpl3+)))
+
+(define-public emacs-uuidgen
+  (package
+   (name "emacs-uuidgen")
+   (version "20200816.1308")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/kanru/uuidgen-el.git")
+           (commit "b50e6fef2de4199a8f207b46588c2cb3890ddd85")))
+     (sha256
+      (base32 "08m74kj7h70kna3pifk3sgsy7mck11p32vi48h9wzqnafyq3n55d"))))
+   (build-system emacs-build-system)
+   (home-page "unspecified")
+   (synopsis "Provides various UUID generating functions")
+   (description
+    " This is a naive implementation of RFC4122 Universally Unique IDentifier
+generation in elisp.  Currently implemented are UUID v1 v3, v4 and v5
+generation.  The resolution of the time based UUID is microseconds, which is 10
+times of the suggested 100-nanosecond resolution, but should be enough for
+general usage.
+
+Get development version from git:
+
+    git clone git://github.com/kanru/uuidgen-el.git")
+   (license #f)))
