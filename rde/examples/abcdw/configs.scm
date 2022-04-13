@@ -297,19 +297,30 @@
       ;;      "alias superls="
       ;;      #$(file-append (@ (gnu packages base) coreutils) "/bin/ls"))))
 
+      ;;; home jobs
+      ;;
       ;; see logs at ~/.local/var/log/mcron.log
-      ;;   tail --follow ~/.local/var/log/mcron.log
-      ;; ((@ (gnu services) simple-service)
-      ;;  'notes-commit-job
-      ;;  (@ (gnu home services mcron) home-mcron-service-type)
-      ;;  (list #~(job '(next-minute)
-      ;;               (lambda ()
-      ;;                 (system* "echo \"$(date -u) attempting to commit\" >> /tmp/commit-log")
-      ;;                 (system* "cd $HOME/life")
-      ;;                 (system* "git add .")
-      ;;                 (system* "git commit -m \"auto-commit | $(date -u)\""))
-      ;;               "notes-commit")))
-      )
+      ;;   tail --follow ~/.local/var/log/mcron.logtail --follow ~/.local/var/log/mcron.log
+      ;;
+      ;; see job spec at [[info:mcron#Guile Syntax][mcron#Guile Syntax]]
+      ((@ (gnu services) simple-service)
+       'home-jobs (@ (gnu home services mcron) home-mcron-service-type)
+       (list
+         ;;; job: commit my notes
+        #~(job '(next-minute '(15))
+               (lambda ()
+                 (system* (string"(cd /home/samuel/life && git add . && git commit -m \"auto-commit | $(date -u)\") &>/tmp/commit-log"))
+                 "notes-commit"))
+         ;;; job: fulltext index the universe
+        #~(job '(next-hour)
+               (lambda ()
+                 (system* (file-append (@@ (gnu packages search) recoll) "/bin/recollindex")))
+               "recollindex")
+         ;;; job: generate tags
+        ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
+        #~(job '(next-hour '(12 0)) ;; every 12 hours
+               (string-append #$(@@ (gnu packages idutils) idutils) "/bin/mkid git")
+               #:user "samuel"))))
      #:system-services
      (remove
       unspecified?
@@ -318,12 +329,28 @@
            (@@ (gnu services desktop) %desktop-services)
            '())
        (list
-        (when gaming?
-          (simple-service
-           'nvidia-udev-rule udev-service-type
-           (list nvidia-driver)))
+        ;;; cron jobs
+        (simple-service
+         'system-jobs (@ (gnu services mcron) mcron-service-type)
+         ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
+         (list
+          ;; update locate database
+          ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
+          #~(job '(next-hour '(12 0)) ;; every 12 hours
+                 (lambda ()
+                   (execl (string-append #$(@ (gnu packages base) findutils) "/bin/updatedb")
+                            "updatedb"
+                            "--prunepaths=/tmp /var/tmp /gnu/store"))
+                   "updatedb")))
 
-        (when #f
+        ;;; udev: nvidia
+           (when gaming?
+             (simple-service
+              'nvidia-udev-rule udev-service-type
+              (list nvidia-driver)))
+
+        ;;; desktop manager: X11 gdm + nvidia
+           (when #f
           (simple-service
            'gdm-xorg-conf gdm-service-type
            (gdm-configuration
