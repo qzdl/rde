@@ -21,6 +21,38 @@
     
            (,enable)
            (list ',enable ',disable))))
+    (defun cons->table (body &optional &key cols tail-fn)
+      "a transformation helper for org-babel, which has defaults
+    to parse robustly the proper-list[1] over the simple cons[2]
+    
+    body      *values you wish to transform*: a list; cons, proper,
+              a-, etc.
+    :cols     *column headers for the results*: wrap the result in
+              ((co1 col2) . (hline . (..res..)); as such, they will
+              be made in addition to any headers and/or `hlines'
+              applied by `org-babel' (esp. those from `:colnames').
+    :tail-fn  *control the parsing of each entry of `body'*:
+              by default, `cdr' because for a simple `cons' '(a . b),
+              cdr will yield 'b -> (cdr '(a . b)).  If operating on
+              some `list' '(a b), then the analog for `'b' is `cadr'
+              -> (cadr '(a b)) -> `'b'
+    
+    [1] proper-list: '(a b)   ; '(a . (b . nil))
+    [2] simple-cons: '(a . b) ; '(a . b)"
+      (let ((res (mapcar (lambda (c)
+                           (list (car c)
+                                 (funcall (or tail-fn 'cdr) c)))
+                         body)))
+        (if cols
+            (cons cols (cons 'hline res))
+          res)))
+    
+    ;;; e.g  {C-n C-SPC M-e C-p C-x C-;}
+    ;; (cons->table
+    ;;  '((56 . "/home/samuel/life/roam/20210420T114708Z-newstore.org") 
+    ;;    (11 . "/home/samuel/life/roam/20210813T161035Z-kubernetes.org")
+    ;;    (10 . "/home/samuel/life/roam/20200515T151822Z-postgresql.org"))
+    ;;  :cols '(count file))
     (defun qz/ensure-list (s)
       (if (listp s)
           s
@@ -85,6 +117,7 @@
 
     ;; NOWEB CONF START
     ;; NOWEB KBD START
+    (define-key global-map (kbd "C-M-y") 'consult-yank-from-kill-ring)
     (define-key global-map (kbd "C-x C-M-f") 'consult-recent-file)
     ;;(custom-set-variables
     ;; '(org-disputed-keys '([(shift o)] . [(meta shift o)])))
@@ -694,7 +727,11 @@
           (append (mapcar (lambda (s)
                             (when-let ((n (org-roam-node-from-title-or-alias s)))
                               (org-roam-node-file n)))
-                          '("NewStore" "kubernetes" "postgres"))
+                          '("NewStore"
+                            "kubernetes"
+                            "postgres"
+                            "elisp"
+                            ))
                   ;; .. other files
                   nil
                   ;; ..
@@ -703,10 +740,11 @@
         
         (defun qz/org-babel-do-lob-ingest-files (&optional files)
           (interactive)
-          (mapcar (lambda (f) (org-babel-lob-ingest f))
+          (mapcar (lambda (f) (cons (org-babel-lob-ingest f) f))
                   (append qz/org-babel-lob-ingest-files files)))
         
-        (qz/org-babel-do-lob-ingest-files)
+        (cons->table
+         (qz/org-babel-do-lob-ingest-files))
         ;; [[file:~/.doom.d/config.org::*templates][templates]]
         (setq org-capture-templates
               `(("i" "inbox" entry
@@ -993,7 +1031,8 @@
           (org-redisplay-inline-images))
         
         (add-hook 'org-roam-mode-hook 'qz/roam-buffer-image-width)
-        (add-to-list 'magit-section-initial-visibility-alist (cons 'org-roam-node-section 'hide))
+        (cons->table
+         (add-to-list 'magit-section-initial-visibility-alist (cons 'org-roam-node-section 'hide)))
         ;; NOWEB ROAM END
         )
       (setq org-confirm-babel-evaluate nil)

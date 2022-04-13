@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-04-11 Mon 18:50]
+:UPDATED:  [2022-04-13 Wed 14:29]
 :ID:       84700327-3a84-4d33-9918-dd06a809c28f
 :CREATED:  <2022-03-03 Thu 12:06>
 :END:
@@ -392,7 +392,7 @@ buffer are offered."
 :PROPERTIES:
 :ID:       9a8fc009-7e01-46ab-a467-4d639723a060
 :CREATED:  <2022-02-28 Mon 09:42>
-:UPDATED:  <2022-02-28 Mon 10:01>
+:UPDATED:  [2022-04-13 Wed 12:49]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -1029,11 +1029,7 @@ body      *values you wish to transform*: a list; cons, proper,
 #+end_src
 
 #+RESULTS: elisp-cons->table
-| count | file                                                   |
-|-------+--------------------------------------------------------|
-|    56 | /home/samuel/life/roam/20210420T114708Z-newstore.org   |
-|    11 | /home/samuel/life/roam/20210813T161035Z-kubernetes.org |
-|    10 | /home/samuel/life/roam/20200515T151822Z-postgresql.org |
+: cons->table
 
 *** ensure-list
 :PROPERTIES:
@@ -1174,7 +1170,7 @@ to populate, just fill a `pass' entry like so echo mypass | pass
 :PROPERTIES:
 :ID:       33f19a38-eb70-473d-8445-c916b7c3c2ff
 :CREATED:  <2022-03-11 Fri 11:53>
-:UPDATED:  <2022-03-11 Fri 11:58>
+:UPDATED:  [2022-04-12 Tue 09:26]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2306,33 +2302,38 @@ CREATED: <2021-11-29 Mon>
 :ID:       3c5750a5-620d-4b44-9a38-fd0fb218b584
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-12 Tue 16:35]
 :END:
 #+begin_src emacs-lisp :noweb-ref org
 (defun qz/org-babel-make-table-constants ()
   "exec from the top of a tree"
   (interactive)
   (let* ((hi-lock-auto-select-face t)
+         (write-constants (equal '(4) current-prefix-arg))
          ;; above is 100x better when you patch `hi-lock-face-symbol-at-point'
          ;; with `(or (and hi-lock-auto-select-face (hi-lock-read-face-name)) 'hi-yellow)'
          (col '()))
-    (save-excursion
+    (save-mark-and-excursion
       (org-map-tree
        (lambda ()
          (when-let* ((s (org-get-heading))
                      (s (org-no-properties s))
-                     (i (string-match ":" s))
-                     (k (substring s 0 i))
-                     (v (substring s (+ 2 i))))
+                     (i (string-match "::" s))
+                     (k (substring s 0 (1- i)))
+                     (v (substring s (+ 3 i))))
            (message "key: %s" k)
            (message "value: %s" v)
-           (message "col: %s" col)
            (setq col (cons (format "%s=%s" k v) col))
-           (funcall-interactively 'highlight-phrase v))))
-      (org-back-to-heading)
-      (next-line)
-      (newline)
-      (previous-line)
-      (insert (format "#+constants: %s" (s-join " " (reverse col)))))
+           (funcall-interactively 'highlight-phrase v)
+           (message "applied highlight for '%s'" v)
+           )))
+      (when write-constants
+        (org-back-to-heading)
+        (next-line)
+        (newline)
+        (previous-line)
+        (insert (format "#+constants: %s" (s-join " " (reverse col))))))
+    (message "col: %s" col)
     col))
 
 (define-key org-babel-map (kbd "M-d") 'qz/org-babel-make-table-constants)
@@ -2384,8 +2385,6 @@ the major mode specifies support for Font Lock."
          (hi-lock-auto-select-face t)
          (face (hi-lock-read-face-name)))
     (or (facep face)
-        (and hi-lock-auto-select-face
-             (hi-lock-read-face-name))
         (setq face (or (and hi-lock-auto-select-face
                             (hi-lock-read-face-name))
                        'hi-yellow)))
@@ -2395,10 +2394,42 @@ the major mode specifies support for Font Lock."
      (if (and case-fold-search search-upper-case)
          (isearch-no-upper-case-p regexp t)
        case-fold-search))))
+
+(defun hi-lock-face-phrase-buffer (regexp &optional face)
+  "Set face of each match of phrase REGEXP to FACE.
+Interactively, prompt for REGEXP using `read-regexp', then FACE.
+Use the global history list for FACE.
+
+If REGEXP contains upper case characters (excluding those preceded by `\\')
+and `search-upper-case' is non-nil, the matching is case-sensitive.
+Also set `search-spaces-regexp' to the value of `search-whitespace-regexp'.
+
+Use Font lock mode, if enabled, to highlight REGEXP.  Otherwise,
+use overlays for highlighting.  If overlays are used, the
+highlighting will not update as you type.  The Font Lock mode
+is considered \"enabled\" in a buffer if its `major-mode'
+causes `font-lock-specified-p' to return non-nil, which means
+the major mode specifies support for Font Lock."
+  (interactive
+   (list
+    (hi-lock-regexp-okay
+     (read-regexp "Phrase to highlight" 'regexp-history-last))
+    (hi-lock-read-face-name)))
+  (or (facep face)
+      (setq face (or (and hi-lock-auto-select-face
+                          (hi-lock-read-face-name))
+                     'hi-yellow)))
+  (unless hi-lock-mode (hi-lock-mode 1))
+  (hi-lock-set-pattern
+   regexp face nil nil
+   (if (and case-fold-search search-upper-case)
+       (isearch-no-upper-case-p regexp t)
+     case-fold-search)
+   search-whitespace-regexp))
 #+end_src
 
 #+RESULTS:
-: hi-lock-face-symbol-at-point
+: hi-lock-face-phrase-buffer
 
 *** capture
 :PROPERTIES:
@@ -3939,6 +3970,7 @@ once we find out about sequences and repeats
 :ID:       1728a0dc-4e3f-4317-8d3d-4ebb3dbc0375
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-13 Wed 14:29]
 :END:
 #+begin_src emacs-lisp :noweb-ref org
 (setq org-log-done 'note)
@@ -3948,7 +3980,7 @@ once we find out about sequences and repeats
 :PROPERTIES:
 :ID:       948baebf-3fae-499d-8036-6e454de83417
 :CREATED:  <2022-02-27 Sun 15:04>
-:UPDATED:  [2022-04-06 Wed 11:29]
+:UPDATED:  [2022-04-13 Wed 12:53]
 :ROAM_EXCLUDE: t
 :END:
 
