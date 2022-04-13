@@ -361,6 +361,7 @@
                                            %default-xorg-modules))
                                  (drivers (list "nvidia")))))))
 
+        ;;; postgres: don't include if gaming
         (unless gaming?
           (service postgresql-service-type))
         (unless gaming?
@@ -376,6 +377,9 @@
                                  (postgresql-role
                                   (name "newstore")
                                   (create-database? #t)))))))
+
+        ;;; ssh
+        ;; TODO key up, remove password method
         (service openssh-service-type
                  (openssh-configuration
                   (password-authentication? #t)
@@ -568,7 +572,8 @@
       (list emacs-consult-dir
             emacs-consult-eglot
             emacs-consult-recoll
-            emacs-sql-indent)
+            emacs-sql-indent
+            emacs-code-review)
       (pkgs "emacs-elfeed"
             "emacs-hl-todo"
             "emacs-ytdl"
@@ -583,6 +588,7 @@
             "emacs-forge"
             "emacs-debbugs"
             "emacs-plantuml-mode"
+            "emacs-ggtags"
 
             "emacs-ob-async"
             "emacs-org-fragtog"
@@ -599,6 +605,8 @@
             "emacs-logview" ;; https://github.com/doublep/logview
             ;;"emacs-vlf" ;; TODO guix: package emacs-vlf
 
+            "emacs-org-super-agenda"
+            "emacs-org-transclusion"
             "emacs-ox-hugo"
             "emacs-explain-pause-mode"
             ;; TODO feature-emacs-lsp
