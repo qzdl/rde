@@ -1216,3 +1216,34 @@ Get development version from git:
 
     git clone git://github.com/kanru/uuidgen-el.git")
    (license #f)))
+
+(define-public emacs-code-review
+  (package
+   (name "emacs-code-review")
+   (version "20220328.108")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/wandersoncferreira/code-review.git")
+           (commit "85ab2080e489b4ca01c787f5a316ade02a4ee877")))
+     (sha256
+      (base32 "0j0ijnzfd7b3a2jqi94zlky8iqv9g7vj9fx5fd4g2k53ilgapmdl"))))
+   (build-system emacs-build-system)
+   (propagated-inputs
+    (list emacs-closql
+          emacs-magit
+          emacs-a
+          emacs-ghub
+          emacs-uuidgen
+          emacs-deferred
+          emacs-markdown-mode
+          emacs-forge
+          emacs-emojify))
+   (home-page "https://github.com/wandersoncferreira/code-review")
+   (synopsis "Perform code review from Github, Gitlab, and Bitbucket Cloud")
+   (description
+    "Review Pull Request in Emacs using a modern interface based on Magit
+Section and Transient.  Currently supports Github, Gitlab, and
+Bitbucket Cloud.")
+   (license license:gpl3+)))
