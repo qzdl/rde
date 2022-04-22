@@ -21,6 +21,7 @@
 (define-module (rde packages emacs-xyz)
   #:use-module (guix packages)
   #:use-module (guix gexp)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system emacs)
   #:use-module (gnu packages emacs-xyz)
@@ -249,3 +250,257 @@ sending Git patches via Email, without leaving Emacs."))))
    (synopsis "Navigate, stage and revert hunks with ease")
    (description "This package provides transient interface for git-gutter function
 to manipulate and navigate hunks.")))
+
+(define-public emacs-es-mode-latest
+  (package
+    (name "emacs-es-mode")
+    (version "4.3.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dakrone/es-mode")
+             (commit "cde5cafcbbbd57db6d38ae7452de626305bba68d")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02zzwf9ykfi2dggjbspg7mk77b5x1fnkpp3bcp6rd4h95apnsjq5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     ;; The version of org in Emacs 24.5 is not sufficient, and causes
+     ;; tables to be rendered incorrectly
+     (list emacs-dash
+           emacs-org
+           emacs-spark
+           emacs-s
+           emacs-request))
+    (home-page "https://github.com/dakrone/es-mode")
+    (synopsis "Major mode for editing Elasticsearch queries")
+    (description "@code{es-mode} includes highlighting, completion and
+indentation support for Elasticsearch queries.  Also supported are
+@code{es-mode} blocks in @code{org-mode}, for which the results of queries can
+be processed through @code{jq}, or in the case of aggregations, can be
+rendered in to a table.  In addition, there is an @code{es-command-center}
+mode, which displays information about Elasticsearch clusters.")
+    (license license:gpl3+)))
+
+(define-public emacs-sql-indent
+  (package
+   (name "emacs-sql-indent")
+   (version "1.6")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "https://elpa.gnu.org/packages/sql-indent-"
+           version
+           ".tar"))
+     (sha256
+      (base32 "000pimlg0k4mrv2wpqq8w8l51wpr1lzlaq6ai8iaximm2a92ap5b"))))
+   (build-system emacs-build-system)
+   (home-page "https://github.com/alex-hhh/emacs-sql-indent")
+   (synopsis "Support for indenting code in SQL files.")
+   (description
+    "`sqlind-minor-mode' is a minor mode that enables syntax-based indentation for
+`sql-mode' buffers: the TAB key indents the current line based on the SQL code
+on previous lines.  To setup syntax-based indentation for every SQL buffer, add
+`sqlind-minor-mode' to `sql-mode-hook'.  Indentation rules are flexible and can
+be customized to match your personal coding style.  For more information, see
+the \"sql-indent.org\" file.
+
+The package also defines align rules so that the `align' function works for SQL
+statements, see `sqlind-align-rules'.")
+   (license license:gpl3+)))
+
+(define-public emacs-uuidgen
+  (package
+   (name "emacs-uuidgen")
+   (version "20200816.1308")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/kanru/uuidgen-el.git")
+           (commit "b50e6fef2de4199a8f207b46588c2cb3890ddd85")))
+     (sha256
+      (base32 "08m74kj7h70kna3pifk3sgsy7mck11p32vi48h9wzqnafyq3n55d"))))
+   (build-system emacs-build-system)
+   (home-page "unspecified")
+   (synopsis "Provides various UUID generating functions")
+   (description
+    " This is a naive implementation of RFC4122 Universally Unique IDentifier
+generation in elisp.  Currently implemented are UUID v1 v3, v4 and v5
+generation.  The resolution of the time based UUID is microseconds, which is 10
+times of the suggested 100-nanosecond resolution, but should be enough for
+general usage.
+
+Get development version from git:
+
+    git clone git://github.com/kanru/uuidgen-el.git")
+   (license #f)))
+
+(define-public emacs-code-review
+  (package
+   (name "emacs-code-review")
+   (version "20220328.108")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/wandersoncferreira/code-review.git")
+           (commit "85ab2080e489b4ca01c787f5a316ade02a4ee877")))
+     (sha256
+      (base32 "0j0ijnzfd7b3a2jqi94zlky8iqv9g7vj9fx5fd4g2k53ilgapmdl"))))
+   (build-system emacs-build-system)
+   (propagated-inputs
+    (list emacs-closql
+          emacs-magit
+          emacs-a
+          emacs-ghub
+          emacs-uuidgen
+          emacs-deferred
+          emacs-markdown-mode
+          emacs-forge
+          emacs-emojify))
+   (home-page "https://github.com/wandersoncferreira/code-review")
+   (synopsis "Perform code review from Github, Gitlab, and Bitbucket Cloud")
+   (description
+    "Review Pull Request in Emacs using a modern interface based on Magit
+Section and Transient.  Currently supports Github, Gitlab, and
+Bitbucket Cloud.")
+   (license license:gpl3+)))
+
+(define-public emacs-org-roam-ui
+  (package
+  (name "emacs-org-roam-ui")
+  (version "20220225.2151")
+  (source
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/org-roam/org-roam-ui.git")
+             (commit "df1f9522c5a9cdb248208427fa9df4f2a7666e2a")))
+      (sha256
+        (base32 "03kyg95f012ql0gpzy58kzxgdfksig5zlbr1p9m9ycgqmmxyq4jp"))))
+  (build-system emacs-build-system)
+  (propagated-inputs
+   (list emacs-org-roam
+         emacs-simple-httpd
+         emacs-websocket))
+  (arguments
+    '(#:include
+      '("^[^/]+.el$"
+        "^[^/]+.el.in$"
+        "^dir$"
+        "^[^/]+.info$"
+        "^[^/]+.texi$"
+        "^[^/]+.texinfo$"
+        "^doc/dir$"
+        "^doc/[^/]+.info$"
+        "^doc/[^/]+.texi$"
+        "^doc/[^/]+.texinfo$"
+        "^out$")
+      #:exclude
+      '("^.dir-locals.el$"
+        "^test.el$"
+        "^tests.el$"
+        "^[^/]+-test.el$"
+        "^[^/]+-tests.el$")))
+  (home-page "https://github.com/org-roam/org-roam-ui")
+  (synopsis "User Interface for Org-roam")
+  (description
+    "Org-roam-ui provides a web interface for navigating around notes
+created within Org-roam.")
+  (license license:gpl3+)))
+
+(define-public emacs-consult-recoll
+  (package
+   (name "emacs-consult-recoll")
+   (version "0.1")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://codeberg.org/jao/consult-recoll")
+           (commit "42dea1d40fedf7894e2515b4566a783b7b85486a")))
+     (sha256
+      (base32 "0nzch4x58vgvmcjr6p622lkzms2gvjfdgpvi6bbj5qdzkln5q23a"))))
+   (build-system emacs-build-system)
+   (propagated-inputs
+    `(("emacs-consult" ,emacs-consult)))
+   (home-page "https://codeberg.org/jao/consult-recoll")
+   (synopsis "A consulting-read interface for recoll")
+   (description
+    "A consulting-read interface for recoll")
+   (license license:gpl3+)))
+
+(define-public emacs-consult-eglot
+  (package
+   (name "emacs-consult-eglot")
+   (version "20210905.1830")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/mohkale/consult-eglot.git")
+           (commit "f93c571dc392a8b11d35541bffde30bd9f411d30")))
+     (sha256
+      (base32 "1jqg6sg6iaqxpfn7symiy221mg9sn4y1rn0l1rw9rj9xmcnng7s0"))))
+   (build-system emacs-build-system)
+   (propagated-inputs
+    `(("emacs-eglot" ,emacs-eglot) ("emacs-consult" ,emacs-consult)))
+   (home-page "https://github.com/mohkale/consult-eglot")
+   (synopsis "A consulting-read interface for eglot")
+   (description
+    "Query workspace symbol from eglot using consult.
+
+This package provides a single command `consult-eglot-symbols' that uses the
+lsp workspace/symbol procedure to get a list of symbols exposed in the current
+workspace. This differs from the default document/symbols call, that eglot
+exposes through imenu, in that it can present symbols from multiple open files
+or even files not indirectly loaded by an open file but still used by your
+project.
+
+This code was partially adapted from the excellent consult-lsp package.")
+   (license license:expat)))
+
+(define-public emacs-ob-restclient-latest
+  (let ((commit "f81f2f4f3fe6882947b8547ccd570f540106ed4d"))
+    (package
+      (name "emacs-ob-restclient")
+      (version (git-version "0.02" "2" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alf/ob-restclient.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "16byn85gsl99k818686jp3r4ipjcwdyq3nilmb32g4hgg0dlgaij"))))
+      (propagated-inputs
+       (list emacs-restclient))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/alf/ob-restclient.el")
+      (synopsis "Org-babel functionality for @code{restclient-mode}")
+      (description
+       "This package integrates @code{restclient-mode} with Org.")
+      (license license:gpl3+))))
+
+(define-public emacs-perfect-margin
+  (package
+    (name "emacs-perfect-margin")
+    (version "0.1")
+    (home-page "https://github.com/mpwang/perfect-margin")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url home-page)
+              (commit "94b055c743b1859098870c8aca3e915bd6e67d9d")))
+       (sha256
+        (base32 "02k379nig43j85wfm327pw6sh61kxrs1gwz0vgcbx9san4dp83bk"))))
+    (build-system emacs-build-system)
+    (synopsis "A global margin-making-mode, great for ultrawides")
+    (description
+     "[emacs] auto center emacs windows, work with minimap and/or linum-mode")
+    (license license:gpl3+)))
