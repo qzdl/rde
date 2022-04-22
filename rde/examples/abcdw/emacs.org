@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-04-13 Wed 14:29]
+:UPDATED:  [2022-04-22 Fri 12:10]
 :ID:       84700327-3a84-4d33-9918-dd06a809c28f
 :CREATED:  <2022-03-03 Thu 12:06>
 :END:
@@ -535,17 +535,19 @@ I don't use this very much, as it curls my whole left hand up (qwerty troubles)
 :ID:       75441f13-8830-42fe-b3fe-b22b2dbf4275
 :CREATED:  <2022-02-25 Fri 10:11>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-04-05 Tue 09:06]
+:UPDATED:  [2022-04-22 Fri 12:03]
 :END:
+
 #+begin_src emacs-lisp :noweb-ref kbd
 ;; Activate occur easily inside isearch
-(define-key isearch-mode-map (kbd "<return>")
-(lambda () (interactive)
-(let ((case-fold-search isearch-case-fold-search))
-(occur (if isearch-regexp
-isearch-string
-(regexp-quote isearch-string))))))
-#+end_srcq
+
+(define-key isearch-mode-map (kbd "C-o")
+            (lambda () (interactive)
+              (let ((case-fold-search isearch-case-fold-search))
+                (occur (if isearch-regexp
+                           isearch-string
+                         (regexp-quote isearch-string))))))
+#+end_src
 
 #+RESULTS:
 | lambda | nil | (interactive) | (let ((case-fold-search isearch-case-fold-search)) (occur (if isearch-regexp isearch-string (regexp-quote isearch-string)))) |
@@ -867,7 +869,6 @@ consuming
                                ())
        :lisp-1 6 :symbol-types symbol :plist-get 2)
 #+end_src
-
 
 
 **** settings
@@ -1223,15 +1224,23 @@ is already narrowed."
 
 #+RESULTS:
 : qz/yq-interactively
+
 ** hyperbole
 :PROPERTIES:
 :ID:       530fac5a-4f90-489a-83d8-69b1b75ab249
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
+
+*** (require 'hyperbole)
+:PROPERTIES:
+:ID:       03b4c561-6d9e-4c53-97ea-559dfbfc7eff
+:ROAM_EXCLUDE: t
+:END:
 #+begin_src emacs-lisp :noweb-ref conf
 (require 'hyperbole)
 #+end_src
+
 *** {C-<mouse-2} hkey-either
 :PROPERTIES:
 :ID:       ccc12df3-8b40-4bec-937f-c28692f1fed4
@@ -1240,6 +1249,7 @@ is already narrowed."
 :END:
 #+begin_src emacs-lisp :noweb-ref conf
 (define-key global-map (kbd "C-<down-mouse-2>") 'hkey-either)
+(define-key global-map (kbd "M-<return>") 'hkey-either)
 #+end_src
 
 #+RESULTS:
@@ -1863,6 +1873,7 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
 :ID:       3719c9a6-45ea-497e-a3ee-bc4c64a566e3
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-19 Tue 16:20]
 :END:
 #+begin_src emacs-lisp :noweb yes :noweb-ref org
 
@@ -1926,20 +1937,71 @@ because a mechanism for the discovery of =TODO= entries is
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-***** vulpea's category agenda refinement :org:
+***** category :: agenda format refinement                          :org:
 :PROPERTIES:
 :ID:       428c5706-9498-44e8-8960-2e893347d737
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-22 Fri 09:52]
+:END:
+****** org-category ;; agenda 
+:PROPERTIES:
+:ID:       0dd4254a-f725-4df0-8843-a25e22b4b299
+:CREATED:  [2022-04-22 Fri 09:56]
+:UPDATED:  [2022-04-22 Fri 09:56]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref agenda
+(defun qz/org-category (&optional len)
+  (let* ((len (or len 25)))
+    (->>
+     (if buffer-file-name
+         (file-name-sans-extension (file-name-nondirectory buffer-file-name))
+       "")
+     (replace-regexp-in-string "private-" "")
+     (replace-regexp-in-string
+      ;; datetime from file, could do "[0-9]\\{6\\}T[0-9]\\{6\\}Z?-"
+      (concat "[0-9][0-9][0-9][0-9]" "[0-9][0-9]" "[0-9][0-9]"
+              "T" "[0-9][0-9]" "[0-9][0-9]" "[0-9][0-9]" "Z-")
+      "")
+     (s-pad-right len " ")
+     (s-truncate len))))
+
+;;(qz/org-category)
+#+end_src
+
+#+RESULTS:
+: qz/org-category
+
+****** org-agenda-prefix-format
+:PROPERTIES:
+:ID:       9ce2b921-9c56-42b8-aa6a-579972a92a60
+:CREATED:  [2022-04-22 Fri 09:56]
+:UPDATED:  [2022-04-22 Fri 09:56]
+:ROAM_EXCLUDE: t
 :END:
 #+begin_src emacs-lisp :noweb-ref agenda
-(setq qz/org-agenda-prefix-length 20
-      org-agenda-prefix-format nil)
-;; '((agenda . " %i Emacs Configuration %?-12t% s")
-;;   (todo . " %i Emacs Configuration  ")
-;;   (tags . " %i Emacs Configuration  ")
-;;   (search . " %i Emacs Configuration  "))
+(let* ((agenda "  %(qz/org-category)%-12t% s")
+       (other "%i%(qz/org-category 12)%l"))
+  (setq org-agenda-prefix-format `((agenda . ,agenda)
+                                   (todo . ,other)
+                                   (tags . ,other)
+                                   (search . ,other))))
+#+end_src
 
+#+RESULTS:
+: ((agenda .   %(qz/org-category)%-12t% s) (todo . %i%(qz/org-category 12)%l) (tags . %i%(qz/org-category 12)%l) (search . %i%(qz/org-category 12)%l))
+
+****** vulpea's category refinement
+:PROPERTIES:
+:ID:       6c717faa-ecc5-41b3-a93e-606fa9170d7a
+:CREATED:  [2022-04-22 Fri 09:53]
+:UPDATED:  [2022-04-22 Fri 09:53]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref agenda
 (defun vulpea-agenda-category (&optional len)
   "Get category of item at point for agenda.
 
@@ -1976,7 +2038,113 @@ Refer to `org-agenda-prefix-format' for more information."
 #+end_src
 
 #+RESULTS:
-: ((agenda .  %i Emacs Configuration %?-12t% s) (todo .  %i Emacs Configuration  ) (tags .  %i Emacs Configuration  ) (search .  %i Emacs Configuration  ))
+: vulpea-agenda-category
+**** etc
+:PROPERTIES:
+:ID:       d21041e2-b257-4f84-93bd-c43fd895c33b
+:CREATED:  [2022-04-21 Thu 15:26]
+:UPDATED:  [2022-04-21 Thu 15:26]
+:ROAM_EXCLUDE: t
+:END:
+***** lunar phases
+:PROPERTIES:
+:ID:       730db291-2c3d-4995-928f-81685991be07
+:CREATED:  [2022-04-14 Thu 15:55]
+:UPDATED:  [2022-04-14 Thu 15:55]
+:ROAM_EXCLUDE: t
+:END:
+
+- :: https://orgmode.org/worg/org-hacks.html#org92f0a44
+
+****** org-lunar-phases :func:
+:PROPERTIES:
+:ID:       84219025-9fc0-41c0-b43b-70c5d61aed77
+:CREATED:  [2022-04-14 Thu 15:55]
+:UPDATED:  [2022-04-14 Thu 15:55]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref agenda
+(org-no-warnings (defvar date))
+(defun qz/org-lunar-phases ()
+  "Show lunar phase in Agenda buffer."
+  (require 'lunar)
+  (let* ((phase-list (lunar-phase-list (nth 0 date)
+                                       (nth 2 date)))
+         (phase (cl-find-if (lambda (phase)
+                              (equal (car phase) date))
+                            phase-list)))
+    (when phase
+      (setq ret (concat (lunar-phase-name (nth 2 phase)))))))
+#+end_src
+
+#+RESULTS:
+: qz/org-lunar-phases
+
+****** lunar-phase-names
+:PROPERTIES:
+:ID:       f8dbfc55-a12f-4481-909c-aa7e15339931
+:CREATED:  [2022-04-14 Thu 15:55]
+:UPDATED:  [2022-04-22 Fri 12:06]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref agenda
+;; 🌑🌒🌓🌔🌕🌖🌗🌘🌙🌚🌛🌜
+(setq lunar-phase-names
+'("🌚 new moon" ; unicode symbol : 🌑 use full circle as fallback
+"🌛 first quarter moon"
+"🌝 full moon" ; unicode symbol: 🌕 use empty circle as fallback
+"🌜 last quarter moon"))
+
+#+end_src
+
+#+RESULTS:
+| 🌚 new moon | 🌛 first quarter moon | 🌝 full moon | 🌜 last quarter moon |
+
+***** sunrise + set
+:PROPERTIES:
+:ID:       8bcfd1c5-2002-4e81-90fe-39a98ff678b1
+:CREATED:  [2022-04-14 Thu 15:55]
+:UPDATED:  [2022-04-21 Thu 15:36]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+(setq calendar-latitude 52.5)  ; imprecise
+(setq calendar-longitude 13.4)
+(setq calendar-location-name "berlin")
+
+(autoload 'solar-sunrise-sunset "solar.el")
+(autoload 'solar-time-string "solar.el")
+(defun qz/diary-sunrise ()
+  "Local time of sunrise as a diary entry.
+The diary entry can contain `%s' which will be replaced with
+`calendar-location-name'."
+  (let ((l (solar-sunrise-sunset date)))
+    (when (car l)
+      (concat
+       (if (string= entry "")
+           "🌄 sunrise"
+         (format entry (eval calendar-location-name))) " "
+       (solar-time-string (caar l) nil)))))
+
+(defun qz/diary-sunset ()
+  "Local time of sunset as a diary entry.
+The diary entry can contain `%s' which will be replaced with
+`calendar-location-name'."
+  (let ((l (solar-sunrise-sunset date)))
+    (when (cadr l)
+      (concat
+       (if (string= entry "")
+           "🌅 sunset"
+         (format entry (eval calendar-location-name))) " "
+       (solar-time-string (caadr l) nil)))))
+#+end_src
+
+#+RESULTS:
+: qz/diary-sunset
+
 
 *** [[id:0213945d-cba5-4dd0-812c-9c01d6f51148][babel]]
 :PROPERTIES:
@@ -2063,14 +2231,14 @@ fuck the speed my man; {M-x load-library RET ob-} is so annoying
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-CREATED: <2021-11-29 Mon>
-
+CREATED: <2021-11-29 Mon
+>
 ***** lob-ingest-files                                         :var:func:
 :PROPERTIES:
 :ID:       05415208-95bf-4153-b65c-32e10112c582
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-04-11 Mon 10:07]
+:UPDATED:  [2022-04-22 Fri 12:08]
 :END:
 CREATED: <2021-11-29 Mon>
 
@@ -2103,9 +2271,10 @@ CREATED: <2021-11-29 Mon>
 #+RESULTS:
 | count | file                                                   |
 |-------+--------------------------------------------------------|
-|    56 | /home/samuel/life/roam/20210420T114708Z-newstore.org   |
+|    58 | /home/samuel/life/roam/20210420T114708Z-newstore.org   |
 |    11 | /home/samuel/life/roam/20210813T161035Z-kubernetes.org |
-|    10 | /home/samuel/life/roam/20200515T151822Z-postgresql.org |
+|    11 | /home/samuel/life/roam/20200515T151822Z-postgresql.org |
+|     2 | /home/samuel/life/roam/20200415T145703Z-emacs_lisp.org |
 
 
 ***** choose babel block                                           :func:
@@ -2319,7 +2488,7 @@ CREATED: <2021-11-29 Mon>
          (when-let* ((s (org-get-heading))
                      (s (org-no-properties s))
                      (i (string-match "::" s))
-                     (k (substring s 0 (1- i)))
+                     (k (substring s 0 (- i 1)))
                      (v (substring s (+ 3 i))))
            (message "key: %s" k)
            (message "value: %s" v)
@@ -3007,23 +3176,18 @@ as this is my current mechanism for making a [[id:5d31286f-eef2-490a-8d44-0cded2
 | qz/advice-enable--org-id-get-create--qz/org-roam--insert-timestamp | qz/advice-disable--org-id-get-create--qz/org-roam--insert-timestamp |
 ***** auto-tagging
 :PROPERTIES:
-:ID:       462b81b9-c746-4299-987c-70f2f5ce7e28
-:CREATED:  [2022-03-10 Thu 18:47]
-:UPDATED:  [2022-03-10 Thu 18:47]
-:ROAM_EXCLUDE: t
-:END:
-:PROPERTIES:
 :ID:       bac18b83-9a07-4c4b-ac68-82a4ba1b480c
-:CREATED:  <2022-02-22 Tue 15:27>
+:CREATED:  [2022-02-22 Tue 15:27]
+:UPDATED:  [2022-04-22 Fri 12:06]
 :ROAM_EXCLUDE: t
-
-
 :END:
+
 ****** test
 :PROPERTIES:
 :ID:       6301a181-545d-4d78-838b-b8b6849481a9
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-22 Fri 12:07]
 :END:
 ******* predicate
 :PROPERTIES:
@@ -3605,16 +3769,16 @@ cat /tmp/oo | uniq -c | sort -r | head
 :results:
 3394
 3395
-      1 fffec49f-29e6-4eeb-bf72-8a332f758222,<2021-09-30 01:00:38>,<2020-07-13 09:03:06>,Why, and how much, extra disk space is required when upgrading with Slony-1?
-      1 ffd716b0-02c7-4594-aec9-bb6cf729d86a,<2021-09-30 01:00:38>,<2021-09-30 01:00:38>,pollo de limon
-      1 ffcd9f0f-7eca-4d4e-bf94-a7a41266994f,<2021-09-30 01:00:38>,<2021-09-30 01:00:38>,<2021-06-15>
-      1 ffa31214-f0c3-415a-be09-16971e46c56e,<2022-01-07 Fri 13:06>,<2022-01-07 Fri 13:06>,tig welding
-      1 ff7134e1-beed-4110-a1d1-299a77dcec12,<2021-10-05 11:01:34>,<2021-08-16 18:32:45>,how did you get into <<job>>
-      1 ff5c3587-1d6f-40a9-8ced-c0a07b5fcd76,<2021-10-19 08:47:34>,<2020-05-18 09:40:13>,meeting
-      1 ff4838ef-41ae-43d4-844e-c4d8a1451411,<2021-09-30 01:00:38>,<2021-08-13 16:10:35>,Arthur Holmes
-      1 ff318634-08d2-4987-8a82-3a436303c753,<2021-09-30 01:00:38>,<2021-09-30 01:00:38>,<2020-08-23>
-      1 ff1873f7-5ad7-4d4e-8de1-eb0046675047,<2021-09-30 01:00:38>,<2021-09-30 01:00:38>,wine
-      1 ff06c7dc-3266-4ba1-82a6-c5f430bb1963,<2021-12-15 Wed 11:36>,<2021-04-20 11:47:08>,NewStore
+1 fffec49f-29e6-4eeb-bf72-8a332f758222,<2021-09-30 01:00:38>,<2020-07-13 09:03:06>,Why, and how much, extra disk space is required when upgrading with Slony-1?
+1 ffd716b0-02c7-4594-aec9-bb6cf729d86a,<2021-09-30 01:00:38>,<2021-09-30 01:00:38>,pollo de limon
+1 ffcd9f0f-7eca-4d4e-bf94-a7a41266994f,<2021-09-30 01:00:38>,<2021-09-30 01:00:38>,<2021-06-15>
+1 ffa31214-f0c3-415a-be09-16971e46c56e,<2022-01-07 Fri 13:06>,<2022-01-07 Fri 13:06>,tig welding
+1 ff7134e1-beed-4110-a1d1-299a77dcec12,<2021-10-05 11:01:34>,<2021-08-16 18:32:45>,how did you get into <<job>>
+1 ff5c3587-1d6f-40a9-8ced-c0a07b5fcd76,<2021-10-19 08:47:34>,<2020-05-18 09:40:13>,meeting
+1 ff4838ef-41ae-43d4-844e-c4d8a1451411,<2021-09-30 01:00:38>,<2021-08-13 16:10:35>,Arthur Holmes
+1 ff318634-08d2-4987-8a82-3a436303c753,<2021-09-30 01:00:38>,<2021-09-30 01:00:38>,<2020-08-23>
+1 ff1873f7-5ad7-4d4e-8de1-eb0046675047,<2021-09-30 01:00:38>,<2021-09-30 01:00:38>,wine
+1 ff06c7dc-3266-4ba1-82a6-c5f430bb1963,<2021-12-15 Wed 11:36>,<2021-04-20 11:47:08>,NewStore
 :end:
 
 ****** duplicate ids?
@@ -3630,16 +3794,16 @@ cat /tmp/oo | cut -d, -f1 | uniq -c | sort -rgk1 | head
 
 #+RESULTS:
 :results:
-      1 fffec49f-29e6-4eeb-bf72-8a332f758222
-      1 ffd716b0-02c7-4594-aec9-bb6cf729d86a
-      1 ffcd9f0f-7eca-4d4e-bf94-a7a41266994f
-      1 ffa31214-f0c3-415a-be09-16971e46c56e
-      1 ff7134e1-beed-4110-a1d1-299a77dcec12
-      1 ff5c3587-1d6f-40a9-8ced-c0a07b5fcd76
-      1 ff4838ef-41ae-43d4-844e-c4d8a1451411
-      1 ff318634-08d2-4987-8a82-3a436303c753
-      1 ff1873f7-5ad7-4d4e-8de1-eb0046675047
-      1 ff06c7dc-3266-4ba1-82a6-c5f430bb1963
+1 fffec49f-29e6-4eeb-bf72-8a332f758222
+1 ffd716b0-02c7-4594-aec9-bb6cf729d86a
+1 ffcd9f0f-7eca-4d4e-bf94-a7a41266994f
+1 ffa31214-f0c3-415a-be09-16971e46c56e
+1 ff7134e1-beed-4110-a1d1-299a77dcec12
+1 ff5c3587-1d6f-40a9-8ced-c0a07b5fcd76
+1 ff4838ef-41ae-43d4-844e-c4d8a1451411
+1 ff318634-08d2-4987-8a82-3a436303c753
+1 ff1873f7-5ad7-4d4e-8de1-eb0046675047
+1 ff06c7dc-3266-4ba1-82a6-c5f430bb1963
 :end:
 
 ****** date distribution
@@ -3662,16 +3826,16 @@ cat /tmp/oo | awk -F, '{print $2}' | sort | uniq -c | sort -rgk1 | head
 #+RESULTS:
 :results:
 534
-   2246 <2021-09-30 01:00:38>
-     96 <2022-01-06 12:46:02>
-     77 <2021-10-19 08:47:34>
-     35 <2022-01-12 20:09:37>
-     34 <2021-10-05 11:42:04>
-     14 <2022-01-12 16:47:20>
-     14 <2021-12-13 11:13:32>
-     11 <2021-10-05 16:34:48>
-     11 <2021-10-01 16:24:07>
-     10 <2022-01-12 13:40:32>
+2246 <2021-09-30 01:00:38>
+96 <2022-01-06 12:46:02>
+77 <2021-10-19 08:47:34>
+35 <2022-01-12 20:09:37>
+34 <2021-10-05 11:42:04>
+14 <2022-01-12 16:47:20>
+14 <2021-12-13 11:13:32>
+11 <2021-10-05 16:34:48>
+11 <2021-10-01 16:24:07>
+10 <2022-01-12 13:40:32>
 :end:
 
 ******* created
@@ -3688,16 +3852,16 @@ cat /tmp/oo | awk -F, '{print $3}' | sort | uniq -c | sort -rgk1 | head
 #+RESULTS:
 :results:
 1893
-    500 <2021-08-13 16:10:35>
-    459 <2021-09-30 01:00:38>
-    102 <2021-04-20 11:47:08>
-     37 <2021-05-18 12:49:41>
-     28 <2021-10-19 08:47:34>
-     20 <2020-05-15 16:39:41>
-     15 <2021-12-13 11:13:32>
-     13 <2022-01-12 Wed 16:58>
-     12 <2020-05-11 15:09:56>
-     11 <2021-06-08 08:19:23>
+500 <2021-08-13 16:10:35>
+459 <2021-09-30 01:00:38>
+102 <2021-04-20 11:47:08>
+37 <2021-05-18 12:49:41>
+28 <2021-10-19 08:47:34>
+20 <2020-05-15 16:39:41>
+15 <2021-12-13 11:13:32>
+13 <2022-01-12 Wed 16:58>
+12 <2020-05-11 15:09:56>
+11 <2021-06-08 08:19:23>
 :end:
 
 ******* created,updated
@@ -3712,16 +3876,16 @@ cat /tmp/oo | awk -F, '{print $2,$3}' | sort | uniq -c | sort -rgk1 | head
 
 #+RESULTS:
 :results:
-    459 <2021-09-30 01:00:38> <2021-09-30 01:00:38>
-    241 <2021-09-30 01:00:38> <2021-08-13 16:10:35>
-     96 <2022-01-06 12:46:02> <2021-04-20 11:47:08>
-     35 <2022-01-12 20:09:37> <2021-05-18 12:49:41>
-     28 <2021-10-19 08:47:34> <2021-10-19 08:47:34>
-     26 <2021-10-19 08:47:34> <2021-08-13 16:10:35>
-     19 <2021-10-05 11:42:04> <2021-08-13 16:10:35>
-     14 <2022-01-12 16:47:20> <2020-05-15 16:39:41>
-     14 <2021-12-13 11:13:32> <2021-12-13 11:13:32>
-     11 <2021-10-05 16:34:48> <2021-06-08 08:19:23>
+459 <2021-09-30 01:00:38> <2021-09-30 01:00:38>
+241 <2021-09-30 01:00:38> <2021-08-13 16:10:35>
+96 <2022-01-06 12:46:02> <2021-04-20 11:47:08>
+35 <2022-01-12 20:09:37> <2021-05-18 12:49:41>
+28 <2021-10-19 08:47:34> <2021-10-19 08:47:34>
+26 <2021-10-19 08:47:34> <2021-08-13 16:10:35>
+19 <2021-10-05 11:42:04> <2021-08-13 16:10:35>
+14 <2022-01-12 16:47:20> <2020-05-15 16:39:41>
+14 <2021-12-13 11:13:32> <2021-12-13 11:13:32>
+11 <2021-10-05 16:34:48> <2021-06-08 08:19:23>
 :end:
 
 
@@ -3771,13 +3935,13 @@ cat /tmp/oo | awk -F, '{print $2,$3}' | sort | uniq -c | sort -rgk1 | head
 :END:
 #+begin_src emacs-lisp
 (dolist (file (split-string (shell-command-to-string
-                          "rg TODO ~/life/roam -t org --files-with-matches")
-                         "\n"))
+                             "rg TODO ~/life/roam -t org --files-with-matches")
+                            "\n"))
   (unless (string-empty-p file)
     (with-current-buffer (find-file-noselect f)
       (org-mode)
       (unless 
-           (qz/file-has-todo-p
+          (qz/file-has-todo-p
 
 #+end_src
 
@@ -4186,7 +4350,7 @@ CREATED: <2021-12-07 Tue 14:13>
 check with (org-redisplay-inline-images)
 -----------------------------------------------------------------
 
-#+begin_src emacs-lisp :noweb-ref conf
+#+begin_src emacs-lisp :noweb-ref org
 (setq org-image-actual-width 640)
 #+end_src
 
@@ -4243,19 +4407,22 @@ check with (org-redisplay-inline-images)
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
+
 *** choose
 :PROPERTIES:
 :ID:       ada7f597-ebc8-43f2-bc32-7cb09a31a088
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
+
 **** restclient-choose-env
 :PROPERTIES:
 :ID:       b88fa094-45e8-4426-8ed8-cdd333afde7a
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp :noweb-ref conf
+
+#+begin_src emacs-lisp :noweb-ref restclient
 (defvar qz/restclient-env nil)
 
 (defun qz/restclient-choose-env (&optional env)
@@ -4277,7 +4444,7 @@ check with (org-redisplay-inline-images)
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp :noweb-ref es
+#+begin_src emacs-lisp :noweb-ref restclient
 (defvar qz/restclient-tenant nil)
 
 (defun qz/restclient-choose-tenant (&optional tenant)
@@ -4291,14 +4458,30 @@ check with (org-redisplay-inline-images)
 
 #+RESULTS:
 : qz/restclient-choose-tenant
+*** noweb tangler
+:PROPERTIES:
+:ID:       515b64aa-7f64-45dd-adb6-253e4a24f387
+:CREATED:  [2022-04-20 Wed 15:14]
+:UPDATED:  [2022-04-22 Fri 12:05]
+:ROAM_EXCLUDE: t
+:END:
 
+#+begin_src emacs-lisp :noweb-ref conf
+;; NOWEB RESTCLIENT START
+(with-eval-after-load 'restclient
+  <<restclient>>
+  )
+;; NOWEB RESTCLIENT END
+#+end_src
 *** token
 :PROPERTIES:
 :ID:       7136479f-df01-4628-b15d-c5878b4e45bf
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-20 Wed 15:15]
 :END:
-#+begin_src emacs-lisp :noweb-ref conf
+
+#+begin_src emacs-lisp :noweb-ref restclient
 (defvar qz/restclient-token nil)
 (defvar qz/restclient-token-field 'access_token)
 
@@ -4451,6 +4634,7 @@ or
 :ID:       21946f30-986f-49fe-a51d-38c78f315543
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-22 Fri 12:02]
 :END:
 #+begin_src emacs-lisp :noweb yes :noweb-ref conf
 (defun qz/reload-config-home ()
@@ -4463,7 +4647,7 @@ or
     "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
     "&& make ixy-home-reconfigure"
     "&& echo 'bal-eggd-e' "
-    "| espeak --stdin "))) 
+    "| espeak --stdin ")))
 
 (defun qz/reload-config-system ()
   (interactive)
@@ -4505,11 +4689,44 @@ or
 #+RESULTS:
 : qz/guix-upgrade
 
+*** swaywm: choose output resolution
+:PROPERTIES:
+:ID:       8fbfdfd8-edfb-4f7d-a6ed-a1927aa1885a
+:CREATED:  [2022-04-22 Fri 11:56]
+:UPDATED:  [2022-04-22 Fri 12:03]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref conf
+(defun qz/sway-choose-output-res (&optional display res)
+  (interactive)
+  (let* ((cur (s-trim (shell-command-to-string
+                       "swaymsg -t get_outputs | jq -r 'map( . | select(.focused == true) | .name) | first'")))
+         (cmd (format "swaymsg 'output %s enable res %s'"
+                      (or display
+                          (completing-read "display: "
+                                           '("DP-1" "DP-2"
+                                             "eDP-1"
+                                             "HDMI-1" "HDMI-2")
+                                           nil t cur))
+                      (or res
+                          (completing-read "resolution: "
+                                           '("1920x1080"
+                                             "5120x1440")
+                                           nil t)))))
+    (when (y-or-n-p (format "exec ~%s~?" cmd))
+      (shell-command cmd))))
+#+end_src
+
+#+RESULTS:
+: qz/sway-choose-output-res
+
 ** [[id:fbfebc6c-8732-4646-85da-96345218116e][tramp]]
 :PROPERTIES:
 :ID:       603cb796-7a41-459d-a1e9-5fdc50aee476
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-21 Thu 14:56]
 :END:
 *** tramp-cache-read-persistent-data ; yes please
 :PROPERTIES:
@@ -5201,6 +5418,7 @@ MINIBUFFER-ALSO-P is non-nil."
 :ID:       bb42ed82-562f-4d92-9a60-3a524b82283d
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-22 Fri 12:10]
 :END:
 #+begin_src emacs-lisp :tangle no
 ;;; vline.el --- show vertical line (column highlighting) mode.

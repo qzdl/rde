@@ -309,6 +309,7 @@
         (call-interactively 'jq-interactively)))
     (require 'hyperbole)
     (define-key global-map (kbd "C-<down-mouse-2>") 'hkey-either)
+    (define-key global-map (kbd "M-<return>") 'hkey-either)
     
     ;; NOWEB GOLANG START
     (with-eval-after-load 'go-mode
@@ -675,27 +676,31 @@
         "exec from the top of a tree"
         (interactive)
         (let* ((hi-lock-auto-select-face t)
+               (write-constants (equal '(4) current-prefix-arg))
                ;; above is 100x better when you patch `hi-lock-face-symbol-at-point'
                ;; with `(or (and hi-lock-auto-select-face (hi-lock-read-face-name)) 'hi-yellow)'
                (col '()))
-          (save-excursion
+          (save-mark-and-excursion
             (org-map-tree
              (lambda ()
                (when-let* ((s (org-get-heading))
                            (s (org-no-properties s))
-                           (i (string-match ":" s))
-                           (k (substring s 0 i))
-                           (v (substring s (+ 2 i))))
+                           (i (string-match "::" s))
+                           (k (substring s 0 (- i 1)))
+                           (v (substring s (+ 3 i))))
                  (message "key: %s" k)
                  (message "value: %s" v)
-                 (message "col: %s" col)
                  (setq col (cons (format "%s=%s" k v) col))
-                 (funcall-interactively 'highlight-phrase v))))
-            (org-back-to-heading)
-            (next-line)
-            (newline)
-            (previous-line)
-            (insert (format "#+constants: %s" (s-join " " (reverse col)))))
+                 (funcall-interactively 'highlight-phrase v)
+                 (message "applied highlight for '%s'" v)
+                 )))
+            (when write-constants
+              (org-back-to-heading)
+              (next-line)
+              (newline)
+              (previous-line)
+              (insert (format "#+constants: %s" (s-join " " (reverse col))))))
+          (message "col: %s" col)
           col))
       
       (define-key org-babel-map (kbd "M-d") 'qz/org-babel-make-table-constants)
@@ -1087,10 +1092,10 @@
                             'qz/create-excluded-ids-for-headlines-in-buffer nil 'local)))
       
       (setq org-id-link-to-org-use-id t)
+      (setq org-image-actual-width 640)
       )
     (message "post org: %s" (shell-command-to-string "date"))
     ;; NOWEB ORG END
-    (setq org-image-actual-width 640)
     
     ;; (setq minibuffer-mode-hook nil)
     ;; (add-hook 'minibuffer-mode-hook 'olivetti-mode)
