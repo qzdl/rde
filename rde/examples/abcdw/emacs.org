@@ -2238,7 +2238,7 @@ CREATED: <2021-11-29 Mon
 :ID:       05415208-95bf-4153-b65c-32e10112c582
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-04-22 Fri 12:08]
+:UPDATED:  [2022-04-29 Fri 12:07]
 :END:
 CREATED: <2021-11-29 Mon>
 
@@ -2261,8 +2261,10 @@ CREATED: <2021-11-29 Mon>
 
 (defun qz/org-babel-do-lob-ingest-files (&optional files)
   (interactive)
-  (mapcar (lambda (f) (cons (org-babel-lob-ingest f) f))
-          (append qz/org-babel-lob-ingest-files files)))
+  (let ((r (mapcar (lambda (f) (cons (org-babel-lob-ingest f) f))
+                   (append qz/org-babel-lob-ingest-files files))))
+    (message "%s" (pp r))
+    r))
 
 (cons->table
  (qz/org-babel-do-lob-ingest-files))
@@ -2271,7 +2273,7 @@ CREATED: <2021-11-29 Mon>
 #+RESULTS:
 | count | file                                                   |
 |-------+--------------------------------------------------------|
-|    58 | /home/samuel/life/roam/20210420T114708Z-newstore.org   |
+|    69 | /home/samuel/life/roam/20210420T114708Z-newstore.org   |
 |    11 | /home/samuel/life/roam/20210813T161035Z-kubernetes.org |
 |    11 | /home/samuel/life/roam/20200515T151822Z-postgresql.org |
 |     2 | /home/samuel/life/roam/20200415T145703Z-emacs_lisp.org |
