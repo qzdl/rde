@@ -4880,6 +4880,113 @@ the major mode specifies support for Font Lock."
 
 #+RESULTS:
 : hi-lock-face-symbol-at-point
+*** emacs-highlight-indent-guides
+:PROPERTIES:
+:ID:       aacfd214-458f-4334-aad6-7b1a6453a9f5
+:CREATED:  [2022-05-23 Mon 11:01]
+:UPDATED:  [2022-05-23 Mon 11:03]
+:ROAM_EXCLUDE: t
+:END:
+
+**** noweb tangler
+:PROPERTIES:
+:ID:       623daebd-6f65-49da-b45b-801c5f18489c
+:CREATED:  [2022-05-23 Mon 11:01]
+:UPDATED:  [2022-05-23 Mon 11:01]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb yes
+
+(with-eval-after-load 'highlight-indent-guides
+   <<hl-indent>>
+   )
+
+#+end_src
+**** appearance; character ( 🐶 🐩 ), colours
+:PROPERTIES:
+:ID:       7f7805c9-90a1-43b0-921a-3260e3153079
+:CREATED:  [2022-05-23 Mon 11:01]
+:UPDATED:  [2022-05-23 Mon 11:03]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref hl-indent
+
+;; highlight-indent-guides-character
+;; 🐶
+;; 🐩
+;; |
+;; default (char-to-string 9474)
+;; default │
+
+(custom-set-variables '(highlight-indent-guides-method 'character)
+                        `(highlight-indent-guides-character 9474)
+                        '(highlight-indent-guides-auto-enabled nil)
+                        '(highlight-indent-guides-responsive 'top))
+
+;; I don't use this AT ALL so give some ridulous defaults
+(set-face-background 'highlight-indent-guides-odd-face "green")
+(set-face-background 'highlight-indent-guides-even-face "red")
+
+;; this is the /only/ based highlight-indent guide variety
+(set-face-foreground 'highlight-indent-guides-character-face "#333")
+(let ((accent "#555"))
+  (set-face-foreground 'highlight-indent-guides-stack-character-face accent)
+  (set-face-foreground 'highlight-indent-guides-top-character-face accent))
+#+end_src
+
+these settings end up looking like this:
+
+#+DOWNLOADED: screenshot @ 2022-05-23 11:02:39
+[[file:configs/2022-05-23_11-02-39_screenshot.png]]
+
+**** interactive customisation
+:PROPERTIES:
+:ID:       b935c3bd-3965-4553-8177-5c679f5eaa2a
+:CREATED:  [2022-05-23 Mon 11:01]
+:UPDATED:  [2022-05-23 Mon 11:01]
+:ROAM_EXCLUDE: t
+:END:
+
+***** toggle following responsive :: qz/highlight-indent-toggle-responsive
+:PROPERTIES:
+:ID:       168ed94a-2b77-41a8-8e8d-b22d330b9c84
+:CREATED:  [2022-05-23 Mon 11:01]
+:UPDATED:  [2022-05-23 Mon 11:01]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref hl-indent
+(defun qz/highlight-indent-toggle-responsive (&optional arg)
+  (interactive)
+  (let ((val (if (or (and arg (> 0 arg))
+                     (and (not arg) highlight-indent-guides-responsive))
+                 nil qz/highlight-indent-guides-responsive)))
+    (custom-set-variables
+     `(highlight-indent-guides-responsive ',val))
+    (highlight-indent-guides-mode)
+    val))
+#+end_src
+
+***** lazy reading mode
+:PROPERTIES:
+:ID:       9a6b201c-5074-4bcc-adea-252dfe608127
+:CREATED:  [2022-05-23 Mon 11:01]
+:UPDATED:  [2022-05-23 Mon 11:08]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref hl-indent
+(defvar qz/lazy-last -1)
+(defun qz/lazy-eyes (&optional arg)
+  (interactive)
+  (setq qz/lazy-last (if (> 0 qz/lazy-last) 1 -1))
+  (qz/highlight-indent-toggle-responsive qz/lazy-last)
+  (global-hl-line-mode qz/lazy-last))
+#+end_src
+
+#+RESULTS:
+: qz/lazy-eyes
 
 *** [[id:bdba5c2b-bcfc-429c-bd90-57aaa211de65][font]] modulation
 :PROPERTIES:
