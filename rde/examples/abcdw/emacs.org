@@ -4236,6 +4236,52 @@ once we find out about sequences and repeats
 (define-key org-mode-map (kbd "C-c M-a") 'qz/org-insert-current-attachment)
 
 #+end_src
+**** refine org-link for generic files
+:PROPERTIES:
+:ID:       220874c8-4330-4440-a616-31b2e0a47ef2
+:CREATED:  [2022-05-23 Mon 10:46]
+:UPDATED:  [2022-05-23 Mon 10:46]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb-ref org
+(defun qz/org-insert-last-stored-link (arg)
+  "Insert the last link stored in `org-stored-links'."
+  (interactive "p")
+  (qz/org-insert-all-links arg "" "\n"))
+
+(defun qz/org-insert-all-links (arg &optional pre post)
+  "Insert all links in `org-stored-links'.
+When a universal prefix, do not delete the links from `org-stored-links'.
+When `ARG' is a number, insert the last N link(s).
+`PRE' and `POST' are optional arguments to define a string to
+prepend or to append."
+  (interactive "P")
+  (let ((org-link-keep-stored-after-insertion (equal arg '(4)))
+        (links (copy-sequence org-stored-links))
+        (pr (or pre "- "))
+        (po (or post "\n"))
+        (cnt 1) l)
+    (if (null org-stored-links)
+        (message "No link to insert")
+      (while (and (or (listp arg) (>= arg cnt))
+                  (setq l (if (listp arg)
+                              (pop links)
+                            (pop org-stored-links))))
+        (setq cnt (1+ cnt))
+        (insert pr)
+        (org-insert-link nil (car l)
+                         (or (cadr l)
+                             ;; (car (last (s-split "/" "file/path/goop.boop::pattern")))
+                             ;; => "goop.boop::pattern"
+                             (car (last (s-split "/" (car l))))))
+        (insert po)))))
+
+(define-key org-mode-map (kbd "C-c M-l") 'qz/org-insert-last-stored-link)
+#+end_src
+
+#+RESULTS:
+: qz/org-insert-last-stored-link
+
 *** hooks
 :PROPERTIES:
 :ID:       5ff7526d-f62c-49fd-8752-07d829fce0d8
