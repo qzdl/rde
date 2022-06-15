@@ -1148,7 +1148,6 @@ if one already exists."
 
         (define-key mode-specific-map (kbd "c") 'org-capture)
         (setq org-directory ,org-directory)
-
         (setq org-agenda-directory ,org-agenda-directory)
 
         (with-eval-after-load
@@ -2017,9 +2016,8 @@ emacsclient feels more like a separate emacs instance."
                (concat "${title:80} " (propertize "${tags:20}" 'face 'org-tag))
                org-roam-node-annotation-function
                (lambda (node) (marginalia--time (org-roam-node-file-mtime node))))
-         (org-roam-db-autosync-enable))
-
-        (require 'org-roam-protocol))
+         (org-roam-db-autosync-enable)
+         (require 'org-roam-protocol))
 
 	(define-key global-map (kbd "C-c n n")   'org-roam-buffer-toggle)
 	(define-key global-map (kbd "C-c n f")   'org-roam-node-find)
@@ -2045,7 +2043,6 @@ emacsclient feels more like a separate emacs instance."
         (define-key global-map (kbd "C-c n d n") 'org-roam-dailies-goto-next-note)
         (define-key global-map (kbd "C-c n d p") 'org-roam-dailies-goto-previous-note)
         )
-
       #:elisp-packages (list emacs-org-roam))))
 
   (feature
@@ -2245,7 +2242,6 @@ enable rde-keycast-mode on configure-keycast package load."
    (name f-name)
    (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
-
 
 ;; TODO: feature-emacs-reasonable-keybindings
 ;; TODO: Fix env vars for emacs daemon
