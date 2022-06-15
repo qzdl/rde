@@ -1243,13 +1243,13 @@ Start an unlimited search at `point-min' otherwise."
          ;; Clean agenda view
          ;; https://gist.github.com/rougier/ddb84c16c28f7cd75e27e50d4c3c43da
          ;; https://d12frosted.io/posts/2020-06-23-task-management-with-roam-vol1.html
-         (mapcar
+         (mapc
           (lambda (view)
-            (add-to-list 'org-agenda-custom-commands view))
-          `((,(kbd "C-d") "Agenda for the day"
-             ((agenda
-               ""
-               ((org-agenda-span 1)
+            (org-add-agenda-custom-command view))
+          `(
+            (,(kbd "C-d") "Agenda for the day"
+             ((agenda ""
+                      ((org-agenda-span 1)
                 (org-agenda-scheduled-leaders '("" "Sched.%2dx: "))
                 (org-agenda-block-separator nil)
                 (org-agenda-entry-types '(:scheduled :timestamp :sexp))
