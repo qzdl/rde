@@ -504,3 +504,31 @@ This code was partially adapted from the excellent consult-lsp package.")
     (description
      "[emacs] auto center emacs windows, work with minimap and/or linum-mode")
     (license license:gpl3+)))
+
+(define-public emacs-mpv
+  (package
+   (name "emacs-mpv")
+   (version "20211228.2043")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/kljohann/mpv.el.git")
+           (commit "4fd8baa508dbc1a6b42b4e40292c0dbb0f19c9b9")))
+     (sha256
+      (base32 "03zziy1lcvpf1wq15bsxwy0dhdb2z7rrdcj6srgrmgykz2wf33q7"))))
+   (build-system emacs-build-system)
+   (propagated-inputs
+    (list ;;emacs-json
+          emacs-org))
+   (home-page "https://github.com/kljohann/mpv.el")
+   (synopsis "control mpv for easy note-taking")
+   (description
+    "This package is a potpourri of helper functions to control a mpv process via its
+IPC interface.  You might want to add the following to your init file:
+
+(org-add-link-type \"mpv\" #'mpv-play) (defun org-mpv-complete-link (&optional
+arg)   (replace-regexp-in-string    \"file:\" \"mpv:\"    (org-file-complete-link
+arg)    t t)) (add-hook 'org-open-at-point-functions
+#'mpv-seek-to-position-at-point)")
+   (license license:gpl3+)))
