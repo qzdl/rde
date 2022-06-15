@@ -556,3 +556,29 @@ waveforms, but it didn’t have an easy way to copy the timestamp. So
 the obvious answer is, of course, to make the text editor do the
 job.  Yay Emacs!")
    (license license:gpl3+)))
+
+(define-public emacs-ob-go
+  (package
+   (name "emacs-ob-go")
+   (version "20190201.214")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/pope/ob-go")
+           (commit "2067ed55f4c1d33a43cb3f6948609d240a8915f5")))
+     (sha256
+      (base32 "069w9dymiv97cvlpzabf193nyw174r38lz5j11x23x956ladvpbw"))))
+   (build-system emacs-build-system)
+   (propagated-inputs (list emacs-org))
+   (home-page "https://github.com/pope/ob-go")
+   (synopsis "Org-Babel support for evaluating go code.")
+   (description
+    "@code{ob-go} enables @{Org-Babel} support for evaluating @code{go}
+code. It was created based on the usage of @code{ob-C}. The @code{go}
+code is compiled and run via the @code{go run} command. If a
+@code{main} function isn’t present, by default the code is wrapped in
+a simple @{main func}. If @code{:package} option isn’t set, and no
+package is declared in the code, then the @code{main package} is
+declared.")
+   (license license:gpl3+)))
