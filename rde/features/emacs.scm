@@ -232,7 +232,8 @@ Prefix keymap for binding various minor modes for toggling functionalitty.")
                                      "/emacs/backup"))))
 
           ,#~""
-          (pixel-scroll-precision-mode 1)
+	  (when (fboundp 'pixel-scroll-precision-mode)
+            (pixel-scroll-precision-mode 1))
           (column-number-mode 1)
           (save-place-mode 1)
           ;; MAYBE: Make it buffer local?
