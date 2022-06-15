@@ -846,6 +846,30 @@ battery is low or nearly empty."
              (background . @base09))
            `((color . @base09)))))))
 
+;; https://www.reddit.com/r/swaywm/comments/sks343/pwvolume_pipewire_volume_control_and_waybar_module/
+;; https://github.com/Alexays/Waybar/wiki/Module:-PulseAudio
+(define* (waybar-volume
+          #:key
+          (intense? #f))
+  "When INTENSE? is #t changes background color instead of text color when the
+battery is low or nearly empty."
+  (waybar-module
+   'pulseaudio
+   `((format . "{format_source}{icon} {volume}%")
+     (format-muted . "{format_source}🔇")
+     (format-source . "🎙️ ")
+     (format-source-muted . "")
+     (format-bluetooth . "{format_source}{icon} {volume}% ")
+     (format-icons . ((default . 🔊)
+                      ;; (low  . 🔈)
+                      ;; (half . 🔉)
+                      ;; (high . 🔊)
+                      ;;
+                       ))
+     (scroll-step . 1)
+     (on-click . "pavucontrol"))
+   ))
+
 (define* (feature-waybar
           #:key
           (waybar waybar)
