@@ -532,3 +532,27 @@ arg)   (replace-regexp-in-string    \"file:\" \"mpv:\"    (org-file-complete-lin
 arg)    t t)) (add-hook 'org-open-at-point-functions
 #'mpv-seek-to-position-at-point)")
    (license license:gpl3+)))
+
+(define-public emacs-waveform-el
+  (package
+   (name "emacs-waveform-el")
+   (version "20220105.0826")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/sachac/waveform-el.git")
+           (commit "ee52c6a72b3e9890743e3a6e2fc1f3195f5687b2")))
+     (sha256
+      (base32 "082ls7khd22fjwnk7h1zxrmqqcmxqh2wx2vljlxhjh9bcp1y2pyr"))))
+   (build-system emacs-build-system)
+   (propagated-inputs (list emacs-mpv emacs-org))
+   (home-page "https://github.com/sachac/waveform-el")
+   (synopsis "Display a waveform in GNU Emacs, and use it to navigate a file in mpv.")
+   (description
+    "To help [...] select timestamps [..].  Finding the right time in MPV
+was hard because it didn’t have a waveform view.  Audacity could show
+waveforms, but it didn’t have an easy way to copy the timestamp. So
+the obvious answer is, of course, to make the text editor do the
+job.  Yay Emacs!")
+   (license license:gpl3+)))
