@@ -360,7 +360,7 @@ function, which accepts config with rde values and returns a string."
                         (get-value 'mailing-lists config)))
     (define (get-repo-config ml)
       (let ((repo-config (mailing-list-config ml)))
-        (if (eq? (l2md-repo-maildir repo-config) 'disabled)
+        (if (unspecified? (l2md-repo-maildir repo-config))
             (l2md-repo
              (inherit repo-config)
              (maildir (string-append
