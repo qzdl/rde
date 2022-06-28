@@ -80,6 +80,8 @@
 
   (define (get-term-cmd config)
     (file-append
+     ;; TODO add -a for when no server running
+     ;;   (will currently open uncommitted buffer-file "(vterm t)")
      (get-value 'emacs-client-create-frame config) " -e \"(vterm t)\""))
 
   (define (get-home-services config)
