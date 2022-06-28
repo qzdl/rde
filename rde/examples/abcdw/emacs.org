@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-04-22 Fri 12:10]
+:UPDATED:  [2022-05-30 Mon 18:15]
 :ID:       84700327-3a84-4d33-9918-dd06a809c28f
 :CREATED:  <2022-03-03 Thu 12:06>
 :END:
@@ -21,6 +21,7 @@
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
+
 #+begin_src emacs-lisp :tangle no
 (org-map-entries
  (lambda ()
@@ -463,6 +464,7 @@ maximum [[id:6eb04531-fbcc-45da-86e9-499b48caeb8a][ergonomics]]
 (define-key global-map (kbd "C-M-j") 'delete-indentation)
 #+end_src
 
+
 *** {H-M-s-h}jkl windmove swap
 :PROPERTIES:
 :ID:       e12feea7-bf2a-44b8-acfe-95e2af12357e
@@ -832,7 +834,7 @@ consuming
 :ID:       43699aa6-0e26-487b-a597-902577ddf22a
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-03-30 Wed 09:36]
+:UPDATED:  [2022-05-25 Wed 12:35]
 :END:
 #+begin_src emacs-lisp :noweb yes :noweb-ref conf
 ;; NOWEB ES START
@@ -842,33 +844,6 @@ consuming
 ;; NOWEB ES END
 #+end_src
 
-
-#+begin_src clojure
-{ :key value
- :key value }
-#+end_src
-
-#+begin_src emacs-lisp :results code
-(list :cons (car '(a :hello . "a"))
-      :cons-list (car '((a . (b :hi))))
-      :hash-map (make-hash-table)
-      :lisp-1 (let ((a (lambda (f) (1+ f))))
-                (funcall a 5))
-      :symbol-types (type-of 'a)
-
-      :plist-get (plist-get '(:a 1 :b 2) :b))
-
-;; (setq :why-do-this 5)
-#+end_src
-
-#+RESULTS:
-#+begin_src emacs-lisp
-(:cons a :cons-list
-       (a b :hi)
-       :hash-map #s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8125 data
-                               ())
-       :lisp-1 6 :symbol-types symbol :plist-get 2)
-#+end_src
 
 
 **** settings
@@ -1295,21 +1270,25 @@ CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
 :UPDATED:  [2022-03-30 Wed 11:59]
 :ROAM_EXCLUDE: t
 :END:
-**** add-py-debug (                                                 :func:
+**** add-py-debug :func:
 :PROPERTIES:
 :ID:       a8049444-d35b-4b3c-a3eb-54678a3a17aa
 :CREATED:  [2022-03-24 Thu 10:24]
-:UPDATED:  [2022-03-24 Thu 10:26]
+:UPDATED:  [2022-05-02 Mon 12:21]
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :noweb-ref conf
 (defun qz/add-py-debug ()
   "add debug code and move line down"
   (interactive)
   (move-beginning-of-line 1)
   (insert "import pdb; pdb.set_trace();\n"))
 #+end_src
+
+#+RESULTS:
+: qz/add-py-debug
+
 *** [[id:0c02b1ad-3964-4b51-ba59-d2de0e05428f][golang]]
 :PROPERTIES:
 :ID:       f38578c6-09c1-4da0-8da0-90e0899a2ab1
@@ -1686,6 +1665,7 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
 :ID:       ebd9c208-4ac6-49cc-8bdc-3f22f3554b6d
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-05-03 Tue 11:02]
 :END:
 #+begin_src emacs-lisp :noweb-ref agenda
 (defun qz/org-agenda-gtd ()
@@ -1723,6 +1703,9 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
            (org-agenda-files '(,(format "%s/%s" org-roam-directory "emacs.org"))))))))
 #+end_src
 
+#+RESULTS:
+| g | GTD | ((agenda  ((org-agenda-span 'day) (org-deadline-warning-days 60))) (tags-todo now ((org-agenda-overriding-header |
+
 #+begin_src emacs-lisp :noweb-ref agenda
 (add-to-list
  'org-agenda-custom-commands
@@ -1738,11 +1721,14 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
                ((org-agenda-overriding-header "make"))))))
 #+end_src
 
+#+RESULTS:
+|  | Overview | ((agenda  ((org-agenda-time-grid nil) (org-agenda-start-on-weekday nil) (org-agenda-start-day +1d) (org-agenda-span 14) (org-agenda-show-all-dates nil) (org-agenda-time-grid nil) (org-deadline-warning-days 0) (org-agenda-block-separator nil) (org-agenda-entry-types '(:deadline)) (org-agenda-skip-function '(org-agenda-skip-entry-if 'done)) (org-agenda-overriding-header |
+
 ***** w ; work
 :PROPERTIES:
 :ID:       02a112d7-ef32-44d3-b06b-cde3d0df4038
 :CREATED:  [2022-03-31 Thu 09:41]
-:UPDATED:  [2022-04-04 Mon 12:06]
+:UPDATED:  [2022-05-25 Wed 12:17]
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src emacs-lisp :noweb-ref agenda
