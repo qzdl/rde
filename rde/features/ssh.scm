@@ -12,12 +12,11 @@
 	       ssh-host
 	       ssh-match))
 
-
 (define* (feature-ssh
 	  #:key
           (ssh openssh)
 	  (ssh-configuration (home-ssh-configuration))
-          (extra-config '())))
+          (extra-config '()))
   "Setup and configure SSH."
   (ensure-pred home-ssh-configuration? ssh-configuration)
   (ensure-pred list-of-ssh-host-or-ssh-match? extra-config)
@@ -38,3 +37,6 @@
    (name 'ssh)
    (values `((ssh . ,openssh)))
    (home-services-getter ssh-home-services)))
+
+;;; ssh.scm ends here
+
