@@ -168,7 +168,7 @@ binary.")
 
 (define-configuration/no-serialization home-msmtp-configuration
   (package
-   (package msmtp-latest)
+   (package msmtp)
    "msmtp package to use.")
   (xdg-flavor?
    (boolean #t)
