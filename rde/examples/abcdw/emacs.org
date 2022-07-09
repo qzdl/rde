@@ -2264,7 +2264,10 @@ CREATED: <2021-11-29 Mon>
                   '("NewStore"
                     "kubernetes"
                     "postgres"
+                    "es-mode"
                     "elisp"
+                    "plantuml"
+                    "GNU Guix"
                     ))
           ;; .. other files
           nil
@@ -2286,10 +2289,13 @@ CREATED: <2021-11-29 Mon>
 #+RESULTS:
 | count | file                                                   |
 |-------+--------------------------------------------------------|
-|    69 | /home/samuel/life/roam/20210420T114708Z-newstore.org   |
+|    71 | /home/samuel/life/roam/20210420T114708Z-newstore.org   |
 |    11 | /home/samuel/life/roam/20210813T161035Z-kubernetes.org |
-|    11 | /home/samuel/life/roam/20200515T151822Z-postgresql.org |
+|    18 | /home/samuel/life/roam/20200515T151822Z-postgresql.org |
+|     4 | /home/samuel/life/roam/20210813T161035Z-es_mode.org    |
 |     2 | /home/samuel/life/roam/20200415T145703Z-emacs_lisp.org |
+|     1 | /home/samuel/life/roam/20210505T135556Z-plantuml.org   |
+|     1 | /home/samuel/life/roam/20200919T152005Z-gnu_guix.org   |
 
 
 ***** choose babel block                                           :func:
