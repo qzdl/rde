@@ -74,7 +74,9 @@
           #:key
           (pipewire pipewire-0.3)
           (wireplumber wireplumber)
-          (pulseaudio pulseaudio))
+          (pulseaudio pulseaudio)
+          ;; 3 = I = info
+          (verbosity 3))
   ""
   (define (home-pipewire-services config)
     (list
@@ -129,7 +131,8 @@ ctl_type.pipewire {
         (start #~(make-forkexec-constructor
                   (list #$(file-append pipewire "/bin/pipewire"))
                   #:environment-variables
-                  (append (list "DISABLE_RTKIT=1")
+                  (append (list "DISABLE_RTKIT=1"
+                                (string-append "PIPEWIRE_DEBUG=" #$verbosity))
                           (default-environment-variables)))))
        (shepherd-service
         (requirement '(pipewire))
@@ -138,7 +141,8 @@ ctl_type.pipewire {
         (start #~(make-forkexec-constructor
                   (list #$(file-append wireplumber "/bin/wireplumber"))
                   #:environment-variables
-                  (append (list "DISABLE_RTKIT=1")
+                  (append (list "DISABLE_RTKIT=1"
+                                (string-append "WIREPLUMBER_DEBUG=" #$verbosity))
                           (default-environment-variables)))))
        (shepherd-service
         (requirement '(pipewire))
