@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-07-09 Sat 17:33]
+:UPDATED:  [2022-07-09 Sat 17:57]
 :ID:       84700327-3a84-4d33-9918-dd06a809c28f
 :CREATED:  <2022-03-03 Thu 12:06>
 :END:
@@ -540,7 +540,7 @@ I don't use this very much, as it curls my whole left hand up (qwerty troubles)
 #+RESULTS:
 : org-store-link
 
-*** isearch 
+*** isearch
 :PROPERTIES:
 :ID:       7a81203e-e7c0-474a-941b-b6c8a2e51a8d
 :CREATED:  <2022-02-25 Fri 10:11>
@@ -552,7 +552,7 @@ I don't use this very much, as it curls my whole left hand up (qwerty troubles)
 :ID:       75441f13-8830-42fe-b3fe-b22b2dbf4275
 :CREATED:  <2022-02-25 Fri 10:11>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-07-09 Sat 17:54]
+:UPDATED:  [2022-07-09 Sat 17:57]
 :END:
 
 #+begin_src emacs-lisp :noweb-ref kbd
@@ -979,9 +979,9 @@ CLOCK: [2022-04-11 Mon 10:07]--[2022-04-11 Mon 10:47] =>  0:40
 
 - see also :: [[id:317eb3df-458c-411b-a8d3-32507d3f025e][org-table]]
 
-just kind of wack to see  
+just kind of wack to see
 : ((1 . a) (2 . b))
-all the time, especially when the results are massive 
+all the time, especially when the results are massive
 
 #+name: elisp-cons->table
 #+begin_src elisp :noweb-ref general
@@ -1013,7 +1013,7 @@ body      *values you wish to transform*: a list; cons, proper,
 
 ;;; e.g  {C-n C-SPC M-e C-p C-x C-;}
 ;; (cons->table
-;;  '((56 . "/home/samuel/life/roam/20210420T114708Z-newstore.org") 
+;;  '((56 . "/home/samuel/life/roam/20210420T114708Z-newstore.org")
 ;;    (11 . "/home/samuel/life/roam/20210813T161035Z-kubernetes.org")
 ;;    (10 . "/home/samuel/life/roam/20200515T151822Z-postgresql.org"))
 ;;  :cols '(count file))
@@ -1329,7 +1329,7 @@ CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
     (select-column sqlind-indent-select-column)
     (select-column-continuation sqlind-indent-select-column +)
     ;; ((default . ++) (kinda . +) ( . sqlind-use-anchor-indentation))
-    (select-join-condition ++) ; this should wrap 
+    (select-join-condition ++) ; this should wrap
     (select-table sqlind-indent-select-table)
     (select-table-continuation sqlind-indent-select-table +)
     (in-select-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
@@ -1912,87 +1912,87 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
 #+begin_src emacs-lisp
 (("" "Overview"
   ((agenda ""
-	   ((org-agenda-time-grid nil)
-	    (org-agenda-start-on-weekday nil)
-	    (org-agenda-start-day "+1d")
-	    (org-agenda-span 14)
-	    (org-agenda-show-all-dates nil)
-	    (org-agenda-time-grid nil)
-	    (org-deadline-warning-days 0)
-	    (org-agenda-block-separator nil)
-	    (org-agenda-entry-types
-	     '(:deadline))
-	    (org-agenda-skip-function
-	     '(org-agenda-skip-entry-if 'done))
-	    (org-agenda-overriding-header "\nUpcoming deadlines (+14d)\n")))
+           ((org-agenda-time-grid nil)
+            (org-agenda-start-on-weekday nil)
+            (org-agenda-start-day "+1d")
+            (org-agenda-span 14)
+            (org-agenda-show-all-dates nil)
+            (org-agenda-time-grid nil)
+            (org-deadline-warning-days 0)
+            (org-agenda-block-separator nil)
+            (org-agenda-entry-types
+             '(:deadline))
+            (org-agenda-skip-function
+             '(org-agenda-skip-entry-if 'done))
+            (org-agenda-overriding-header "\nUpcoming deadlines (+14d)\n")))
    (agenda "*"
-	   ((org-agenda-block-separator nil)
-	    (org-agenda-span 14)
-	    (org-agenda-overriding-header "\nAgenda\n")))
+           ((org-agenda-block-separator nil)
+            (org-agenda-span 14)
+            (org-agenda-overriding-header "\nAgenda\n")))
    (alltodo ""
-	    ((org-agenda-block-separator nil)
-	     (org-agenda-skip-function
-	      '(or
-		(org-agenda-skip-if nil
-				    '(scheduled deadline))))
-	     (org-agenda-overriding-header "\nBacklog\n")))))
+            ((org-agenda-block-separator nil)
+             (org-agenda-skip-function
+              '(or
+                (org-agenda-skip-if nil
+                                    '(scheduled deadline))))
+             (org-agenda-overriding-header "\nBacklog\n")))))
  ("" "Agenda for the day"
   ((agenda ""
-	   ((org-agenda-span 1)
-	    (org-agenda-scheduled-leaders
-	     '("" "Sched.%2dx: "))
-	    (org-agenda-block-separator nil)
-	    (org-agenda-entry-types
-	     '(:scheduled :timestamp :sexp))
-	    (org-scheduled-past-days 0)
-	    (org-agenda-day-face-function
-	     (lambda
-	       (date)
-	       'org-agenda-date))
-	    (org-agenda-format-date "%A %-e %B %Y")
-	    (org-agenda-overriding-header "\nAgenda for the day\n")))
+           ((org-agenda-span 1)
+            (org-agenda-scheduled-leaders
+             '("" "Sched.%2dx: "))
+            (org-agenda-block-separator nil)
+            (org-agenda-entry-types
+             '(:scheduled :timestamp :sexp))
+            (org-scheduled-past-days 0)
+            (org-agenda-day-face-function
+             (lambda
+               (date)
+               'org-agenda-date))
+            (org-agenda-format-date "%A %-e %B %Y")
+            (org-agenda-overriding-header "\nAgenda for the day\n")))
    (todo "NEXT"
-	 ((org-agenda-block-separator nil)
-	  (org-agenda-overriding-header "\nCurrent Tasks\n")))))
+         ((org-agenda-block-separator nil)
+          (org-agenda-overriding-header "\nCurrent Tasks\n")))))
  ("c" "create"
   ((agenda ""
-	   ((org-agenda-span 'day)
-	    (org-deadline-warning-days 60)))
+           ((org-agenda-span 'day)
+            (org-deadline-warning-days 60)))
    (tags-todo "diy+create+do+buy+make+wip"
-	      ((org-agenda-overriding-header "wip")))
+              ((org-agenda-overriding-header "wip")))
    (tags-todo "diy+create+do"
-	      ((org-agenda-overriding-header "create")))
+              ((org-agenda-overriding-header "create")))
    (tags-todo "buy"
-	      ((org-agenda-overriding-header "buy")))
+              ((org-agenda-overriding-header "buy")))
    (tags-todo "make"
-	      ((org-agenda-overriding-header "make")))))
+              ((org-agenda-overriding-header "make")))))
  ("g" "GTD"
   ((agenda ""
-	   ((org-agenda-span 'day)
-	    (org-deadline-warning-days 60)))
+           ((org-agenda-span 'day)
+            (org-deadline-warning-days 60)))
    (tags-todo "now"
-	      ((org-agenda-overriding-header "\nnow\n")))
+              ((org-agenda-overriding-header "\nnow\n")))
    (tags-todo "wip"
-	      ((org-agenda-overriding-header "\nwip\n")))
+              ((org-agenda-overriding-header "\nwip\n")))
    (todo "TODO"
-	 ((org-agenda-overriding-header "\nto process\n")
-	  (org-agenda-files
-	   '("~/life//roam/inbox.org"))))
+         ((org-agenda-overriding-header "\nto process\n")
+          (org-agenda-files
+           '("~/life//roam/inbox.org"))))
    (todo "TODO"
-	 ((org-agenda-overriding-header "\ndaily inbox\n")
-	  (org-agenda-files qz/agenda-daily-files)))
+         ((org-agenda-overriding-header "\ndaily inbox\n")
+          (org-agenda-files qz/agenda-daily-files)))
    (todo "TODO"
-	 ((org-agenda-overriding-header "\nemails\n")
-	  (org-agenda-files
-	   '("~/life//roam/emails.org"))))
+         ((org-agenda-overriding-header "\nemails\n")
+          (org-agenda-files
+           '("~/life//roam/emails.org"))))
    (todo "TODO"
-	 ((org-agenda-overriding-header "\none-off Tasks\n")
-	  (org-agenda-files
-	   '("~/life//roam/next.org"))))
+         ((org-agenda-overriding-header "\none-off Tasks\n")
+          (org-agenda-files
+           '("~/life//roam/next.org"))))
    (todo "TODO"
-	 ((org-agenda-overriding-header "\nto yak shave\n")
-	  (org-agenda-files
-	   '("~/life//roam/emacs.org"))))))
+         ((org-agenda-overriding-header "\nto yak shave\n")
+          (org-agenda-files
+           '("~/life//roam/emacs.org"))))))
  ("n" "Agenda and all TODOs"
   ((agenda "")
    (alltodo ""))))
@@ -2009,7 +2009,7 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
 could do with some love; dates above are a bit redundant maybe
 
 - :: https://emacs.stackexchange.com/questions/22077/org-agenda-how-to-show-only-todos-with-deadline
-  
+
 #+begin_src emacs-lisp :noweb-ref agenda
 (add-to-list
  'org-agenda-custom-commands
@@ -2085,7 +2085,7 @@ could do with some love; dates above are a bit redundant maybe
 :ROAM_EXCLUDE: t
 :END:
 
-because a mechanism for the discovery of =TODO= entries is 
+because a mechanism for the discovery of =TODO= entries is
 
 #+begin_src emacs-lisp
 (setq org-agenda-hide-tags-regexp "project")
@@ -2103,7 +2103,7 @@ because a mechanism for the discovery of =TODO= entries is
 :ROAM_EXCLUDE: t
 :UPDATED:  [2022-04-22 Fri 09:52]
 :END:
-****** org-category ;; agenda 
+****** org-category ;; agenda
 :PROPERTIES:
 :ID:       0dd4254a-f725-4df0-8843-a25e22b4b299
 :CREATED:  [2022-04-22 Fri 09:56]
@@ -2993,7 +2993,7 @@ org-roam loading, as we use it's variables.
 (setq qz/capture-title-timestamp-roam "%(qz/utc-timestamp)-${slug}.org")
 
 (setq org-roam-capture-templates
-      `(("d" "default" plain "%?" 
+      `(("d" "default" plain "%?"
          :if-new (file+head ,qz/capture-title-timestamp-roam
                             ,qz/org-roam-capture-head)
          :unnarrowed t)
@@ -3207,7 +3207,7 @@ so we can use it as a COMMAND. better traceability than a lambda
 (defun qz/current-roam-link ()
   "Get link to org-roam file with title"
   (interactive)
-  
+
   (concat "* TODO "
           (let ((n (qz/org-roam-node-at-point)))
             (org-link-make-string
@@ -4146,7 +4146,7 @@ cat /tmp/oo | awk -F, '{print $2,$3}' | sort | uniq -c | sort -rgk1 | head
   (unless (string-empty-p file)
     (with-current-buffer (find-file-noselect f)
       (org-mode)
-      (unless 
+      (unless
           (qz/file-has-todo-p
 
 #+end_src
@@ -4183,7 +4183,7 @@ cat /tmp/oo | awk -F, '{print $2,$3}' | sort | uniq -c | sort -rgk1 | head
 
 #+RESULTS:
 :results:
-((r ref plain 
+((r ref plain
 #+begin_quote
 ${body}
 #+end_quote
@@ -4367,7 +4367,7 @@ once we find out about sequences and repeats
 :END:
 
 - :: (info-apropos "org-enforce")
-  
+
 **** org-tags-column
 :PROPERTIES:
 :ID:       2809e6c5-ab8c-475a-ab96-6236563e5ce8
@@ -4462,7 +4462,7 @@ a most controversial decision
 :UPDATED:  [2022-04-06 Wed 11:39]
 :ROAM_EXCLUDE: t
 :END:
-  
+
 #+begin_src emacs-lisp :noweb-ref org
 (setq org-enforce-todo-checkbox-dependencies t)
 #+end_src
@@ -4808,7 +4808,7 @@ check with (org-redisplay-inline-images)
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src emacs-lisp :noweb yes :noweb-ref conf 
+#+begin_src emacs-lisp :noweb yes :noweb-ref conf
 ;; NOWEB RESTCLIENT START
 (with-eval-after-load 'restclient
   <<restclient>>
@@ -5019,13 +5019,13 @@ or
   (interactive)
   (async-shell-command
    (concat "cd $HOME/git/sys/rde/ "
-	   "&& make channels-update-lock && make channels-pull")))
+           "&& make channels-update-lock && make channels-pull")))
 
 (defun qz/guix-upgrade ()
   (interactive)
   (async-shell-command
    (concat "cd $HOME/git/sys/rde"
-	   "&& make channels-update-lock && make channels-pull && guix upgrade && make")))
+           "&& make channels-update-lock && make channels-pull && guix upgrade && make")))
 #+end_src
 
 #+RESULTS:
