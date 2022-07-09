@@ -506,9 +506,19 @@
          (for_window "[app_id=\"pavucontrol\"]" floating enable, border pixel)
          (for_window "[app_id=\"pinentry-qt\"]" floating enable, border pixel)
          (for_window "[title=\"Nightly - Sharing Indicator\"]" floating enable, border pixel)
+
          (bindsym $mod+Ctrl+o opacity set 1)
          (bindsym $mod+Ctrl+p opacity minus 0.1)
-         (bindsym $mod+x exec $menu))))
+
+         (bindsym $mod+x exec $menu)
+         (bindsym $mod+Period exec "tessen -a copy")
+
+         (bindsym $mod+bracketright exec "pactl set-sink-volume @DEFAULT_SINK@ +5%")
+         (bindsym $mod+bracketleft exec "pactl set-sink-volume @DEFAULT_SINK@ -5%")
+         (bindsym $mod+Ctrl+bracketright exec "pactl set-sink-mute @DEFAULT_SINK@ toggle")
+         (bindsym $mod+Ctrl+bracketleft exec "pactl set-source-mute @DEFAULT_SOURCE@ toggle")
+         ;; alsa_input.usb-TEAC_Corporation_TASCAM_DR_Series-00.analog-stereo
+         )))
     (unless gaming?
       (feature-sway-run-on-tty
        #:sway-tty-number 2
