@@ -43,6 +43,14 @@ home:
 	GUILE_LOAD_PATH=./ \
 	guix home reconfigure ./rde/examples/abcdw/configs.scm --allow-downgrades
 
+.PHONY: home-box
+home-box:
+	RDE_TARGET=ixy-home \
+	GUILE_LOAD_PATH=./ \
+	guix home container \
+	--allow-downgrades --verbosity=$(VERBOSITY) \
+	./rde/examples/abcdw/configs.scm \
+
 .PHONY: system
 system:
 	RDE_TARGET=ixy-system \
