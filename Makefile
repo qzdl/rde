@@ -26,20 +26,24 @@ check: check-channel
 # 	GUILE_LOAD_PATH=./ ../gnu/guix/pre-inst-env guix \
 # 	home reconfigure ../rde/rde/config.scm
 
-# Rewrite to glakes
+# TODO Rewrite to glakes
+.PHONY: env
 env:
 	guix time-machine -C stale/guix-related/guix/channels-lock -- \
 	environment --ad-hoc make
 
+.PHONY: channels-pull
 channels-pull:
 	guix pull -C stale/guix-related/guix/channels-lock
 
+.PHONY: channels-update-lock
 channels-update-lock:
 	guix time-machine -C stale/guix-related/guix/channels -- \
 	describe -f channels > stale/guix-related/guix/channels-lock
 
+.PHONY: iso
 iso:
-	guix time-machine  -C stale/guix-related/guix/channels-lock -- \
+	guix time-machine -C stale/guix-related/guix/channels-lock -- \
 	system -L ./ image -t iso9660 stale/guix-related/system/install.scm
 
 doc/rde-tool-list.texi: doc/rde-tool-list.org
@@ -73,6 +77,7 @@ doc/graphs:
 		$(DRIVER) $$df -Tpng -o $$dp -Goverlap=false -Gsplines=true;\
 	done\
 
+.PHONY: clean
 clean:
 	rm -f doc/rde.html
 	rm -f doc/rde.pdf
