@@ -1251,11 +1251,11 @@ is already narrowed."
 :UPDATED:  [2022-03-17 Thu 10:06]
 :ROAM_EXCLUDE: t
 :END:
-*** sql
+*** [[id:eae3ee00-be74-4f59-8a4d-b638baebc9f8][sql]]
 :PROPERTIES:
 :ID:       7be3838d-a859-469e-ae8c-049a299b658a
 :CREATED:  [2022-03-17 Thu 10:06]
-:UPDATED:  [2022-03-17 Thu 10:06]
+:UPDATED:  [2022-07-09 Sat 17:48]
 :ROAM_EXCLUDE: t
 :END:
 **** sql-indent
@@ -1268,16 +1268,134 @@ is already narrowed."
 :LOGBOOK:
 CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
 :END:
+
 ***** TODO add-hook ;
 :PROPERTIES:
 :ID:       ed32b595-8b57-4f28-86b7-0a5e97651ae0
 :CREATED:  [2022-03-17 Thu 10:06]
-:UPDATED:  [2022-03-17 Thu 10:06]
+:UPDATED:  [2022-07-09 Sat 17:48]
 :ROAM_EXCLUDE: t
 :END:
+
 #+begin_src emacs-lisp :noweb-ref conf
 
 #+end_src
+
+***** indent tweaks
+:PROPERTIES:
+:ID:       7436d41f-37b5-4aa9-9b61-be884f4ac459
+:CREATED:  [2022-05-24 Tue 12:14]
+:UPDATED:  [2022-05-24 Tue 12:21]
+:ROAM_EXCLUDE: t
+:END:
+
+****** sqlind-indentation-offsets-alist
+:PROPERTIES:
+:ID:       eaeefe83-2fbf-4eab-81e7-34c0a278bdca
+:CREATED:  [2022-05-24 Tue 12:25]
+:UPDATED:  [2022-07-09 Sat 17:49]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref conf
+(custom-set-variables
+ '(sqlind-indentation-offsets-alist
+   ((syntax-error sqlind-report-sytax-error)
+    (in-string sqlind-report-runaway-string)
+    (comment-continuation sqlind-indent-comment-continuation)
+    (comment-start sqlind-indent-comment-start)
+    (toplevel 0)
+    (in-block +)
+    (in-begin-block +)
+    (block-start 0)
+    (block-end 0)
+    (declare-statement +)
+    (package ++)
+    (package-body 0)
+    (create-statement +)
+    (defun-start +)
+    (labeled-statement-start 0)
+    (statement-continuation +)
+    (nested-statement-open sqlind-use-anchor-indentation +)
+    (nested-statement-continuation sqlind-use-previous-line-indentation)
+    (nested-statement-close sqlind-use-anchor-indentation)
+    (with-clause sqlind-use-anchor-indentation)
+    (with-clause-cte +)
+    (with-clause-cte-cont ++)
+    (case-clause 0)
+    (case-clause-item sqlind-use-anchor-indentation +)
+    (case-clause-item-cont sqlind-right-justify-clause)
+    (select-clause sqlind-right-justify-clause)
+    (select-column sqlind-indent-select-column)
+    (select-column-continuation sqlind-indent-select-column +)
+    ;; ((default . ++) (kinda . +) ( . sqlind-use-anchor-indentation))
+    (select-join-condition ++) ; this should wrap 
+    (select-table sqlind-indent-select-table)
+    (select-table-continuation sqlind-indent-select-table +)
+    (in-select-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+    (insert-clause sqlind-right-justify-clause)
+    (in-insert-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+    (delete-clause sqlind-right-justify-clause)
+    (in-delete-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+    (update-clause sqlind-right-justify-clause)
+    (in-update-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator))))
+#+end_src
+
+#+RESULTS:
+
+****** sqlind-default-indentation-offsets-alist
+:PROPERTIES:
+:ID:       07314dae-5651-44cb-a74d-332ded269f4a
+:CREATED:  [2022-05-24 Tue 12:25]
+:UPDATED:  [2022-07-09 Sat 17:48]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+(custom-set-variables
+ '(sqlind-default-indentation-offsets-alist
+   ((syntax-error sqlind-report-sytax-error)
+    (in-string sqlind-report-runaway-string)
+    (comment-continuation sqlind-indent-comment-continuation)
+    (comment-start sqlind-indent-comment-start)
+    (toplevel 0)
+    (in-block +)
+    (in-begin-block +)
+    (block-start 0)
+    (block-end 0)
+    (declare-statement +)
+    (package ++)
+    (package-body 0)
+    (create-statement +)
+    (defun-start +)
+    (labeled-statement-start 0)
+    (statement-continuation +)
+    (nested-statement-open sqlind-use-anchor-indentation +)
+    (nested-statement-continuation sqlind-use-previous-line-indentation)
+    (nested-statement-close sqlind-use-anchor-indentation)
+    (with-clause sqlind-use-anchor-indentation)
+    (with-clause-cte +)
+    (with-clause-cte-cont ++)
+    (case-clause 0)
+    (case-clause-item sqlind-use-anchor-indentation +)
+    (case-clause-item-cont sqlind-right-justify-clause)
+    (select-clause sqlind-right-justify-clause)
+    (select-column sqlind-indent-select-column)
+    (select-column-continuation sqlind-indent-select-column +)
+    (select-join-condition -- --)
+    (select-table sqlind-indent-select-table)
+    (select-table-continuation sqlind-indent-select-table +)
+    (in-select-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+    (insert-clause sqlind-right-justify-clause)
+    (in-insert-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+    (delete-clause sqlind-right-justify-clause)
+    (in-delete-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+    (update-clause sqlind-right-justify-clause)
+    (in-update-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator))))
+#+end_src
+
+#+RESULTS:
+
 *** [[id:091ac573-6b34-4e0e-88b8-415785d5ae85][python]]
 :PROPERTIES:
 :ID:       ed0b9a5d-4287-48f0-a518-4303fb2efe32
