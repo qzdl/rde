@@ -94,8 +94,8 @@ FILE-NAME found in %PATCH-PATH."
            libjpeg-turbo
            librsvg
            libxkbcommon
-           wayland-latest
-           wayland-protocols-latest
+           wayland
+           wayland-protocols
            pango
            startup-notification))
     (description "Rofi is a minimalist application launcher.  It memorizes which
