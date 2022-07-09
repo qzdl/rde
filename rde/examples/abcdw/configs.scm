@@ -23,30 +23,43 @@
   #:use-module (rde features docker)
   #:use-module (rde features video)
   #:use-module (rde features markup)
-  ;; #:use-module (gnu services)
   #:use-module (rde features networking)
-  #:use-module (gnu services)
+
+  #:use-module (rde packages)
+  #:use-module (rde packages emacs)
+  #:use-module (rde packages emacs-xyz)
+
   #:use-module (rde home services i2p)
+
+  #:use-module (rde examples abcdw emacs)
 
   #:use-module (gnu system keyboard)
 
+  #:use-module (gnu home services) ; nope
+  #:use-module (gnu home-services ssh)
+  ;; #:use-module (gnu home-services-utils) ; nope
+  ;; #:use-module (gnu home-services shells) ; nope
+
+  ;;#:use-module (gnu home-services shellutils)
+
   #:use-module (nongnu packages nvidia)
+
   #:use-module (gnu services base)
   #:use-module (gnu services ssh)
   #:use-module (gnu services desktop)
   #:use-module (gnu services xorg)
-  #:use-module (rde examples abcdw emacs)
+
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
-  #:use-module (gnu home-services ssh)
+
   #:use-module (gnu packages)
-  #:use-module (rde packages)
-  #:use-module (rde packages emacs)
-  #:use-module (rde packages emacs-xyz)
   #:use-module (gnu packages fonts)
+
   #:use-module (guix gexp)
+  #:use-module (guix utils)
   #:use-module (guix inferior)
   #:use-module (guix channels)
+
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
   #:use-module (srfi srfi-1))
@@ -777,11 +790,16 @@ host	all	all	0.0.0.0/0       md5
 
     ;; ------------------------------------------------
 
+    (feature-docker)
     (feature-mpv)
     (feature-isync #:isync-verbose #t)
     (feature-l2md)
     (feature-msmtp
-     #:msmtp msmtp-latest)
+     ;; #:msmtp msmtp-latest
+
+     ;; FIXME qz: check if msmtp-latest being removed has fucked
+     ;; anything up
+     )
     (feature-notmuch
      #:extra-tag-updates-post
      '("notmuch tag +guix-home -- 'thread:\"\
