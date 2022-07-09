@@ -1,4 +1,10 @@
-# pipefail is not POSIX complaint
+
+PANDOC = pandoc
+SED = sed
+MAKEINFO = makeinfo
+
+# NOTE: pipefail is not POSIX complaint
+
 all: doc/rde.info
 
 install:
@@ -46,23 +52,27 @@ iso:
 	guix time-machine -C stale/guix-related/guix/channels-lock -- \
 	system -L ./ image -t iso9660 stale/guix-related/system/install.scm
 
+.PHONY: doc/rde-tool-list.texi
 doc/rde-tool-list.texi: doc/rde-tool-list.org
-	pandoc doc/rde-tool-list.org -f org -t texinfo \
+	$(PANDOC) doc/rde-tool-list.org -f org -t texinfo \
 	-o doc/rde-tool-list.texi
-	sed -i '1,3d' doc/rde-tool-list.texi
+	$(SED) -i '1,3d' doc/rde-tool-list.texi
 
+.PHONY: doc/rde.info
 doc/rde.info: doc/rde.texi
-	makeinfo -o doc/rde.info doc/rde.texi
+	$(MAKEINFO) -o doc/rde.info doc/rde.texi
 
+.PHONY: doc/rde.html
 doc/rde.html: doc/rde.texi
-	makeinfo --html --no-split \
+	$(MAKEINFO) --html --no-split \
 	--css-ref=/assets/manual.css \
 	-c "EXTRA_HEAD=<meta name=\"viewport\" \
 content=\"width=device-width, initial-scale=1\" />" \
 	-o doc/rde.html doc/rde.texi
 
+.PHONY: doc/rde.pdf
 doc/rde.pdf: doc/rde.texi
-	makeinfo --pdf -o doc/rde.pdf doc/rde.texi
+	$(MAKEINFO) --pdf -o doc/rde.pdf doc/rde.texi
 
 DRIVER=neato
 GUILD=guild
