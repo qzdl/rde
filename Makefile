@@ -105,8 +105,9 @@ content=\"width=device-width, initial-scale=1\" />" \
 doc/rde.pdf: doc/rde.texi
 	$(MAKEINFO) --pdf -o doc/rde.pdf doc/rde.texi
 
-DRIVER=neato
-GUILD=guild
+DRIVER = neato
+GUILD = guild
+.PHONY: doc/graphs
 doc/graphs:
 	mkdir -p doc/graphs;
 	for file in $$(find . -name '*.scm') ; do\
