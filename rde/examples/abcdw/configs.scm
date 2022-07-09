@@ -364,19 +364,44 @@
 
         ;;; postgres: don't include if gaming
         (unless gaming?
-          (service postgresql-service-type))
+          (service postgresql-service-type
+                   (postgresql-configuration
+                    (config-file
+                     (postgresql-config-file
+                      (hba-file
+                       (plain-file "pg_hba.conf"
+                                   "
+local	all	all			trust
+host	all	all	127.0.0.1/32    md5
+host	all	all	0.0.0.0/0       md5
+"
+                                   ))))
+                    (postgresql (@ (gnu packages databases) postgresql-10)))))
+
+        ;; analytics ; timescaledb
+        (unless gaming?
+          (service postgresql-service-type
+                   (postgresql-configuration
+                    (port 5435)
+                    (extension-packages
+                     (list (@ (gnu packages databases) timescaledb)
+                           (@ (gnu packages geo) postgis)))
+                    (postgresql (@ (gnu packages databases) postgresql-14)))))
+
         (unless gaming?
           (service postgresql-role-service-type
                    (postgresql-role-configuration
                     (roles (list (postgresql-role
                                   (name "postgres")
-                                  (create-database? #t))
-                                 (postgresql-role
-                                  (name "samuel")
                                   (permissions '(superuser))
                                   (create-database? #t))
                                  (postgresql-role
+                                  (name "samuel")
+                                  (permissions '(superuser login))
+                                  (create-database? #t))
+                                 (postgresql-role
                                   (name "newstore")
+                                  (permissions '(login))
                                   (create-database? #t)))))))
 
         ;;; ssh
