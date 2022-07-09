@@ -308,19 +308,38 @@
        'home-jobs (@ (gnu home services mcron) home-mcron-service-type)
        (list
          ;;; job: commit my notes
-        #~(job '(next-minute '(15))
+        #~(job '(next-minute)
+               ;;'(next-minute '(15))
                (lambda ()
-                 (system* (string"(cd /home/samuel/life && git add . && git commit -m \"auto-commit | $(date -u)\") &>/tmp/commit-log"))
-                 "notes-commit"))
+                 (call-with-output-file "/tmp/commit.log"
+                   (lambda (port)
+                     (chdir "./life")
+                     (display
+                      (with-exception-handler
+                          (lambda (exn)
+                            (format #f "exception: ~s\n" exn))
+                        (system*
+                         (format #f "~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
+                                 (file-append #$(@ (gnu packages version-control) git) "/bin/git")
+                                 (file-append #$(@ (gnu packages version-control) git) "/bin/git")
+                                 (file-append #$(@ (gnu packages base) coreutils) "/bin/date")))
+                        port)))))
+               "notes-commit"
+               #:user "samuel")
          ;;; job: fulltext index the universe
         #~(job '(next-hour)
                (lambda ()
-                 (system* (file-append (@@ (gnu packages search) recoll) "/bin/recollindex")))
-               "recollindex")
+                 (system*
+                  (file-append #$(@ (gnu packages search) recoll) "/bin/recollindex")))
+               "index: recollindex"
+               #:user "samuel")
          ;;; job: generate tags
         ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
         #~(job '(next-hour '(12 0)) ;; every 12 hours
-               (string-append #$(@@ (gnu packages idutils) idutils) "/bin/mkid git")
+               (lambda ()
+                 (system*
+                  (file-append #$(@ (gnu packages idutils) idutils) "/bin/mkid") "git"))
+               "index: idutils"
                #:user "samuel"))))
      #:system-services
      (remove
