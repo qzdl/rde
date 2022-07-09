@@ -1991,20 +1991,22 @@ because a mechanism for the discovery of =TODO= entries is
 :PROPERTIES:
 :ID:       9ce2b921-9c56-42b8-aa6a-579972a92a60
 :CREATED:  [2022-04-22 Fri 09:56]
-:UPDATED:  [2022-04-22 Fri 09:56]
+:UPDATED:  [2022-06-27 Mon 10:49]
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src emacs-lisp :noweb-ref agenda
 (let* ((agenda "  %(qz/org-category)%-12t% s")
        (other "%i%(qz/org-category 12)%l"))
-  (setq org-agenda-prefix-format `((agenda . ,agenda)
-                                   (todo . ,other)
-                                   (tags . ,other)
-                                   (search . ,other))))
+  (setq org-agenda-prefix-format (list (cons 'agenda agenda)
+                                       (cons 'todo other)
+                                       (cons 'todo other)
+                                       (cons 'todo other)
+                                       (cons 'search other))))
+
 #+end_src
 
 #+RESULTS:
-: ((agenda .   %(qz/org-category)%-12t% s) (todo . %i%(qz/org-category 12)%l) (tags . %i%(qz/org-category 12)%l) (search . %i%(qz/org-category 12)%l))
+: ((agenda .   %(qz/org-category)%-12t% s) (todo . %i%(qz/org-category 12)%l) (todo . %i%(qz/org-category 12)%l) (todo . %i%(qz/org-category 12)%l) (search . %i%(qz/org-category 12)%l))
 
 ****** vulpea's category refinement
 :PROPERTIES:
