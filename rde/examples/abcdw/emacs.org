@@ -4535,13 +4535,30 @@ check with (org-redisplay-inline-images)
 #+RESULTS:
 : 640
 
-**** [[id:8b0b7251-2404-404b-9b64-53e4d3ce2fe6][olivetti]]
+**** {M-x align tags}
+:PROPERTIES:
+:ID:       3db09afc-ea16-4ec4-883c-27ad7589f7f1
+:CREATED:  [2022-04-25 Mon 10:10]
+:UPDATED:  [2022-04-25 Mon 11:26]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref org
+(defun qz/org-align-tags ()
+  (interactive)
+  (org-align-tags 'yes-all-the-bloody-tags))
+#+end_src
+
+#+RESULTS:
+: qz/org-align-tags
+
+** [[id:8b0b7251-2404-404b-9b64-53e4d3ce2fe6][olivetti]] :visual:
 :PROPERTIES:
 :ID:       a10b32b7-6a50-47e8-9fed-0bd985f8b0f2
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-***** apply [[id:8b0b7251-2404-404b-9b64-53e4d3ce2fe6][olivetti]] to [[id:0b89e24d-72c0-46ae-8f61-94cee95d7732][minibuffer]]
+*** apply [[id:8b0b7251-2404-404b-9b64-53e4d3ce2fe6][olivetti]] to [[id:0b89e24d-72c0-46ae-8f61-94cee95d7732][minibuffer]]
 :PROPERTIES:
 :ID:       85fc83bc-5603-493f-973a-e3aa994654cd
 :CREATED:  <2022-02-22 Tue 15:27>
