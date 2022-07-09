@@ -4917,6 +4917,101 @@ or
 #+RESULTS:
 : qz/sway-choose-output-res
 
+*** bluetooth
+:PROPERTIES:
+:ID:       49d011dd-3d26-4b50-abf5-292cdf118d46
+:CREATED:  [2022-04-22 Fri 15:31]
+:UPDATED:  [2022-04-22 Fri 15:31]
+:ROAM_EXCLUDE: t
+:END:
+
+**** outputs
+:PROPERTIES:
+:ID:       24700345-74aa-4f26-8fe6-64321c8ea328
+:CREATED:  [2022-04-22 Fri 15:31]
+:UPDATED:  [2022-04-22 Fri 15:31]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src shell
+pactl list sources | grep -E 'Name|Desc' -n
+#+end_src
+
+#+RESULTS:
+|   3: | Name: alsa_output.pci-0000_01_00.1.hdmi-stereo.monitor                                             |
+|   4: | Description: Monitor of HDA NVidia Digital Stereo (HDMI)                                           |
+|  37: | Name: alsa_input.usb-Generic_USB_Audio_201405280001-00.analog-stereo                               |
+|  38: | Description: USB Audio Analog Stereo                                                               |
+|  91: | Name: alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp_5__sink.monitor |
+|  92: | Description: Monitor of Comet Lake PCH cAVS HDMI3 Output                                           |
+| 126: | Name: alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp_4__sink.monitor |
+| 127: | Description: Monitor of Comet Lake PCH cAVS HDMI2 Output                                           |
+| 161: | Name: alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp_3__sink.monitor |
+| 162: | Description: Monitor of Comet Lake PCH cAVS HDMI1 Output                                           |
+| 196: | Name: alsa_output.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp__sink.monitor   |
+| 197: | Description: Monitor of Comet Lake PCH cAVS Speaker + Headphones                                   |
+| 231: | Name: alsa_input.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp__source          |
+| 232: | Description: Comet Lake PCH cAVS Headphones Stereo Microphone                                      |
+| 284: | Name: alsa_input.pci-0000_00_1f.3-platform-skl_hda_dsp_generic.HiFi__hw_sofhdadsp_6__source        |
+| 285: | Description: Comet Lake PCH cAVS Digital Microphone                                                |
+| 337: | Name: alsa_output.usb-TEAC_Corporation_TASCAM_DR_Series-00.analog-stereo.monitor                   |
+| 338: | Description: Monitor of TASCAM DR Series Analog Stereo                                             |
+| 374: | Name: alsa_input.usb-TEAC_Corporation_TASCAM_DR_Series-00.analog-stereo                            |
+| 375: | Description: TASCAM DR Series Analog Stereo                                                        |
+| 428: | Name: bluez_sink.44_F0_9E_51_52_7B.a2dp_sink.monitor                                               |
+| 429: | Description: Monitor of Samuel’s AirPods Pro                                                       |
+
+***** tascam: input: alsa_input.usb-TEAC_Corporation_TASCAM_DR_Series-00.analog-stereo
+:PROPERTIES:
+:ID:       2bfd38e2-cf1c-4074-8349-b4d9a3736b9f
+:CREATED:  [2022-04-22 Fri 15:31]
+:UPDATED:  [2022-04-22 Fri 15:31]
+:ROAM_EXCLUDE: t
+:END:
+***** tascam: output: alsa_output.usb-TEAC_Corporation_TASCAM_DR_Series-00.analog-stereo.monitor
+:PROPERTIES:
+:ID:       4a4a7516-1e18-4d0e-9646-5cc87a361341
+:CREATED:  [2022-04-22 Fri 15:31]
+:UPDATED:  [2022-04-22 Fri 15:31]
+:ROAM_EXCLUDE: t
+:END:
+***** airpods: output: bluez_sink.44_F0_9E_51_52_7B.a2dp_sink.monitor
+:PROPERTIES:
+:ID:       0710390c-4cc2-49e8-8150-490ca155eda9
+:CREATED:  [2022-04-22 Fri 15:31]
+:UPDATED:  [2022-04-22 Fri 15:31]
+:ROAM_EXCLUDE: t
+:END:
+**** connect to headphones
+:PROPERTIES:
+:ID:       13b782de-a874-43ff-8f8f-e75960674e48
+:CREATED:  [2022-04-22 Fri 15:31]
+:UPDATED:  [2022-04-25 Mon 15:15]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+
+(defun qz/bt-connect (mac)
+  (interactive "saddress: ")
+  (async-shell-command
+   (format "bluetoothctl connect %s" mac)
+   "*bluetoothctl*"))
+
+(defun qz/bt-airpods ()
+  (interactive)
+  (qz/bt-connect "44:F0:9E:51:52:7B"))
+
+(defun qz/bt-aiaiai ()
+  (interactive)
+  (qz/bt-connect "44:F0:9E:51:52:7B")
+
+
+  )
+#+end_src
+
+#+RESULTS:
+: qz/bt-aiaiai
+
 ** [[id:fbfebc6c-8732-4646-85da-96345218116e][tramp]]
 :PROPERTIES:
 :ID:       603cb796-7a41-459d-a1e9-5fdc50aee476
