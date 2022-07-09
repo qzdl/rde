@@ -5,24 +5,31 @@ MAKEINFO = makeinfo
 
 # NOTE: pipefail is not POSIX complaint
 
+.PHONY: all
 all: doc/rde.info
 
+.PHONY: install
 install:
 	@echo some installation will happen here
 
+
+.PHONY: home
 home:
 	RDE_TARGET=ixy-home \
 	GUILE_LOAD_PATH=./ \
 	guix home reconfigure ./rde/examples/abcdw/configs.scm --allow-downgrades
 
+.PHONY: system
 system:
 	RDE_TARGET=ixy-system \
 	GUILE_LOAD_PATH=./ \
 	guix system reconfigure ./rde/examples/abcdw/configs.scm --allow-downgrades
 
+.PHONY: check-channel
 check-channel:
 	guix pull -C ./rde/examples/channels.tmpl
 
+.PHONY: check
 check: check-channel
 	RDE_TARGET=ixy-home \
 	./pre-inst-env guix home build \
