@@ -58,19 +58,12 @@
 ;; use this feature with care
 ;; (display (crypt "hi" "$6$abc"))
 
-(define* (mail-acc id user #:optional (type 'gmail))
-  "Make a simple mail-account with gmail type by default."
-  (mail-account
-   (id   id)
-   (fqda user)
-   (type type)))
-
 (define* (mail-lst id fqda urls)
   "Make a simple mailing-list."
   (mailing-list
    (id   id)
    (fqda fqda)
-   (config (l2md-repo
+   (config (l2md-repo ;; XXX maildir issue might be here
             (name (symbol->string id))
             (urls urls)))))
 
@@ -115,35 +108,36 @@
                   "nntps://news.public-inbox.org/inbox.comp.mail.public-inbox.meta"
                   "imaps://news.public-inbox.org/inbox.comp.mail.public-inbox.meta.0"))
 
-      ;; source: https://mail.python.org/archives/list/speed@python.org/latest
-      ;;  -> mbox: https://mail.python.org/archives/list/speed@python.org/export/speed@python.org-2022-02.mbox.gz?start=1970-01-01&end=2022-02-21
-      ;; (mail-lst 'python-speed "speed@python.org"
-      ;;           '("https://mail.python.org/mailman/listinfo/speed"
-      ;;             "https://mail.python.org/archives/list/speed@python.org/"))
-
-      ;; (mail-lst 'rde-announce "~acbdw/rde-announce@lists.sr.ht"
-      ;;           '("https://lists.sr.ht/~abcdw/rde-announce/export"))
-      ;; (mail-lst 'rde-discuss "~acbdw/rde-discuss@lists.sr.ht"
-      ;;           '("https://lists.sr.ht/~abcdw/rde-discuss"))
-      ;; (mail-lst 'rde-devel "~acbdw/rde-devel@lists.sr.ht"
-      ;;           '("https://lists.sr.ht/~abcdw/rde-devel"))
-      ;;; emacs
-      (mail-lst 'emacs-org-mode "emacs-orgmode@gnu.org"
-                '("https://yhetil.org/orgmode"))
-
-      (mail-lst 'emacs-hyperbole "bug-hyperbole@gnu.org"
-                '("https://lists.gnu.org/archive/mbox/bug-hyperbole"
-                  "https://lists.gnu.org/archive/html/bug-hyperbole"))
-      (mail-lst 'emacs-hyperbole-users "hyperbole-users@gnu.org"
-                '("https://lists.gnu.org/archive/mbox/hyperbole-users"
-                  "https://lists.gnu.org/archive/html/hyperbole-users"))
-
-      (mail-lst 'guix-bugs "guix-bugs@gnu.org"
-                '("https://yhetil.org/guix-bugs/0"))
-      (mail-lst 'guix-devel "guix-devel@gnu.org"
-                '("https://yhetil.org/guix-devel/0"))
-      (mail-lst 'guix-patches "guix-patches@gnu.org"
-                '("https://yhetil.org/guix-patches/1"))))
+      ;;;; source: https://mail.python.org/archives/list/speed@python.org/latest
+      ;;;;  -> mbox: https://mail.python.org/archives/list/speed@python.org/export/speed@python.org-2022-02.mbox.gz?start=1970-01-01&end=2022-02-21
+      ;;;; (mail-lst 'python-speed "speed@python.org"
+      ;;;;           '("https://mail.python.org/mailman/listinfo/speed"
+      ;;;;             "https://mail.python.org/archives/list/speed@python.org/"))
+      ;;
+      ;;;; (mail-lst 'rde-announce "~acbdw/rde-announce@lists.sr.ht"
+      ;;;;           '("https://lists.sr.ht/~abcdw/rde-announce/export"))
+      ;;;; (mail-lst 'rde-discuss "~acbdw/rde-discuss@lists.sr.ht"
+      ;;;;           '("https://lists.sr.ht/~abcdw/rde-discuss"))
+      ;;;; (mail-lst 'rde-devel "~acbdw/rde-devel@lists.sr.ht"
+      ;;;;           '("https://lists.sr.ht/~abcdw/rde-devel"))
+      ;;;;; emacs
+      ;;(mail-lst 'emacs-org-mode "emacs-orgmode@gnu.org"
+      ;;          '("https://yhetil.org/orgmode"))
+      ;;
+      ;;(mail-lst 'emacs-hyperbole "bug-hyperbole@gnu.org"
+      ;;          '("https://lists.gnu.org/archive/mbox/bug-hyperbole"
+      ;;            "https://lists.gnu.org/archive/html/bug-hyperbole"))
+      ;;(mail-lst 'emacs-hyperbole-users "hyperbole-users@gnu.org"
+      ;;          '("https://lists.gnu.org/archive/mbox/hyperbole-users"
+      ;;            "https://lists.gnu.org/archive/html/hyperbole-users"))
+      ;;
+      ;;(mail-lst 'guix-bugs "guix-bugs@gnu.org"
+      ;;          '("https://yhetil.org/guix-bugs/0"))
+      ;;(mail-lst 'guix-devel "guix-devel@gnu.org"
+      ;;          '("https://yhetil.org/guix-devel/0"))
+      ;;(mail-lst 'guix-patches "guix-patches@gnu.org"
+      ;;          '("https://yhetil.org/guix-patches/1"))
+      ))
 
     (feature-keyboard
      ;; To get all available options, layouts and variants run:
