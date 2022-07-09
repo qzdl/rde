@@ -340,18 +340,18 @@
           #~(job '(next-hour '(12 0)) ;; every 12 hours
                  (lambda ()
                    (execl (string-append #$(@ (gnu packages base) findutils) "/bin/updatedb")
-                            "updatedb"
-                            "--prunepaths=/tmp /var/tmp /gnu/store"))
-                   "updatedb")))
+                          "updatedb"
+                          "--prunepaths=/tmp /var/tmp /gnu/store"))
+                 "updatedb")))
 
         ;;; udev: nvidia
-           (when gaming?
-             (simple-service
-              'nvidia-udev-rule udev-service-type
-              (list nvidia-driver)))
+        (when gaming?
+          (simple-service
+           'nvidia-udev-rule udev-service-type
+           (list nvidia-driver)))
 
         ;;; desktop manager: X11 gdm + nvidia
-           (when #f
+        (when #f
           (simple-service
            'gdm-xorg-conf gdm-service-type
            (gdm-configuration
