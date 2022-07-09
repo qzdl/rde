@@ -4222,6 +4222,26 @@ once we find out about sequences and repeats
 
 - :: (info-apropos "org-enforce")
   
+**** org-tags-column
+:PROPERTIES:
+:ID:       2809e6c5-ab8c-475a-ab96-6236563e5ce8
+:CREATED:  [2022-04-25 Mon 10:09]
+:UPDATED:  [2022-04-25 Mon 11:29]
+:ROAM_EXCLUDE: t
+:END:
+
+a most controversial decision
+
+- see also :: [[id:3db09afc-ea16-4ec4-883c-27ad7589f7f1][align tags]]
+- see also :: [[id:0b88f9d2-f33f-4fbf-88f0-8cde8ccd0e67][org-tags-alist]]
+
+#+begin_src emacs-lisp :noweb-ref org
+(setq org-tags-column 120)
+#+end_src
+
+#+RESULTS:
+: 120
+
 **** org-enforce-todo-dependencies                                   :var:
 :PROPERTIES:
 :ID:       51ff922b-e6d5-4437-9fdc-d6208de9b959
