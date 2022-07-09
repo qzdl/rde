@@ -484,6 +484,10 @@ I don't use this very much, as it curls my whole left hand up (qwerty troubles)
 (define-key global-map (kbd "M-s-j") 'windmove-swap-states-down)
 (define-key global-map (kbd "M-s-k") 'windmove-swap-states-up)
 (define-key global-map (kbd "M-s-l") 'windmove-swap-states-right)
+(define-key global-map (kbd "H-M-s-h") 'windmove-swap-states-left)
+(define-key global-map (kbd "H-M-s-j") 'windmove-swap-states-down)
+(define-key global-map (kbd "H-M-s-k") 'windmove-swap-states-up)
+(define-key global-map (kbd "H-M-s-l") 'windmove-swap-states-right)
 #+end_src
 
 #+RESULTS:
@@ -506,12 +510,18 @@ I don't use this very much, as it curls my whole left hand up (qwerty troubles)
 :ID:       e3015f6e-f7ca-4e31-aa05-290a438862da
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-07-09 Sat 17:26]
 :END:
+
 #+begin_src emacs-lisp :noweb yes :noweb-ref kbd
-(define-key global-map (kbd "s-h") 'windmove-left)
-(define-key global-map (kbd "s-j") 'windmove-down)
-(define-key global-map (kbd "s-k") 'windmove-up)
-(define-key global-map (kbd "s-l") 'windmove-right)
+(define-key global-map (kbd "H-s-h") 'windmove-left)
+(define-key global-map (kbd "s-h")   'windmove-left)
+(define-key global-map (kbd "H-s-j") 'windmove-down)
+(define-key global-map (kbd "s-j")   'windmove-down)
+(define-key global-map (kbd "H-s-k") 'windmove-up)
+(define-key global-map (kbd "s-k")   'windmove-up)
+(define-key global-map (kbd "H-s-l") 'windmove-right)
+(define-key global-map (kbd "s-l")   'windmove-right)
 #+end_src
 
 #+RESULTS:
