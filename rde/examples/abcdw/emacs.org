@@ -2531,7 +2531,43 @@ CREATED: <2021-11-29 Mon>
 
 #+RESULTS:
 : qz/org-babel-make-table-constants
+***** ob-shell->terminal
+:PROPERTIES:
+:ID:       3ed48629-8f96-4dfe-9cc8-894cfb2920c0
+:CREATED:  [2022-06-21 Tue 23:58]
+:UPDATED:  [2022-06-21 Tue 23:58]
+:ROAM_EXCLUDE: t
+:END:
 
+#+begin_src emacs-lisp :noweb-ref org
+(defun qz/to-shell (command)
+  (interactive) ;; TODO how to interactive bind to `command'??
+  (with-current-buffer (vterm "*to-shell*")
+    (mapc
+     (lambda (c)
+       (message c)
+       (vterm-send-string c)
+       (vterm-send-return))
+     (qz/ensure-list command))))
+
+(defun qz/current-src-block ()
+  (interactive)
+  (s-split
+   "[\n]"
+   (kill-new (nth 6 (car ;; lspec
+                     (cdr (car
+                           (save-excursion
+                             (when-let ((head (org-babel-where-is-src-block-head)))
+                               (goto-char head))
+                             (org-babel-tangle-single-block 1 t)))))))))
+
+(defun qz/shell-current-src-block ()
+  (interactive)
+  (when-let ((command (qz/current-src-block)))
+    (qz/to-shell command)))
+
+(define-key org-babel-map (kbd "C-<return>") #'qz/shell-current-src-block)
+#+end_src
 
 ***** list->rows                                                   :func:
 :PROPERTIES:
