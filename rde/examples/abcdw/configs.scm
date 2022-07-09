@@ -691,6 +691,7 @@
          (setq erc-email-userid "qzdl/irc.libera.chat")
          (erc-tls :server "chat.sr.ht" :nick rde-bouncer-nick))))
     (feature-emacs-elpher)
+    (feature-emacs-ement)
     (feature-emacs-telega)
     (feature-emacs-pdf-tools)
     (feature-emacs-nov-el)
