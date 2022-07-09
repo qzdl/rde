@@ -1294,15 +1294,27 @@ CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
 :END:
 
 #+begin_src emacs-lisp :noweb-ref conf
-(defun qz/add-py-debug ()
+(defun qz/add-pdb-py-debug ()
   "add debug code and move line down"
   (interactive)
-  (move-beginning-of-line 1)
+  (back-to-indentation)
   (insert "import pdb; pdb.set_trace();\n"))
 #+end_src
 
 #+RESULTS:
-: qz/add-py-debug
+: qz/add-pdb-py-debug
+
+**** org-babel-python-command
+:PROPERTIES:
+:ID:       8c209f94-c43d-4cd8-94f9-2a027b6ddaa3
+:CREATED:  [2022-05-02 Mon 10:55]
+:UPDATED:  [2022-05-02 Mon 11:02]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref org
+(setq org-babel-python-command "python3")
+#+end_src
 
 *** [[id:0c02b1ad-3964-4b51-ba59-d2de0e05428f][golang]]
 :PROPERTIES:
