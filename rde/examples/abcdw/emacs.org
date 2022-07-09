@@ -552,18 +552,18 @@ I don't use this very much, as it curls my whole left hand up (qwerty troubles)
 :ID:       75441f13-8830-42fe-b3fe-b22b2dbf4275
 :CREATED:  <2022-02-25 Fri 10:11>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-04-22 Fri 12:03]
+:UPDATED:  [2022-07-09 Sat 17:54]
 :END:
 
 #+begin_src emacs-lisp :noweb-ref kbd
 ;; Activate occur easily inside isearch
 
 (define-key isearch-mode-map (kbd "C-o")
-            (lambda () (interactive)
-              (let ((case-fold-search isearch-case-fold-search))
-                (occur (if isearch-regexp
-                           isearch-string
-                         (regexp-quote isearch-string))))))
+  (lambda () (interactive)
+    (let ((case-fold-search isearch-case-fold-search))
+      (occur (if isearch-regexp
+                 isearch-string
+               (regexp-quote isearch-string))))))
 #+end_src
 
 #+RESULTS:
@@ -580,11 +580,11 @@ hmm, doesn't allow further input
 
 #+begin_src emacs-lisp :noweb-ref kbd
 (define-key isearch-mode-map (kbd "M-o")
-            (lambda () (interactive)
-              (let ((case-fold-search isearch-case-fold-search))
-                (consult-line (if isearch-regexp
-                                  isearch-string
-                                (regexp-quote isearch-string))))))
+  (lambda () (interactive)
+    (let ((case-fold-search isearch-case-fold-search))
+      (consult-line (if isearch-regexp
+                        isearch-string
+                      (regexp-quote isearch-string))))))
 #+end_src
 
 #+RESULTS:
