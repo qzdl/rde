@@ -330,6 +330,9 @@
            (@@ (gnu services desktop) %desktop-services)
            '())
        (list
+        ;;; metrics
+        (service (@ (gnu services monitoring)
+                    prometheus-node-exporter-service-type))
         ;;; cron jobs
         (simple-service
          'system-jobs (@ (gnu services mcron) mcron-service-type)
