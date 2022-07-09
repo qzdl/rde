@@ -2100,18 +2100,17 @@ Refer to `org-agenda-prefix-format' for more information."
 :PROPERTIES:
 :ID:       f8dbfc55-a12f-4481-909c-aa7e15339931
 :CREATED:  [2022-04-14 Thu 15:55]
-:UPDATED:  [2022-04-22 Fri 12:06]
+:UPDATED:  [2022-07-09 Sat 17:40]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src emacs-lisp :noweb-ref agenda
 ;; 🌑🌒🌓🌔🌕🌖🌗🌘🌙🌚🌛🌜
 (setq lunar-phase-names
-'("🌚 new moon" ; unicode symbol : 🌑 use full circle as fallback
-"🌛 first quarter moon"
-"🌝 full moon" ; unicode symbol: 🌕 use empty circle as fallback
-"🌜 last quarter moon"))
-
+      '("🌚 new moon" ; unicode symbol : 🌑 use full circle as fallback
+        "🌛 first quarter moon"
+        "🌝 full moon" ; unicode symbol: 🌕 use empty circle as fallback
+        "🌜 last quarter moon"))
 #+end_src
 
 #+RESULTS:
