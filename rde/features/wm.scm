@@ -64,6 +64,7 @@
             waybar-sway-workspaces
             waybar-tray
             waybar-temperature
+            waybar-volume
             waybar-idle-inhibitor
             waybar-clock
             waybar-battery
