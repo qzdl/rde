@@ -5163,9 +5163,9 @@ the major mode specifies support for Font Lock."
 ;; default │
 
 (custom-set-variables '(highlight-indent-guides-method 'character)
-                        `(highlight-indent-guides-character 9474)
-                        '(highlight-indent-guides-auto-enabled nil)
-                        '(highlight-indent-guides-responsive 'top))
+                      `(highlight-indent-guides-character 9474)
+                      '(highlight-indent-guides-auto-enabled nil)
+                      '(highlight-indent-guides-responsive 'top))
 
 ;; I don't use this AT ALL so give some ridulous defaults
 (set-face-background 'highlight-indent-guides-odd-face "green")
