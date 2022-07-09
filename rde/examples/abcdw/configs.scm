@@ -87,7 +87,7 @@
    unspecified?
    (list
     (feature-user-info
-     ;;#:emacs-advanced-user? #t
+     #:emacs-advanced-user? #t
      #:user-name "samuel"
      #:full-name "Samuel Culpepper"
      #:email "samuel@samuelculpepper.com"
@@ -196,12 +196,13 @@
     ;; #:outproxy 'http://acetone.i2p:8888
     ;; ;; 'purokishi.i2p
     ;; #:less-anonymous? #t)
+
     (feature-custom-services
      #:feature-name-prefix 'ixy
-     #:system-services
-     (list
-      (simple-service 'nvidia-udev-rule udev-service-type
-                      (list nvidia-driver)))
+     ;; #:system-services
+     ;; (list
+     ;;  (simple-service 'nvidia-udev-rule udev-service-type
+     ;;                  (list nvidia-driver)))
      #:home-services
      (list
       ;; TODO: Remove it once upstreamed.
@@ -213,18 +214,18 @@
          ;;("LIBGL_DRIVERS_PATH" . (string-join (list "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46/lib/gbm"
          ;;                                           "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46/lib"
          ;;                                           "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46") ":"))
-         ("LIBGL_DEBUG" . "verbose")
-         ("G_MESSAGES_DEBUG" . "1")
+         ;;("LIBGL_DEBUG" . "verbose")
+         ;;("G_MESSAGES_DEBUG" . "1")
 
          ;;("MESA_LOADER_DRIVER_OVERRIDE" . "nvidia") ;; no nvidia_dri
          ;;("MESA_LOADER_DRIVER_OVERRIDE" . "nvidia-drm") ;; no nvidia-drm_dri
 
-         ("MESA_DEBUG" . "1")
-         ("MESA_LOG_FILE" . "/tmp/mesa.log")
+         ;;("MESA_DEBUG" . "1")
+         ;;("MESA_LOG_FILE" . "/tmp/mesa.log")
 
          ;; glfw patched?
          ;; https://github.com/bulletphysics/bullet3/issues/2595#issuecomment-588080665
-         ;;("MESA_GL_VERSION_OVERRIDE" . "3.4")
+         ;; ("MESA_GL_VERSION_OVERRIDE" . "3.4")
          ;;("MESA_GLSL_VERSION_OVERRIDE" . "340")
 
          ;;("GBM_BACKEND" . "nvidia-drm")
@@ -248,7 +249,7 @@
          ;;      ))
          ;;
          ;;("__GLX_VENDOR_LIBRARY_NAME" . "nvidia")
-         ("WLR_NO_HARDWARE_CURSORS" . "1")
+         ;;("WLR_NO_HARDWARE_CURSORS" . "1")
          ;;("WLR_DRM_NO_ATOMIC" . "1")
          ;; echo "/dev/dri/card$(udevadm info -a -n /dev/dri/card1 | grep boot_vga | rev | cut -c 2)"
          ;;("WLR_DRM_DEVICES" . "/dev/dri/card1")   ;; gpu only
@@ -386,7 +387,7 @@
                   ;; (authorised-keys
                   ;;  `(("hww" ,(local-file "hww.pub"))
                   ;;    ))
-                   ))
+                  ))
         ))))
 
     (unless gaming? (feature-base-services))
@@ -398,37 +399,37 @@
 
     (unless gaming? (feature-pipewire))
 
-   (feature-fonts
+    (feature-fonts
      #:font-monospace (font "Iosevka" #:size 14 #:weight 'regular)
      ;; #:font-monospace (font "Fira Mono" #:size 14 #:weight 'semi-light)
      #:font-packages (list font-iosevka font-fira-mono))
-   (feature-alacritty
-    #:config-file (local-file "./config/alacritty/alacritty.yml")
-    #:default-terminal? #f
-    #:backup-terminal? #t
-    #:software-rendering? #f)
-   (feature-vterm)
-   (feature-bash)
-   (feature-direnv)
-   (feature-zsh
-    #:enable-zsh-autosuggestions? #t
-    #:extra-zshrc
-    (list ;; XXX higher level category
-     ;; something which evals equiv to following for each promptline "PS1=\"[$(date -u '+%Y-%m-%d | %H:%M')] $PS1\""
-     "alias ns='cd $HOME/git/ns'"
-     "alias om='ns && cd om'"
-     "alias omom='om && cd om'"
-     "alias rt='ns && cd routing'"
-     "alias sys='cd $HOME/git/sys'"
+    (feature-alacritty
+     #:config-file (local-file "./config/alacritty/alacritty.yml")
+     #:default-terminal? #f
+     #:backup-terminal? #t
+     #:software-rendering? #f)
+    (feature-vterm)
+    (feature-bash)
+    (feature-direnv)
+    (feature-zsh
+     #:enable-zsh-autosuggestions? #t
+     #:extra-zshrc
+     (list ;; XXX higher level category
+      ;; something which evals equiv to following for each promptline "PS1=\"[$(date -u '+%Y-%m-%d | %H:%M')] $PS1\""
+      "alias ns='cd $HOME/git/ns'"
+      "alias om='ns && cd om'"
+      "alias omom='om && cd om'"
+      "alias rt='ns && cd routing'"
+      "alias sys='cd $HOME/git/sys'"
 
-     ;; TIL https://unix.stackexchange.com/questions/225943/except-the-1st-argument
-     "rgw() { d=$1; p=$2; argv[1,2]=(); rg $p $d $@; }"
-     "alias rgg='rgw $HOME/git/'"
-     "alias rgr='rgw $HOME/git/sys/rde'"
-     "alias rgns='rgw $HOME/git/ns'"
-     "alias rgom='rgw $HOME/git/ns/om'"
-     "alias rgrt='rgw $HOME/git/ns/routing'"
-     "alias rgsys='rgw $HOME/git/sys'"
+      ;; TIL https://unix.stackexchange.com/questions/225943/except-the-1st-argument
+      "rgw() { d=$1; p=$2; argv[1,2]=(); rg $p $d $@; }"
+      "alias rgg='rgw $HOME/git/'"
+      "alias rgr='rgw $HOME/git/sys/rde'"
+      "alias rgns='rgw $HOME/git/ns'"
+      "alias rgom='rgw $HOME/git/ns/om'"
+      "alias rgrt='rgw $HOME/git/ns/routing'"
+      "alias rgsys='rgw $HOME/git/sys'"
 
       "alias gp='ls $GUIX_EXTRA_PROFILES'"
       "_gP() { export GUIX_PROFILE=$1 ; }"
@@ -445,11 +446,11 @@
       (extra-config
        (list (ssh-host
               (host "qz")
+              ;; <(create ixy->qz key)>
               (options '((user . "samuel")
                          (hostname . "192.168.0.249")
                          (port . 22)
-                         ;;(identity-file . "~/.ssh/newstore-luminate.pem")
-                         )))
+                         (identity-file . "~/.ssh/qzdl.pub"))))
              (ssh-host
               (host "ko")
               (options '((user . "root")
@@ -488,9 +489,9 @@
     ;; --- sway --------
     (unless gaming?
       (feature-sway
-       #:sway sway-latest ;; sway-last (transform-nvidia sway-latest)
+       ;; #:sway sway-latest ;; sway-last (transform-nvidia sway-latest)
        ;; #:sway (transform-nvidia sway-latest)
-       ;;#:Xdg-desktop-portal-wlr xdg-desktop-portal-wlr-latest
+       ;; #:xdg-desktop-portal-wlr xdg-desktop-portal-wlr-latest
        ;; #:xdg-desktop-portal-wlr (transform-nvidia xdg-desktop-portal-wlr-latest)
        #:xwayland? #f
        #:opacity 0.9
@@ -533,7 +534,8 @@
         (waybar-tray)
         (waybar-idle-inhibitor)
         ;; (waybar-temperature)
-        (waybar-sway-language)
+        ;; (waybar-sway-language)
+        (waybar-volume #:intense? #f)
         (waybar-battery #:intense? #f)
         (waybar-clock))))
 
@@ -547,8 +549,10 @@
        ;; The blur of last-screen on lock screen is not privacy-friendly.
        ;; TODO use blurred wallpaper from $HOME/.cache/wallpaper.png
        #:extra-config '(;; (screenshots)
-                        ;; (effect-blur . 7x5)
-                        (clock)))
+                        (effect-blur . 7x5)
+                        (image . "~/.cache/wallpaper.png")
+                        (scale . fill)
+                        (clock))))
     (unless gaming?
       (feature-rofi
        #:theme (local-file "config/rofi/themes/base16-default-dark.rasi")))
@@ -556,10 +560,11 @@
 
     ;; --- EMACS --------------------------------------
     (feature-emacs
-     #:emacs
-     (if (string=? (or (getenv "BUILD_SUBMITTER") "") "git.sr.ht")
-         (@ (gnu packages emacs) emacs-next-pgtk)
-         emacs-next-pgtk-latest)
+     ;;#:emacs emacs-next-pgtk-latest
+     #:emacs (@ (gnu packages emacs) emacs-next-pgtk)
+     ;; (if (string=? (or (getenv "BUILD_SUBMITTER") "") "git.sr.ht")
+     ;;     (@ (gnu packages emacs) emacs-next-pgtk)
+     ;;     emacs-next-pgtk-latest)
 
      #:extra-init-el
      (append
@@ -573,13 +578,14 @@
             emacs-consult-eglot
             emacs-consult-recoll
             emacs-sql-indent
-            emacs-code-review)
+            emacs-code-review
+            emacs-ob-go)
       (pkgs "emacs-elfeed"
             "emacs-hl-todo"
             "emacs-ytdl"
             "emacs-dimmer"
             "emacs-hyperbole"
-            "emacs-ement"
+            ;; "emacs-ement"
             "emacs-restart-emacs"
             "emacs-yaml-mode"
             "emacs-org-download"
@@ -589,9 +595,19 @@
             "emacs-debbugs"
             "emacs-plantuml-mode"
             "emacs-ggtags"
+            "emacs-highlight-indent-guides"
 
+            "emacs-paredit"
+            "emacs-ess"
             "emacs-ob-async"
             "emacs-org-fragtog"
+            "emacs-org-super-agenda"
+            "emacs-org-transclusion"
+            "emacs-ox-hugo"
+            "emacs-ox-pandoc"
+            "emacs-htmlize" ;; ement: -> ox-export html: org src blocks
+
+            ;;"emacs-artbollocks"
 
             "emacs-repology"
 
@@ -600,14 +616,12 @@
             "emacs-slime-volleyball"
 
             "emacs-calfw"
+            "emacs-edit-server"
 
             "emacs-json-snatcher"
             "emacs-logview" ;; https://github.com/doublep/logview
             ;;"emacs-vlf" ;; TODO guix: package emacs-vlf
 
-            "emacs-org-super-agenda"
-            "emacs-org-transclusion"
-            "emacs-ox-hugo"
             "emacs-explain-pause-mode"
             ;; TODO feature-emacs-lsp
             "emacs-jq-mode"
@@ -623,14 +637,14 @@
             "emacs-terraform-mode"
             "emacs-string-inflection"
             "emacs-htmlize" ;; ement: -> ox-export html: org src blocks
+
             ;; emacs-impostman
             ;; "emacs-org-autotangle"
             )))
 
     (feature-emacs-appearance
      #:light? #f
-     #:deuteranopia? #f
-     #:emacs-modus-themes emacs-modus-themes-latest)
+     #:deuteranopia? #f)
     (feature-emacs-faces)
     (feature-emacs-completion
      #:mini-frame? #f)
@@ -644,39 +658,38 @@
      #:visible-width 150)
 
     (feature-emacs-dired)
-    (feature-emacs-vterm)
+    ;;(feature-emacs-vterm) ;; TODO merge with feature-vterm
     (feature-emacs-monocle)
     (feature-emacs-message)
     (feature-emacs-erc
-    #:erc-kill-buffers-on-quit #t
-    #:erc-nick "qzdl"
-    #:align-nicknames? #f
-    #:erc-autojoin-channels-alist
-    '((Libera.Chat "#guix" "#emacs" "#tropin" "#rde" "#sway")
-      (OFTC        "#pipewire" "#wayland"))
-    #:log? #t
+     #:erc-kill-buffers-on-quit #t
+     #:erc-nick "qzdl"
+     #:align-nicknames? #f
+     #:erc-autojoin-channels-alist
+     '((Libera.Chat "#guix" "#emacs" "#tropin" "#rde" "#sway")
+       (OFTC        "#pipewire" "#wayland"))
+     #:log? #t
+     ;; #:erc-server "chat.sr.ht"
+     #:extra-config
+     `((setq rde-bouncer-network-alist
+             `((irc.libera.chat . "qzdl")
+               (irc.oftc.net . "qzdl")))
+       (setq rde-bouncer-nick "qzdl")
 
-    ;; #:erc-server "chat.sr.ht"
-    #:extra-config
-    `((setq rde-bouncer-network-alist
-            `((irc.libera.chat . "qzdl")
-              (irc.oftc.net . "qzdl")))
-      (setq rde-bouncer-nick "qzdl")
+       ;; Rename server buffers to reflect the current network name instead
+       ;; of SERVER:PORT (e.g., "freenode" instead of "irc.freenode.net:6667").
+       ;; This is useful when using a bouncer like ZNC where you have multiple
+       ;; connections to the same server.
+       (setq erc-rename-buffers t)
 
-      ;; Rename server buffers to reflect the current network name instead
-      ;; of SERVER:PORT (e.g., "freenode" instead of "irc.freenode.net:6667").
-      ;; This is useful when using a bouncer like ZNC where you have multiple
-      ;; connections to the same server.
-      (setq erc-rename-buffers t)
-
-      (defun rde-erc-connect-bouncer-oftc ()
-        (interactive)
-        (setq erc-email-userid "qzdl/irc.oftc.net")
-        (erc-tls :server "chat.sr.ht" :nick rde-bouncer-nick))
-      (defun rde-erc-connect-bouncer-libera ()
-        (interactive)
-        (setq erc-email-userid "qzdl/irc.libera.chat")
-        (erc-tls :server "chat.sr.ht" :nick rde-bouncer-nick))))
+       (defun rde-erc-connect-bouncer-oftc ()
+         (interactive)
+         (setq erc-email-userid "qzdl/irc.oftc.net")
+         (erc-tls :server "chat.sr.ht" :nick rde-bouncer-nick))
+       (defun rde-erc-connect-bouncer-libera ()
+         (interactive)
+         (setq erc-email-userid "qzdl/irc.libera.chat")
+         (erc-tls :server "chat.sr.ht" :nick rde-bouncer-nick))))
     (feature-emacs-elpher)
     (feature-emacs-telega)
     (feature-emacs-pdf-tools)
@@ -684,11 +697,6 @@
     ;; TODO: Revisit <https://en.wikipedia.org/wiki/Git-annex>
     (feature-emacs-git)
     ;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
-    (feature-emacs-org
-     #:org-directory my-org-directory
-     #:org-agenda-directory my-notes-directory)
-    (feature-emacs-org-agenda
-     #:org-agenda-files '("~/life/roam/inbox.org"))
     (feature-emacs-org-roam
      ;; TODO: Rewrite to states
      #:org-roam-directory my-notes-directory
@@ -704,10 +712,17 @@
     ;;  (list(string-append my-org-directory "/bib.org")
     ;;  #:bibliography-directory my-notes-directory)
 
+    (feature-emacs-org-agenda
+     #:org-agenda-files '("~/life/roam/inbox.org"))
+    (feature-emacs-org
+     #:org-directory my-org-directory
+     #:org-agenda-directory my-notes-directory)
+
     (feature-emacs-es-mode
-     #:package emacs-es-mode)
+     #:package emacs-es-mode-latest)
     (feature-emacs-restclient
      #:package-ob emacs-ob-restclient-latest)
+
     ;; ------------------------------------------------
 
     (feature-mpv)
@@ -773,7 +788,8 @@
        "ffmpeg"
 
        "ripgrep" "curl" "make"
-       )))))))
+       )))
+    )))
 
 ;;(map pretty-print %main-features)
 (pretty-print "post-%main-features")
@@ -807,19 +823,19 @@
 ;; (define ixy-file-systems
 ;;   (append
 ;;    (map (match-lambda
-;; 	  ((subvol . mount-point)
-;; 	   (file-system
-;; 	     (type "btrfs")
-;; 	     (device "/dev/mapper/enc")
-;; 	     (mount-point mount-point)
-;; 	     (options (format #f "subvol=~a" subvol))
-;; 	     (dependencies ixy-mapped-devices))))
-;; 	'((root . "/")
-;; 	  (boot . "/boot")
-;; 	  (gnu  . "/gnu")
-;; 	  (home . "/home")
-;; 	  (data . "/data")
-;; 	  (log  . "/var/log")))
+;;        ((subvol . mount-point)
+;;         (file-system
+;;           (type "btrfs")
+;;           (device "/dev/mapper/enc")
+;;           (mount-point mount-point)
+;;           (options (format #f "subvol=~a" subvol))
+;;           (dependencies ixy-mapped-devices))))
+;;      '((root . "/")
+;;        (boot . "/boot")
+;;        (gnu  . "/gnu")
+;;        (home . "/home")
+;;        (data . "/data")
+;;        (log  . "/var/log")))
 ;;    (list
 ;;     (file-system
 ;;       (mount-point "/boot/efi")
@@ -960,11 +976,11 @@
 
 ;; (pretty-print-rde-config ixy-config)
 ;; (use-modules (gnu services)
-;; 	     (gnu services base))
+;;           (gnu services base))
 ;; (display
 ;;  (filter (lambda (x)
-;; 	   (eq? (service-kind x) console-font-service-type))
-;; 	 (rde-config-system-services ixy-config)))
+;;         (eq? (service-kind x) console-font-service-type))
+;;       (rde-config-system-services ixy-config)))
 
 ;; (use-modules (rde features))
 ;; ((@ (ice-9 pretty-print) pretty-print)
