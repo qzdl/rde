@@ -1894,9 +1894,8 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
 #+end_src
 
 #+RESULTS:
-| w | work   | ((tags-todo {work}+wip ((org-agenda-overriding-header wip) (org-tags-match-list-sublevels nil))) (tags-todo {work} ((org-agenda-overriding-header work))))                                                                                                                                                                    |
-| c | create | ((agenda  ((org-agenda-span 'day) (org-deadline-warning-days 60))) (tags-todo diy+create+do+buy+make+wip ((org-agenda-overriding-header wip))) (tags-todo diy+create+do ((org-agenda-overriding-header create))) (tags-todo buy ((org-agenda-overriding-header buy))) (tags-todo make ((org-agenda-overriding-header make)))) |
-| g | GTD    | ((agenda  ((org-agenda-span 'day) (org-deadline-warning-days 60))) (tags-todo now ((org-agenda-overriding-header                                                                                                                                                                                                              |
+| w  | work     | ((tags-todo {work}+wip ((org-agenda-overriding-header wip) (org-tags-match-list-sublevels nil))) (tags-todo {work} ((org-agenda-overriding-header work))))                                                                                                                                                                                                                         |
+|  | Overview | ((agenda  ((org-agenda-time-grid nil) (org-agenda-start-on-weekday nil) (org-agenda-start-day +1d) (org-agenda-span 14) (org-agenda-show-all-dates nil) (org-agenda-time-grid nil) (org-deadline-warning-days 0) (org-agenda-block-separator nil) (org-agenda-entry-types '(:deadline)) (org-agenda-skip-function '(org-agenda-skip-entry-if 'done)) (org-agenda-overriding-header |
 
 #+begin_src emacs-lisp  :results code
 ;; remove keyed by KEY
@@ -1911,93 +1910,122 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
 
 #+RESULTS:
 #+begin_src emacs-lisp
-(("c" "create"
+(("" "Overview"
   ((agenda ""
-           ((org-agenda-span 'day)
-            (org-deadline-warning-days 60)))
-   (tags-todo "diy+create+do+buy+make+wip"
-              ((org-agenda-overriding-header "wip")))
-   (tags-todo "diy+create+do"
-              ((org-agenda-overriding-header "create")))
-   (tags-todo "buy"
-              ((org-agenda-overriding-header "buy")))
-   (tags-todo "make"
-              ((org-agenda-overriding-header "make")))))
- ("g" "GTD"
-  ((agenda ""
-           ((org-agenda-span 'day)
-            (org-deadline-warning-days 60)))
-   (tags-todo "now"
-              ((org-agenda-overriding-header "\nnow\n")))
-   (tags-todo "wip"
-              ((org-agenda-overriding-header "\nwip\n")))
-   (todo "TODO"
-         ((org-agenda-overriding-header "\nto process\n")
-          (org-agenda-files
-           '("~/life//roam/inbox.org"))))
-   (todo "TODO"
-         ((org-agenda-overriding-header "\ndaily inbox\n")
-          (org-agenda-files qz/agenda-daily-files)))
-   (todo "TODO"
-         ((org-agenda-overriding-header "\nemails\n")
-          (org-agenda-files
-           '("~/life//roam/emails.org"))))
-   (todo "TODO"
-         ((org-agenda-overriding-header "\none-off Tasks\n")
-          (org-agenda-files
-           '("~/life//roam/next.org"))))
-   (todo "TODO"
-         ((org-agenda-overriding-header "\nto yak shave\n")
-          (org-agenda-files
-           '("~/life//roam/emacs.org"))))))
- ("" "Overview"
-  ((agenda ""
-           ((org-agenda-time-grid nil)
-            (org-agenda-start-on-weekday nil)
-            (org-agenda-start-day "+1d")
-            (org-agenda-span 14)
-            (org-agenda-show-all-dates nil)
-            (org-agenda-time-grid nil)
-            (org-deadline-warning-days 0)
-            (org-agenda-block-separator nil)
-            (org-agenda-entry-types
-             '(:deadline))
-            (org-agenda-skip-function
-             '(org-agenda-skip-entry-if 'done))
-            (org-agenda-overriding-header "\nUpcoming deadlines (+14d)\n")))
+	   ((org-agenda-time-grid nil)
+	    (org-agenda-start-on-weekday nil)
+	    (org-agenda-start-day "+1d")
+	    (org-agenda-span 14)
+	    (org-agenda-show-all-dates nil)
+	    (org-agenda-time-grid nil)
+	    (org-deadline-warning-days 0)
+	    (org-agenda-block-separator nil)
+	    (org-agenda-entry-types
+	     '(:deadline))
+	    (org-agenda-skip-function
+	     '(org-agenda-skip-entry-if 'done))
+	    (org-agenda-overriding-header "\nUpcoming deadlines (+14d)\n")))
    (agenda "*"
-           ((org-agenda-block-separator nil)
-            (org-agenda-span 14)
-            (org-agenda-overriding-header "\nAgenda\n")))
+	   ((org-agenda-block-separator nil)
+	    (org-agenda-span 14)
+	    (org-agenda-overriding-header "\nAgenda\n")))
    (alltodo ""
-            ((org-agenda-block-separator nil)
-             (org-agenda-skip-function
-              '(or
-                (org-agenda-skip-if nil
-                                    '(scheduled deadline))))
-             (org-agenda-overriding-header "\nBacklog\n")))))
+	    ((org-agenda-block-separator nil)
+	     (org-agenda-skip-function
+	      '(or
+		(org-agenda-skip-if nil
+				    '(scheduled deadline))))
+	     (org-agenda-overriding-header "\nBacklog\n")))))
  ("" "Agenda for the day"
   ((agenda ""
-           ((org-agenda-span 1)
-            (org-agenda-scheduled-leaders
-             '("" "Sched.%2dx: "))
-            (org-agenda-block-separator nil)
-            (org-agenda-entry-types
-             '(:scheduled :timestamp :sexp))
-            (org-scheduled-past-days 0)
-            (org-agenda-day-face-function
-             (lambda
-               (date)
-               'org-agenda-date))
-            (org-agenda-format-date "%A %-e %B %Y")
-            (org-agenda-overriding-header "\nAgenda for the day\n")))
+	   ((org-agenda-span 1)
+	    (org-agenda-scheduled-leaders
+	     '("" "Sched.%2dx: "))
+	    (org-agenda-block-separator nil)
+	    (org-agenda-entry-types
+	     '(:scheduled :timestamp :sexp))
+	    (org-scheduled-past-days 0)
+	    (org-agenda-day-face-function
+	     (lambda
+	       (date)
+	       'org-agenda-date))
+	    (org-agenda-format-date "%A %-e %B %Y")
+	    (org-agenda-overriding-header "\nAgenda for the day\n")))
    (todo "NEXT"
-         ((org-agenda-block-separator nil)
-          (org-agenda-overriding-header "\nCurrent Tasks\n")))))
+	 ((org-agenda-block-separator nil)
+	  (org-agenda-overriding-header "\nCurrent Tasks\n")))))
+ ("c" "create"
+  ((agenda ""
+	   ((org-agenda-span 'day)
+	    (org-deadline-warning-days 60)))
+   (tags-todo "diy+create+do+buy+make+wip"
+	      ((org-agenda-overriding-header "wip")))
+   (tags-todo "diy+create+do"
+	      ((org-agenda-overriding-header "create")))
+   (tags-todo "buy"
+	      ((org-agenda-overriding-header "buy")))
+   (tags-todo "make"
+	      ((org-agenda-overriding-header "make")))))
+ ("g" "GTD"
+  ((agenda ""
+	   ((org-agenda-span 'day)
+	    (org-deadline-warning-days 60)))
+   (tags-todo "now"
+	      ((org-agenda-overriding-header "\nnow\n")))
+   (tags-todo "wip"
+	      ((org-agenda-overriding-header "\nwip\n")))
+   (todo "TODO"
+	 ((org-agenda-overriding-header "\nto process\n")
+	  (org-agenda-files
+	   '("~/life//roam/inbox.org"))))
+   (todo "TODO"
+	 ((org-agenda-overriding-header "\ndaily inbox\n")
+	  (org-agenda-files qz/agenda-daily-files)))
+   (todo "TODO"
+	 ((org-agenda-overriding-header "\nemails\n")
+	  (org-agenda-files
+	   '("~/life//roam/emails.org"))))
+   (todo "TODO"
+	 ((org-agenda-overriding-header "\none-off Tasks\n")
+	  (org-agenda-files
+	   '("~/life//roam/next.org"))))
+   (todo "TODO"
+	 ((org-agenda-overriding-header "\nto yak shave\n")
+	  (org-agenda-files
+	   '("~/life//roam/emacs.org"))))))
  ("n" "Agenda and all TODOs"
   ((agenda "")
    (alltodo ""))))
 #+end_src
+
+***** 1 ; events
+:PROPERTIES:
+:ID:       57a17f21-6c71-4527-8d30-744a8701874c
+:CREATED:  [2022-06-27 Mon 10:55]
+:UPDATED:  [2022-06-27 Mon 10:57]
+:ROAM_EXCLUDE: t
+:END:
+
+could do with some love; dates above are a bit redundant maybe
+
+- :: https://emacs.stackexchange.com/questions/22077/org-agenda-how-to-show-only-todos-with-deadline
+  
+#+begin_src emacs-lisp :noweb-ref agenda
+(add-to-list
+ 'org-agenda-custom-commands
+ '("1" "Events" agenda "display deadlines and exclude scheduled"
+   ((org-agenda-span 'year)
+    (org-agenda-time-grid nil)
+    (org-agenda-show-all-dates nil)
+    (org-agenda-entry-types '(:deadline)) ;; this entry excludes :scheduled
+    (org-deadline-warning-days 0) )))
+
+#+end_src
+
+#+RESULTS:
+|  1 | Events   | agenda                                                                                                                                                                                                                                                                                                                                                                             | display deadlines and exclude scheduled | ((org-agenda-span 'year) (org-agenda-time-grid nil) (org-agenda-show-all-dates nil) (org-agenda-entry-types '(:deadline)) (org-deadline-warning-days 0))  |
+|  1 | Events   | agenda                                                                                                                                                                                                                                                                                                                                                                             | display deadlines and exclude scheduled | ((org-agenda-span 'month) (org-agenda-time-grid nil) (org-agenda-show-all-dates nil) (org-agenda-entry-types '(:deadline)) (org-deadline-warning-days 0)) |
+|  | Overview | ((agenda  ((org-agenda-time-grid nil) (org-agenda-start-on-weekday nil) (org-agenda-start-day +1d) (org-agenda-span 14) (org-agenda-show-all-dates nil) (org-agenda-time-grid nil) (org-deadline-warning-days 0) (org-agenda-block-separator nil) (org-agenda-entry-types '(:deadline)) (org-agenda-skip-function '(org-agenda-skip-entry-if 'done)) (org-agenda-overriding-header |                                         |                                                                                                                                                           |
 
 **** noweb tangler
 :PROPERTIES:
