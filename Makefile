@@ -5,13 +5,25 @@ MAKEINFO = makeinfo
 
 # NOTE: pipefail is not POSIX complaint
 
+default: help
+
+_rde:
+	@echo "                    _/           "
+	@echo "   _/  _/_/    _/_/_/    _/_/    "
+	@echo "  _/_/      _/    _/  _/_/_/_/   "
+	@echo " _/        _/    _/  _/          "
+	@echo "_/          _/_/_/    _/_/_/     "
+	@echo
+	@echo "(c) Andrew Tropin 2020,2022"
+	@echo
+	@echo
+
 .PHONY: all
 all: doc/rde.info
 
 .PHONY: install
 install:
 	@echo some installation will happen here
-
 
 .PHONY: home
 home:
