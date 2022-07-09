@@ -140,11 +140,19 @@
     (define-key global-map (kbd "M-s-j") 'windmove-swap-states-down)
     (define-key global-map (kbd "M-s-k") 'windmove-swap-states-up)
     (define-key global-map (kbd "M-s-l") 'windmove-swap-states-right)
-    (define-key global-map (kbd "s-h") 'windmove-left)
-    (define-key global-map (kbd "s-j") 'windmove-down)
-    (define-key global-map (kbd "s-k") 'windmove-up)
-    (define-key global-map (kbd "s-l") 'windmove-right)
+    (define-key global-map (kbd "H-s-h") 'windmove-left)
+    (define-key global-map (kbd "H-s-j") 'windmove-down)
+    (define-key global-map (kbd "H-s-k") 'windmove-up)
+    (define-key global-map (kbd "H-s-l") 'windmove-right)
     (define-key global-map (kbd "s-\\") 'org-store-link)
+    ;; Activate occur easily inside isearch
+    
+    (define-key isearch-mode-map (kbd "C-o")
+                (lambda () (interactive)
+                  (let ((case-fold-search isearch-case-fold-search))
+                    (occur (if isearch-regexp
+                               isearch-string
+                             (regexp-quote isearch-string))))))
     (define-key isearch-mode-map (kbd "M-o")
                 (lambda () (interactive)
                   (let ((case-fold-search isearch-case-fold-search))
@@ -258,15 +266,6 @@
             qz/newstore-es-urls (cl-loop for env in qz/newstore-envs
                                          append (cl-loop for es-backend in qz/newstore-es-backends
                                                          collect (format qz/newstore-es-string es-backend env))))
-      (defvar qz/restclient-tenant nil)
-      
-      (defun qz/restclient-choose-tenant (&optional tenant)
-        (interactive)
-        (message "qz/restclient-tenant: %s"
-                 (setq qz/restclient-tenant
-                       (or tenant (completing-read
-                                   "restclient-tenant: " qz/newstore-tenants))))
-        qz/restclient-tenant)
       )
     ;; NOWEB ES END
     ;; NOWEB EMBARK START
@@ -311,6 +310,52 @@
     (define-key global-map (kbd "C-<down-mouse-2>") 'hkey-either)
     (define-key global-map (kbd "M-<return>") 'hkey-either)
     
+    (custom-set-variables
+     '(sqlind-indentation-offsets-alist
+       ((syntax-error sqlind-report-sytax-error)
+        (in-string sqlind-report-runaway-string)
+        (comment-continuation sqlind-indent-comment-continuation)
+        (comment-start sqlind-indent-comment-start)
+        (toplevel 0)
+        (in-block +)
+        (in-begin-block +)
+        (block-start 0)
+        (block-end 0)
+        (declare-statement +)
+        (package ++)
+        (package-body 0)
+        (create-statement +)
+        (defun-start +)
+        (labeled-statement-start 0)
+        (statement-continuation +)
+        (nested-statement-open sqlind-use-anchor-indentation +)
+        (nested-statement-continuation sqlind-use-previous-line-indentation)
+        (nested-statement-close sqlind-use-anchor-indentation)
+        (with-clause sqlind-use-anchor-indentation)
+        (with-clause-cte +)
+        (with-clause-cte-cont ++)
+        (case-clause 0)
+        (case-clause-item sqlind-use-anchor-indentation +)
+        (case-clause-item-cont sqlind-right-justify-clause)
+        (select-clause sqlind-right-justify-clause)
+        (select-column sqlind-indent-select-column)
+        (select-column-continuation sqlind-indent-select-column +)
+        ;; ((default . ++) (kinda . +) ( . sqlind-use-anchor-indentation))
+        (select-join-condition ++) ; this should wrap 
+        (select-table sqlind-indent-select-table)
+        (select-table-continuation sqlind-indent-select-table +)
+        (in-select-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+        (insert-clause sqlind-right-justify-clause)
+        (in-insert-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+        (delete-clause sqlind-right-justify-clause)
+        (in-delete-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+        (update-clause sqlind-right-justify-clause)
+        (in-update-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator))))
+    (defun qz/add-pdb-py-debug ()
+      "add debug code and move line down"
+      (interactive)
+      (back-to-indentation)
+      (insert "import pdb; pdb.set_trace();\n"))
     ;; NOWEB GOLANG START
     (with-eval-after-load 'go-mode
       (setq gofmt-command "golines")
@@ -325,10 +370,12 @@
     (with-eval-after-load 'org
       (message "mid org: %s" (shell-command-to-string "date"))
       (define-key org-mode-map (kbd "C-c C-j") 'consult-org-heading)
-      (defvar qz/org-babel-indent-exclude-lang nil "org-babel languages to exclude from auto indent/format with ")
-      (setq qz/org-babel-indent-exclude-lang nil)
+      (defvar qz/org-babel-indent-exclude-lang
+        '("yaml")
+        "org-babel languages to exclude from auto indent/format.")
       
-      (setq qz/debug t)
+      ;;(setq qz/org-babel-indent-exclude-lang nil)
+      ;;(setq qz/debug t)
       
       (defun qz/org-babel-indent-block (beg end &rest args)
         (interactive "r")
@@ -340,7 +387,8 @@
                            (car (car (cdr (car (org-babel-tangle-single-block 1 t))))))))
             (call-interactively 'indent-region))))
       
-      (define-key org-mode-map (kbd "C-c C-v C-\\") 'qz/org-babel-indent-block)
+      (define-key org-mode-map
+        (kbd "C-c C-v C-\\") 'qz/org-babel-indent-block)
       
       ;; NOTE: blocks default
       ;;(add-to-list 'org-ctrl-c-ctrl-c-hook 'qz/org-babel-indent-block)
@@ -364,6 +412,7 @@
                     "go to default opening mode -- see `org-startup-folded'"
                     (interactive)
                     (funcall-interactively 'org-global-cycle '(4))))
+      (setq org-babel-python-command "python3")
       (setq org-babel-default-header-args:jq
             '((:results . "output")
               (:compact . "no")
@@ -502,13 +551,39 @@
             )))
         
         ;;(pp org-agenda-custom-commands)
+        (add-to-list
+         'org-agenda-custom-commands
+         '("1" "Events" agenda "display deadlines and exclude scheduled"
+           ((org-agenda-span 'year)
+            (org-agenda-time-grid nil)
+            (org-agenda-show-all-dates nil)
+            (org-agenda-entry-types '(:deadline)) ;; this entry excludes :scheduled
+            (org-deadline-warning-days 0) )))
+        
         (defvar qz/agenda-daily-files nil)
-        (setq qz/org-agenda-prefix-length 20
-              org-agenda-prefix-format nil)
-        ;; '((agenda . " %i Emacs Configuration %?-12t% s")
-        ;;   (todo . " %i Emacs Configuration  ")
-        ;;   (tags . " %i Emacs Configuration  ")
-        ;;   (search . " %i Emacs Configuration  "))
+        (defun qz/org-category (&optional len)
+          (let* ((len (or len 25)))
+            (->>
+             (if buffer-file-name
+                 (file-name-sans-extension (file-name-nondirectory buffer-file-name))
+               "")
+             (replace-regexp-in-string "private-" "")
+             (replace-regexp-in-string
+              ;; datetime from file, could do "[0-9]\\{6\\}T[0-9]\\{6\\}Z?-"
+              (concat "[0-9][0-9][0-9][0-9]" "[0-9][0-9]" "[0-9][0-9]"
+                      "T" "[0-9][0-9]" "[0-9][0-9]" "[0-9][0-9]" "Z-")
+              "")
+             (s-pad-right len " ")
+             (s-truncate len))))
+        
+        ;;(qz/org-category)
+        (let* ((agenda "  %(qz/org-category)%-12t% s")
+               (other "%i%(qz/org-category 12)%l"))
+          (setq org-agenda-prefix-format (list (cons 'agenda agenda)
+                                               (cons 'todo other)
+                                               (cons 'todo other)
+                                               (cons 'todo other)
+                                               (cons 'search other))))
         
         (defun vulpea-agenda-category (&optional len)
           "Get category of item at point for agenda.
@@ -543,6 +618,53 @@
             (if (numberp len)
                 (s-truncate len (s-pad-right len " " result))
               result)))
+        (org-no-warnings (defvar date))
+        (defun qz/org-lunar-phases ()
+          "Show lunar phase in Agenda buffer."
+          (require 'lunar)
+          (let* ((phase-list (lunar-phase-list (nth 0 date)
+                                               (nth 2 date)))
+                 (phase (cl-find-if (lambda (phase)
+                                      (equal (car phase) date))
+                                    phase-list)))
+            (when phase
+              (setq ret (concat (lunar-phase-name (nth 2 phase)))))))
+        ;; 🌑🌒🌓🌔🌕🌖🌗🌘🌙🌚🌛🌜
+        (setq lunar-phase-names
+        '("🌚 new moon" ; unicode symbol : 🌑 use full circle as fallback
+        "🌛 first quarter moon"
+        "🌝 full moon" ; unicode symbol: 🌕 use empty circle as fallback
+        "🌜 last quarter moon"))
+        
+        (setq calendar-latitude 52.5)  ; imprecise
+        (setq calendar-longitude 13.4)
+        (setq calendar-location-name "berlin")
+        
+        (autoload 'solar-sunrise-sunset "solar.el")
+        (autoload 'solar-time-string "solar.el")
+        (defun qz/diary-sunrise ()
+          "Local time of sunrise as a diary entry.
+        The diary entry can contain `%s' which will be replaced with
+        `calendar-location-name'."
+          (let ((l (solar-sunrise-sunset date)))
+            (when (car l)
+              (concat
+               (if (string= entry "")
+                   "🌄 sunrise"
+                 (format entry (eval calendar-location-name))) " "
+               (solar-time-string (caar l) nil)))))
+        
+        (defun qz/diary-sunset ()
+          "Local time of sunset as a diary entry.
+        The diary entry can contain `%s' which will be replaced with
+        `calendar-location-name'."
+          (let ((l (solar-sunrise-sunset date)))
+            (when (cadr l)
+              (concat
+               (if (string= entry "")
+                   "🌅 sunset"
+                 (format entry (eval calendar-location-name))) " "
+               (solar-time-string (caadr l) nil)))))
         )
       
       ;; NOWEB AGENDA END
@@ -704,6 +826,33 @@
           col))
       
       (define-key org-babel-map (kbd "M-d") 'qz/org-babel-make-table-constants)
+      (defun qz/to-shell (command)
+        (interactive) ;; TODO how to interactive bind to `command'??
+        (with-current-buffer (vterm "*to-shell*")
+          (mapc
+           (lambda (c)
+             (message c)
+             (vterm-send-string c)
+             (vterm-send-return))
+           (qz/ensure-list command))))
+      
+      (defun qz/current-src-block ()
+        (interactive)
+        (s-split
+         "[\n]"
+         (kill-new (nth 6 (car ;; lspec
+                           (cdr (car
+                                 (save-excursion
+                                   (when-let ((head (org-babel-where-is-src-block-head)))
+                                     (goto-char head))
+                                   (org-babel-tangle-single-block 1 t)))))))))
+      
+      (defun qz/shell-current-src-block ()
+        (interactive)
+        (when-let ((command (qz/current-src-block)))
+          (qz/to-shell command)))
+      
+      (define-key org-babel-map (kbd "C-<return>") #'qz/shell-current-src-block)
       (defun qz/org-babel--list->rows (name lst)
         (cons (list name)
               (cons 'hline (mapcar 'list lst))))
@@ -736,6 +885,8 @@
                             "kubernetes"
                             "postgres"
                             "elisp"
+                            "plantuml"
+                            "GNU Guix"
                             ))
                   ;; .. other files
                   nil
@@ -745,8 +896,10 @@
         
         (defun qz/org-babel-do-lob-ingest-files (&optional files)
           (interactive)
-          (mapcar (lambda (f) (cons (org-babel-lob-ingest f) f))
-                  (append qz/org-babel-lob-ingest-files files)))
+          (let ((r (mapcar (lambda (f) (cons (org-babel-lob-ingest f) f))
+                           (append qz/org-babel-lob-ingest-files files))))
+            (message "%s" (pp r))
+            r))
         
         (cons->table
          (qz/org-babel-do-lob-ingest-files))
@@ -1054,6 +1207,28 @@
       (setq org-log-reschedule 'note)
       (setq org-log-done 'note)
       (setq org-startup-folded 'content)
+      (setq org-tags-column 120)
+      (setq org-tag-alist
+            '(("@errand" . ?e)
+              ("@work" . ?w)
+              ("@home" . ?h)
+              ("@blog" . ?B)
+              (:newline)
+              ("emacs" . ?E)
+              ("wip" . ?W)
+              ("CANCELLED" . ?c)
+              (:newline)
+              ("learning" . ?l)
+              ("research" . ?r)
+              (:newline)
+              ("book" . ?b)
+              ("article" . ?a)
+              ("paper" . ?p)
+              (:newline)
+              ("talk" . ?t)
+              ("film" . ?f)))
+      
+      ;;(cons->table org-tag-alist)
       (setq org-enforce-todo-dependencies t)
       (setq org-enforce-todo-checkbox-dependencies t)
       (require 'org-download)
@@ -1076,6 +1251,39 @@
       
       (define-key org-mode-map (kbd "C-c M-a") 'qz/org-insert-current-attachment)
       
+      (defun qz/org-insert-last-stored-link (arg)
+        "Insert the last link stored in `org-stored-links'."
+        (interactive "p")
+        (qz/org-insert-all-links arg "" "\n"))
+      
+      (defun qz/org-insert-all-links (arg &optional pre post)
+        "Insert all links in `org-stored-links'.
+      When a universal prefix, do not delete the links from `org-stored-links'.
+      When `ARG' is a number, insert the last N link(s).
+      `PRE' and `POST' are optional arguments to define a string to
+      prepend or to append."
+        (interactive "P")
+        (let ((org-link-keep-stored-after-insertion (equal arg '(4)))
+              (links (copy-sequence org-stored-links))
+              (pr (or pre "- "))
+              (po (or post "\n"))
+              (cnt 1) l)
+          (if (null org-stored-links)
+              (message "No link to insert")
+            (while (and (or (listp arg) (>= arg cnt))
+                        (setq l (if (listp arg)
+                                    (pop links)
+                                  (pop org-stored-links))))
+              (setq cnt (+ 1 cnt))
+              (insert pr)
+              (org-insert-link nil (car l)
+                               (or (cadr l)
+                                   ;; (car (last (s-split "/" "file/path/goop.boop::pattern")))
+                                   ;; => "goop.boop::pattern"
+                                   (car (last (s-split "/" (car l))))))
+              (insert po)))))
+      
+      (define-key org-mode-map (kbd "C-c M-l") 'qz/org-insert-last-stored-link)
       (defun qz/create-excluded-ids-for-headlines-in-buffer ()
         "Add ID properties to all headlines in the current file which
       do not already have one."
@@ -1093,6 +1301,9 @@
       
       (setq org-id-link-to-org-use-id t)
       (setq org-image-actual-width 640)
+      (defun qz/org-align-tags ()
+        (interactive)
+        (org-align-tags 'yes-all-the-bloody-tags))
       )
     (message "post org: %s" (shell-command-to-string "date"))
     ;; NOWEB ORG END
@@ -1107,37 +1318,50 @@
     
     (with-eval-after-load 'pdf-view
       (add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode))
-    (defvar qz/restclient-env nil)
-    
-    (defun qz/restclient-choose-env (&optional env)
-      (interactive)
-      (message "qz/restclient-env: %s"
-               (setq qz/restclient-env
-                     (cdr (assoc (intern (or env
-                                             (completing-read "restclient-env: " qz/newstore-envs)))
-                                 qz/newstore-envs-abbrev))))
-      qz/restclient-env)
-    (defvar qz/restclient-token nil)
-    (defvar qz/restclient-token-field 'access_token)
-    
-    (defun qz/restclient-hook ()
-      "Update token from a request."
-      ;; url is visible while the hook is running.
-      (let ((result))
-        (save-excursion
-          (cond
-           ((string-suffix-p "/token" url)
-            (condition-case nil
-                (progn
-                  (setq result (cdr (assoc qz/restclient-token-field (json-read))))
-                  (when (stringp result)
-                    (progn
-                      (setq qz/restclient-token result)
-                      (message (concat "stored token: " qz/restclient-token)))))
-              (error (message "That wasn't cleanly handled."))))))))
-    
-    (add-hook 'restclient-response-loaded-hook 'qz/restclient-hook)
-    (provide 'restclient-hooks)
+    ;; NOWEB RESTCLIENT START
+    (with-eval-after-load 'restclient
+      (defvar qz/restclient-env nil)
+      
+      (defun qz/restclient-choose-env (&optional env)
+        (interactive)
+        (message "qz/restclient-env: %s"
+                 (setq qz/restclient-env
+                       (cdr (assoc (intern (or env
+                                               (completing-read "restclient-env: " qz/newstore-envs)))
+                                   qz/newstore-envs-abbrev))))
+        qz/restclient-env)
+      (defvar qz/restclient-tenant nil)
+      
+      (defun qz/restclient-choose-tenant (&optional tenant)
+        (interactive)
+        (message "qz/restclient-tenant: %s"
+                 (setq qz/restclient-tenant
+                       (or tenant (completing-read
+                                   "restclient-tenant: " qz/newstore-tenants))))
+        qz/restclient-tenant)
+      (defvar qz/restclient-token nil)
+      (defvar qz/restclient-token-field 'access_token)
+      
+      (defun qz/restclient-hook ()
+        "Update token from a request."
+        ;; url is visible while the hook is running.
+        (let ((result))
+          (save-excursion
+            (cond
+             ((string-suffix-p "/token" url)
+              (condition-case nil
+                  (progn
+                    (setq result (cdr (assoc qz/restclient-token-field (json-read))))
+                    (when (stringp result)
+                      (progn
+                        (setq qz/restclient-token result)
+                        (message (concat "stored token: " qz/restclient-token)))))
+                (error (message "That wasn't cleanly handled."))))))))
+      
+      (add-hook 'restclient-response-loaded-hook 'qz/restclient-hook)
+      (provide 'restclient-hooks)
+      )
+    ;; NOWEB RESTCLIENT END
     (defvar qz/aws-env nil
       "the aws login configuration, managed through saml2aws
     
@@ -1196,7 +1420,7 @@
         "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
         "&& make ixy-home-reconfigure"
         "&& echo 'bal-eggd-e' "
-        "| espeak --stdin "))) 
+        "| espeak --stdin ")))
     
     (defun qz/reload-config-system ()
       (interactive)
@@ -1233,6 +1457,24 @@
       (async-shell-command
        (concat "cd $HOME/git/sys/rde"
     	   "&& make channels-update-lock && make channels-pull && guix upgrade && make")))
+    (defun qz/sway-choose-output-res (&optional display res)
+      (interactive)
+      (let* ((cur (s-trim (shell-command-to-string
+                           "swaymsg -t get_outputs | jq -r 'map( . | select(.focused == true) | .name) | first'")))
+             (cmd (format "swaymsg 'output %s enable res %s'"
+                          (or display
+                              (completing-read "display: "
+                                               '("DP-1" "DP-2"
+                                                 "eDP-1"
+                                                 "HDMI-1" "HDMI-2")
+                                               nil t cur))
+                          (or res
+                              (completing-read "resolution: "
+                                               '("1920x1080"
+                                                 "5120x1440")
+                                               nil t)))))
+        (when (y-or-n-p (format "exec ~%s~?" cmd))
+          (shell-command cmd))))
     (setq tramp-cache-read-persistent-data t)
     (require 'perfect-margin)
     

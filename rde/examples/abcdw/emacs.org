@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-05-30 Mon 18:15]
+:UPDATED:  [2022-07-09 Sat 17:33]
 :ID:       84700327-3a84-4d33-9918-dd06a809c28f
 :CREATED:  <2022-03-03 Thu 12:06>
 :END:
@@ -204,13 +204,16 @@ nil
 :ID:       a2e3f5db-5cc5-4531-9c9d-470183f5e8aa
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-04-04 Mon 13:27]
+:UPDATED:  [2022-07-09 Sat 16:57]
 :END:
-#+begin_src emacs-lisp :noweb-ref org
-(defvar qz/org-babel-indent-exclude-lang nil "org-babel languages to exclude from auto indent/format with ")
-(setq qz/org-babel-indent-exclude-lang nil)
 
-(setq qz/debug t)
+#+begin_src emacs-lisp :noweb-ref org
+(defvar qz/org-babel-indent-exclude-lang
+  '("yaml")
+  "org-babel languages to exclude from auto indent/format.")
+
+;;(setq qz/org-babel-indent-exclude-lang nil)
+;;(setq qz/debug t)
 
 (defun qz/org-babel-indent-block (beg end &rest args)
   (interactive "r")
@@ -222,7 +225,8 @@ nil
                      (car (car (cdr (car (org-babel-tangle-single-block 1 t))))))))
       (call-interactively 'indent-region))))
 
-(define-key org-mode-map (kbd "C-c C-v C-\\") 'qz/org-babel-indent-block)
+(define-key org-mode-map
+  (kbd "C-c C-v C-\\") 'qz/org-babel-indent-block)
 
 ;; NOTE: blocks default
 ;;(add-to-list 'org-ctrl-c-ctrl-c-hook 'qz/org-babel-indent-block)
@@ -470,6 +474,7 @@ maximum [[id:6eb04531-fbcc-45da-86e9-499b48caeb8a][ergonomics]]
 :ID:       e12feea7-bf2a-44b8-acfe-95e2af12357e
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-07-09 Sat 17:26]
 :END:
 
 I don't use this very much, as it curls my whole left hand up (qwerty troubles)
@@ -813,7 +818,7 @@ consuming
 :ID:       3afd3b6e-400a-49ba-a3bd-1f007531a257
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  <2022-03-04 Fri 12:57>
+:UPDATED:  [2022-07-08 Fri 10:59]
 :END:
 #+begin_src emacs-lisp :noweb-ref es
 (defun qz/es-choose-cookie-headers ()
@@ -1728,7 +1733,7 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
 :PROPERTIES:
 :ID:       02a112d7-ef32-44d3-b06b-cde3d0df4038
 :CREATED:  [2022-03-31 Thu 09:41]
-:UPDATED:  [2022-05-25 Wed 12:17]
+:UPDATED:  [2022-06-27 Mon 10:55]
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src emacs-lisp :noweb-ref agenda
@@ -2096,7 +2101,7 @@ Refer to `org-agenda-prefix-format' for more information."
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :noweb-ref agenda
 (setq calendar-latitude 52.5)  ; imprecise
 (setq calendar-longitude 13.4)
 (setq calendar-location-name "berlin")
@@ -2130,7 +2135,6 @@ The diary entry can contain `%s' which will be replaced with
 
 #+RESULTS:
 : qz/diary-sunset
-
 
 *** [[id:0213945d-cba5-4dd0-812c-9c01d6f51148][babel]]
 :PROPERTIES:
@@ -2224,7 +2228,7 @@ CREATED: <2021-11-29 Mon
 :ID:       05415208-95bf-4153-b65c-32e10112c582
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-04-29 Fri 12:07]
+:UPDATED:  [2022-07-08 Fri 12:08]
 :END:
 CREATED: <2021-11-29 Mon>
 
@@ -2518,9 +2522,11 @@ CREATED: <2021-11-29 Mon>
 ***** patching
 :PROPERTIES:
 :ID:       71c9cef1-f758-4691-a223-446dc82705fd
-:CREATED:  <2022-02-22 Tue 15:27>
+:CREATED:  [2022-02-22 Tue 15:27]
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-29 Fri 12:08]
 :END:
+
 #+begin_src emacs-lisp :tangle no
 (defun hi-lock-face-symbol-at-point ()
   "Highlight each instance of the symbol at point.
@@ -2807,8 +2813,9 @@ org-roam loading, as we use it's variables.
 :ID:       46fed150-b670-4899-aaa2-b029262db572
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-03-24 Thu 10:19]
+:UPDATED:  [2022-05-13 Fri 15:37]
 :END:
+
 #+begin_src emacs-lisp :noweb-ref roam
 (setq org-roam-dailies-capture-templates
       `(("d" "default" entry
@@ -4132,7 +4139,7 @@ once we find out about sequences and repeats
 :PROPERTIES:
 :ID:       948baebf-3fae-499d-8036-6e454de83417
 :CREATED:  <2022-02-27 Sun 15:04>
-:UPDATED:  [2022-04-13 Wed 12:53]
+:UPDATED:  [2022-05-30 Mon 18:15]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -4226,7 +4233,7 @@ once we find out about sequences and repeats
 :PROPERTIES:
 :ID:       220874c8-4330-4440-a616-31b2e0a47ef2
 :CREATED:  [2022-05-23 Mon 10:46]
-:UPDATED:  [2022-05-23 Mon 10:46]
+:UPDATED:  [2022-05-25 Wed 12:31]
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src emacs-lisp :noweb-ref org
@@ -4253,7 +4260,7 @@ prepend or to append."
                   (setq l (if (listp arg)
                               (pop links)
                             (pop org-stored-links))))
-        (setq cnt (1+ cnt))
+        (setq cnt (+ 1 cnt))
         (insert pr)
         (org-insert-link nil (car l)
                          (or (cadr l)
@@ -4424,11 +4431,12 @@ check with (org-redisplay-inline-images)
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-*** midnight-minor-mode ; dark-mode filter on pdfs
+*** midnight-minor-mode ; dark-mode filter on pdfs :visual:
 :PROPERTIES:
 :ID:       539f2eb0-e47d-4976-8c96-6c5a7705835a
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-04-25 Mon 10:10]
 :END:
 #+begin_src emacs-lisp :noweb-ref conf
 (with-eval-after-load 'pdf-view
@@ -4500,7 +4508,7 @@ check with (org-redisplay-inline-images)
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src emacs-lisp :noweb-ref conf
+#+begin_src emacs-lisp :noweb yes :noweb-ref conf 
 ;; NOWEB RESTCLIENT START
 (with-eval-after-load 'restclient
   <<restclient>>
@@ -4884,8 +4892,8 @@ the major mode specifies support for Font Lock."
 #+begin_src emacs-lisp :noweb yes
 
 (with-eval-after-load 'highlight-indent-guides
-   <<hl-indent>>
-   )
+  <<hl-indent>>
+  )
 
 #+end_src
 **** appearance; character ( 🐶 🐩 ), colours
@@ -5057,7 +5065,9 @@ swaymsg output \"*\" background ~/.cache/wallpaper.png fill" tag))
 :ID:       6284a4a9-70f8-487b-b4b2-140b94b70264
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-07-09 Sat 17:33]
 :END:
+
 #+begin_src emacs-lisp :tangle no
 ;;; col-highlight.el --- Highlight the current column.
 ;;
@@ -5250,14 +5260,14 @@ swaymsg output \"*\" background ~/.cache/wallpaper.png fill" tag))
   :prefix "col-highlight-"
   :group 'editing :group 'cursor :group 'hl-line :group 'frames
   :link `(url-link :tag "Send Bug Report"
-          ,(concat "mailto:" "drew.adams" "@" "oracle" ".com?subject=\
+                   ,(concat "mailto:" "drew.adams" "@" "oracle" ".com?subject=\
 col-highlight.el bug: \
 &body=Describe bug here, starting with `emacs -q'.  \
 Don't forget to mention your Emacs and library versions."))
   :link '(url-link :tag "Other Libraries by Drew"
-          "https://www.emacswiki.org/emacs/DrewsElispLibraries")
+                   "https://www.emacswiki.org/emacs/DrewsElispLibraries")
   :link '(url-link :tag "Download"
-          "https://www.emacswiki.org/emacs/download/col-highlight.el"))
+                   "https://www.emacswiki.org/emacs/download/col-highlight.el"))
 
 ;;;###autoload
 (defcustom col-highlight-show-only nil
@@ -5440,12 +5450,12 @@ Do NOT change this yourself; instead, use
             (setq i  (1+ i))
             (vline-forward -1))))))
   (mapc (lambda (ov) (when (overlayp ov) ; Set overlay priority to `col-highlight-overlay-priority'.
-                  (overlay-put ov 'priority col-highlight-overlay-priority)))
+                       (overlay-put ov 'priority col-highlight-overlay-priority)))
         vline-overlay-table))
 
 ;;;###autoload
 (define-minor-mode column-highlight-mode
-    "Toggle highlighting the current column.
+  "Toggle highlighting the current column.
 With ARG, turn column highlighting on if and only if ARG is positive.
 
 Column-Highlight mode uses the functions
@@ -5458,11 +5468,11 @@ col-highlight.el bug: \
 &body=Describe bug here, starting with `emacs -q'.  \
 Don't forget to mention your Emacs and library versions."))
   :link '(url-link :tag "Other Libraries by Drew"
-          "https://www.emacswiki.org/emacs/DrewsElispLibraries")
+                   "https://www.emacswiki.org/emacs/DrewsElispLibraries")
   :link '(url-link :tag
-          "Download" "https://www.emacswiki.org/emacs/download/col-highlight.el")
+                   "Download" "https://www.emacswiki.org/emacs/download/col-highlight.el")
   :link '(url-link :tag "Description"
-          "https://www.emacswiki.org/emacs/ChangingCursorDynamically")
+                   "https://www.emacswiki.org/emacs/ChangingCursorDynamically")
   :link '(emacs-commentary-link :tag "Commentary" "col-highlight")
   (cond (column-highlight-mode
          (add-hook 'pre-command-hook 'col-highlight-unhighlight)
