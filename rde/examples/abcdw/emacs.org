@@ -4242,6 +4242,58 @@ a most controversial decision
 #+RESULTS:
 : 120
 
+**** org-tags-alist
+:PROPERTIES:
+:ID:       0b88f9d2-f33f-4fbf-88f0-8cde8ccd0e67
+:CREATED:  [2022-04-25 Mon 10:13]
+:UPDATED:  [2022-04-25 Mon 10:14]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref org
+(setq org-tag-alist
+      '(("@errand" . ?e)
+        ("@work" . ?w)
+        ("@home" . ?h)
+        ("@blog" . ?B)
+        (:newline)
+        ("emacs" . ?E)
+        ("wip" . ?W)
+        ("CANCELLED" . ?c)
+        (:newline)
+        ("learning" . ?l)
+        ("research" . ?r)
+        (:newline)
+        ("book" . ?b)
+        ("article" . ?a)
+        ("paper" . ?p)
+        (:newline)
+        ("talk" . ?t)
+        ("film" . ?f)))
+
+;;(cons->table org-tag-alist)
+#+end_src
+
+#+RESULTS:
+| @errand   | 101 |
+| @work     | 119 |
+| @home     | 104 |
+| @blog     |  66 |
+| :newline  | nil |
+| emacs     |  69 |
+| wip       |  87 |
+| CANCELLED |  99 |
+| :newline  | nil |
+| learning  | 108 |
+| research  | 114 |
+| :newline  | nil |
+| book      |  98 |
+| article   |  97 |
+| paper     | 112 |
+| :newline  | nil |
+| talk      | 116 |
+| film      | 102 |
+
 **** org-enforce-todo-dependencies                                   :var:
 :PROPERTIES:
 :ID:       51ff922b-e6d5-4437-9fdc-d6208de9b959
