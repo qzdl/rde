@@ -18,6 +18,18 @@ _rde:
 	@echo
 	@echo
 
+.PHONY: help
+help: _rde
+	@echo "help:		print this message"
+	@echo "all:		build info pages"
+	@echo "home:		reload home"
+	@echo "system:		reload system; run with 'sudo -E'"
+	@echo "home-box:	reload home"
+	@echo "iso		create a bootable system image"
+	@echo "check:	      	"
+	@echo "check-channel:	"
+	@echo "check-channel:	"
+
 .PHONY: all
 all: doc/rde.info
 
