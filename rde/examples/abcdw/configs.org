@@ -1,0 +1,2053 @@
+:PROPERTIES:
+:UPDATED:  [2022-08-01 Mon 09:50]
+:END:
+#+title: gnu guix & rde config
+#+property: header-args        :tangle-mode (identity #o444)
+#+property: header-args:sh     :tangle-mode (identity #o755)
+#+property: header-args:scheme :noweb-ref conf
+
+* ext
+:PROPERTIES:
+:ID:       e5794fcd-5a9a-420b-b286-9451cff72f06
+:CREATED:  [2022-08-01 Mon 17:42]
+:UPDATED:  [2022-08-01 Mon 17:42]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src shell
+p="$HOME/git/sys/rde/rde/examples/abcdw/config/rofi/themes"
+mkdir -p $p
+
+curl https://raw.githubusercontent.com/qzdl/rde/qzdl/rde/examples/abcdw/config/rofi/themes/base16-default-dark.rasi \
+     -o $p/base16-default-dark.rasi
+#+end_src
+
+#+RESULTS:
+
+* tangle
+:PROPERTIES:
+:ID:       98f42608-b5c0-455d-bb02-9a326af8bc42
+:CREATED:  [2022-08-01 Mon 09:49]
+:UPDATED:  [2022-08-01 Mon 11:08]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb yes :tangle configs.scm :noweb-ref base
+<<conf>>
+#+end_src
+
+* test
+:PROPERTIES:
+:ID:       cdeb56a4-5c09-4531-bba6-0c0c31bbdd55
+:CREATED:  [2022-08-01 Mon 12:27]
+:UPDATED:  [2022-08-01 Mon 12:27]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src shell :results drawer
+make ixy-home >&/tmp/o
+
+cat /tmp/o
+#+end_src
+
+#+RESULTS:
+:results:
+GUILE_LOAD_PATH=../../../ RDE_TARGET=%-home \
+guix home reconfigure ./configs.scm
+"pre-%abcdw-features"
+"pre-%main-features"
+rde/examples/abcdw/configs.scm:1032:1: missing closing parenthesis
+make: *** [Makefile:14: %-home-reconfigure] Error 1
+:end:
+
+* config
+:PROPERTIES:
+:ID:       c5578b40-1344-4d48-9b24-5c8f13fa3f77
+:CREATED:  [2022-07-29 Fri 18:22]
+:UPDATED:  [2022-07-29 Fri 18:22]
+:ROAM_EXCLUDE: t
+:END:
+
+** defmodule
+:PROPERTIES:
+:ID:       6bb15998-32c1-4674-890a-85180a89d66a
+:CREATED:  [2022-07-29 Fri 18:22]
+:UPDATED:  [2022-07-29 Fri 18:24]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(define-module (rde examples abcdw configs)
+  #:use-module (rde features)
+  #:use-module (rde features base)
+  ;;#:use-module (rde features bluetooth) ;; TODO qzdl
+  #:use-module (rde features gnupg)
+  #:use-module (rde features keyboard)
+  #:use-module (rde features system)
+  #:use-module (rde features wm)
+  #:use-module (rde features xdisorg)
+  #:use-module (rde features xdg)
+  #:use-module (rde features password-utils)
+  #:use-module (rde features version-control)
+  #:use-module (rde features fontutils)
+  #:use-module (rde features terminals)
+  #:use-module (rde features tmux)
+  #:use-module (rde features shells)
+  #:use-module (rde features shellutils)
+  #:use-module (rde features ssh)
+  #:use-module (rde features emacs)
+  #:use-module (rde features linux)
+  #:use-module (rde features bittorrent)
+  #:use-module (rde features mail)
+  #:use-module (rde features docker)
+  #:use-module (rde features video)
+  #:use-module (rde features markup)
+  #:use-module (rde features networking)
+
+  #:use-module (rde packages)
+  #:use-module (rde packages emacs)
+  #:use-module (rde packages emacs-xyz)
+
+  #:use-module (rde home services i2p)
+
+  #:use-module (rde examples abcdw emacs)
+
+  #:use-module (gnu system keyboard)
+
+  #:use-module (gnu home services) ; nope
+  #:use-module (gnu home-services ssh)
+  #:use-module (gnu home-services shells)
+  ;; #:use-module (gnu home-services-utils) ; nope
+
+  ;;#:use-module (gnu home-services shellutils)
+
+  #:use-module (nongnu packages nvidia)
+
+  #:use-module (gnu services base)
+  #:use-module (gnu services ssh)
+  #:use-module (gnu services desktop)
+  #:use-module (gnu services xorg)
+
+  #:use-module (gnu system file-systems)
+  #:use-module (gnu system mapped-devices)
+
+  #:use-module (gnu packages)
+  #:use-module (gnu packages fonts)
+  #:use-module (gnu packages emacs-xyz)
+
+  #:use-module (guix gexp)
+  #:use-module (guix utils)
+  #:use-module (guix inferior)
+  #:use-module (guix channels)
+
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 pretty-print)
+  #:use-module (srfi srfi-1))
+#+end_src
+
+** user features
+:PROPERTIES:
+:ID:       738d1f19-afd3-4497-b2ba-2434fc090789
+:CREATED:  [2022-07-29 Fri 17:48]
+:UPDATED:  [2022-07-29 Fri 17:48]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+
+;;; User-specific features
+
+;; Initial user's password hash will be available in store, so it's
+;; use this feature with care
+;; (display (crypt "hi" "$6$abc"))
+#+end_src
+
+** mailing list
+:PROPERTIES:
+:ID:       74689f33-9e2f-4cf1-bbdf-317a29e66572
+:CREATED:  [2022-07-29 Fri 17:48]
+:UPDATED:  [2022-07-29 Fri 17:48]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(define* (mail-lst id fqda urls)
+  "Make a simple mailing-list."
+  (mailing-list
+   (id   id)
+   (fqda fqda)
+   (config (l2md-repo ;; XXX maildir issue might be here
+            (name (symbol->string id))
+            (urls urls)))))
+#+end_src
+
+** keyboard
+:PROPERTIES:
+:ID:       2ff244bf-5916-4a3b-afa6-6b2e34cb7e21
+:CREATED:  [2022-07-29 Fri 17:48]
+:UPDATED:  [2022-07-29 Fri 17:48]
+:ROAM_EXCLUDE: t
+:END:
+
+*** thinkpad
+:PROPERTIES:
+:ID:       f0d98fbe-0033-47e3-81c3-c592f70c0b8a
+:CREATED:  [2022-07-29 Fri 17:48]
+:UPDATED:  [2022-08-02 Tue 13:31]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+(define %thinkpad-layout
+  (keyboard-layout
+   "us" "altgr-intl"
+   #:model "thinkpad"
+   #:options '("ctrl:nocaps")))
+#+end_src
+
+** zshrc
+:PROPERTIES:
+:ID:       a95216e5-aecd-4a61-b0c3-3bf266189a6d
+:CREATED:  [2022-07-29 Fri 17:48]
+:UPDATED:  [2022-07-29 Fri 17:48]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(define %extra-zshrc
+  (list ;; XXX higher level category
+   ;; something which evals equiv to following for each promptline "PS1=\"[$(date -u '+%Y-%m-%d | %H:%M')] $PS1\""
+   "alias ns='cd $HOME/git/ns'"
+   "alias om='ns && cd om'"
+   "alias omom='om && cd om'"
+   "alias rt='ns && cd routing'"
+   "alias sys='cd $HOME/git/sys'"
+
+   ;; TIL https://unix.stackexchange.com/questions/225943/except-the-1st-argument
+   "rgw() { d=$1; p=$2; argv[1,2]=(); rg $p $d $@; }"
+   "alias rgg='rgw $HOME/git/'"
+   "alias rgr='rgw $HOME/git/sys/rde'"
+   "alias rgns='rgw $HOME/git/ns'"
+   "alias rgom='rgw $HOME/git/ns/om'"
+   "alias rgrt='rgw $HOME/git/ns/routing'"
+   "alias rgsys='rgw $HOME/git/sys'"
+
+   "alias gp='ls $GUIX_EXTRA_PROFILES'"
+   "_gP() { export GUIX_PROFILE=$1 ; }"
+   "alias gP='_gP'"
+   "_gsP() { . $GUIX_EXTRA_PROFILES/$1/$1 ; }"
+   "gsP=_gsP"
+   ))
+#+end_src
+
+** org dirs
+:PROPERTIES:
+:ID:       844e60fb-8235-4249-8aa8-27c8348c5dcb
+:CREATED:  [2022-07-29 Fri 17:48]
+:UPDATED:  [2022-07-29 Fri 17:48]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(define my-org-directory "~/life")
+(define my-notes-directory
+  (string-append my-org-directory "/roam"))
+#+end_src
+
+** flag: gaming?
+:PROPERTIES:
+:ID:       a5883df9-7c45-442b-82a4-fe57ac98f7f8
+:CREATED:  [2022-07-29 Fri 17:48]
+:UPDATED:  [2022-07-29 Fri 18:25]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(define gaming? #f)
+#+end_src
+
+
+** features
+:PROPERTIES:
+:ID:       be090096-e0cd-43f2-a24a-cff37457f33a
+:CREATED:  [2022-07-29 Fri 18:24]
+:UPDATED:  [2022-07-29 Fri 18:24]
+:ROAM_EXCLUDE: t
+:END:
+*** debug; pre features
+:PROPERTIES:
+:ID:       36dc9e54-a5c8-43c8-a464-6349186edd50
+:CREATED:  [2022-07-29 Fri 17:48]
+:UPDATED:  [2022-07-29 Fri 18:23]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+(pretty-print "pre-%abcdw-features")
+#+end_src
+*** abcdw features
+:PROPERTIES:
+:ID:       1532c6ba-0d0c-499e-bddd-ae1caa1dc778
+:CREATED:  [2022-07-29 Fri 17:48]
+:UPDATED:  [2022-08-01 Mon 17:42]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+(define %abcdw-features
+  (remove
+   unspecified?
+   (list
+    (feature-user-info
+     #:emacs-advanced-user? #t
+     #:user-name "samuel"
+     #:full-name "Samuel Culpepper"
+     #:email "samuel@samuelculpepper.com"
+     #:user-groups '("lp")) ;; TODO confluence of features -> groups
+
+    (feature-gnupg
+     #:gpg-primary-key "EE20E25391AAB9BB"
+     #:gpg-smart-card? #f)
+    (feature-password-store)
+    (feature-mail-settings
+     #:mail-accounts
+     (list
+      ;; (mail-account
+      ;;  (id   'personal)
+      ;;  (fqda "samuel@samuelculpepper.com")
+      ;;  (type 'bravehost))
+      (mail-account
+       (id   'work)
+       (fqda "sculpepper@newstore.com")
+       (type 'gmail)))
+     #:mailing-lists
+     (list
+      ;; https://public-inbox.org/README.html
+      (mail-lst 'public-inbox-meta "meta@public-inbox.org"
+                '("https://public-inbox.org/meta"
+                  "nntps://news.public-inbox.org/inbox.comp.mail.public-inbox.meta"
+                  "imaps://news.public-inbox.org/inbox.comp.mail.public-inbox.meta.0"))
+
+     ;;;; source: https://mail.python.org/archives/list/speed@python.org/latest
+     ;;;;  -> mbox: https://mail.python.org/archives/list/speed@python.org/export/speed@python.org-2022-02.mbox.gz?start=1970-01-01&end=2022-02-21
+     ;;;; (mail-lst 'python-speed "speed@python.org"
+     ;;;;           '("https://mail.python.org/mailman/listinfo/speed"
+     ;;;;             "https://mail.python.org/archives/list/speed@python.org/"))
+      ;;
+     ;;;; (mail-lst 'rde-announce "~acbdw/rde-announce@lists.sr.ht"
+     ;;;;           '("https://lists.sr.ht/~abcdw/rde-announce/export"))
+     ;;;; (mail-lst 'rde-discuss "~acbdw/rde-discuss@lists.sr.ht"
+     ;;;;           '("https://lists.sr.ht/~abcdw/rde-discuss"))
+     ;;;; (mail-lst 'rde-devel "~acbdw/rde-devel@lists.sr.ht"
+     ;;;;           '("https://lists.sr.ht/~abcdw/rde-devel"))
+     ;;;;; emacs
+      ;;(mail-lst 'emacs-org-mode "emacs-orgmode@gnu.org"
+      ;;          '("https://yhetil.org/orgmode"))
+      ;;
+      ;;(mail-lst 'emacs-hyperbole "bug-hyperbole@gnu.org"
+      ;;          '("https://lists.gnu.org/archive/mbox/bug-hyperbole"
+      ;;            "https://lists.gnu.org/archive/html/bug-hyperbole"))
+      ;;(mail-lst 'emacs-hyperbole-users "hyperbole-users@gnu.org"
+      ;;          '("https://lists.gnu.org/archive/mbox/hyperbole-users"
+      ;;            "https://lists.gnu.org/archive/html/hyperbole-users"))
+      ;;
+      ;;(mail-lst 'guix-bugs "guix-bugs@gnu.org"
+      ;;          '("https://yhetil.org/guix-bugs/0"))
+      ;;(mail-lst 'guix-devel "guix-devel@gnu.org"
+      ;;          '("https://yhetil.org/guix-devel/0"))
+      ;;(mail-lst 'guix-patches "guix-patches@gnu.org"
+      ;;          '("https://yhetil.org/guix-patches/1"))
+      ))
+
+    (feature-keyboard
+     ;; To get all available options, layouts and variants run:
+     ;; cat `guix build xkeyboard-config`/share/X11/xkb/rules/evdev.lst
+     #:keyboard-layout %thinkpad-layout))))
+#+end_src
+
+#+RESULTS:
+
+**** TODO bravehost mails
+:PROPERTIES:
+:ID:       b78b2899-e41b-448b-a3f8-696c19b4fe76
+:CREATED:  [2022-08-01 Mon 17:35]
+:UPDATED:  [2022-08-01 Mon 17:35]
+:ROAM_EXCLUDE: t
+:END:
+**** debug: print features
+:PROPERTIES:
+:ID:       4d60cafe-ff70-4540-a5ed-2e9b1a7b4b3e
+:CREATED:  [2022-07-29 Fri 17:48]
+:UPDATED:  [2022-07-29 Fri 17:48]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+;;(map pretty-print %abcdw-features)
+#+end_src
+
+**** TODO future features
+:PROPERTIES:
+:ID:       ad67e350-c601-49f4-ba21-ca6486ed96fb
+:CREATED:  [2022-07-29 Fri 17:48]
+:UPDATED:  [2022-07-29 Fri 17:48]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+;;; TODO: feature-wallpapers https://wallhaven.cc/
+;;; TODO: feature-icecat
+;; PipeWire/iwd:
+;; https://github.com/J-Lentz/iwgtk
+;; https://github.com/krevedkokun/guix-config/blob/master/system/yggdrasil.scm
+#+end_src
+
+** packages
+:PROPERTIES:
+:ID:       5508a976-f9ad-457c-b4bb-46dbf3b73fb0
+:CREATED:  [2022-07-29 Fri 17:36]
+:UPDATED:  [2022-07-29 Fri 17:48]
+:END:
+
+#+begin_src scheme
+
+;;; Generic features should be applicable for various hosts/users/etc
+
+(define* (pkgs #:rest lst)
+  (map specification->package+output lst))
+
+(define* (pkgs-vanilla #:rest lst)
+  "Packages from guix channel."
+  (define channel-guix
+    (list (channel
+           (name 'guix)
+           (url "https://git.savannah.gnu.org/git/guix.git")
+           (commit
+            "2b6af630d61dd5b16424be55088de2b079e9fbaf"))))
+
+  (define inferior (inferior-for-channels channel-guix))
+  (define (get-inferior-pkg pkg-name)
+    (car (lookup-inferior-packages inferior pkg-name)))
+
+   (map get-inferior-pkg lst))
+#+end_src
+
+** imports
+:PROPERTIES:
+:ID:       065c4d90-4d84-4969-8221-44f5008a9502
+:CREATED:  [2022-07-29 Fri 17:53]
+:UPDATED:  [2022-07-29 Fri 17:53]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+(use-modules (gnu services)
+             (gnu services databases)
+             (gnu services desktop))
+#+end_src
+
+** debug: pre main-features
+:PROPERTIES:
+:ID:       152578fa-8848-40dc-a0e3-a1a51825a5f7
+:CREATED:  [2022-07-29 Fri 18:24]
+:UPDATED:  [2022-07-29 Fri 18:24]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(pretty-print "pre-%main-features")
+#+end_src
+** %main-features
+:PROPERTIES:
+:ID:       3455e06a-0a2b-4ca9-aca6-2ee2fa05f16f
+:CREATED:  [2022-07-29 Fri 17:53]
+:UPDATED:  [2022-08-01 Mon 12:31]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb yes
+
+;;; WARNING: The order can be important for features extending
+;;; services of other features.  Be careful changing it.
+
+(define %main-features
+  (remove
+   (lambda (s) (or (not s) (unspecified? s)))
+   (list
+    ;;; BEGIN; main
+    <<main>>
+    ;;; END; main
+ )))
+
+#+end_src
+
+*** features
+:PROPERTIES:
+:ID:       ba479dce-2f41-467e-b177-b38d2379f1a7
+:CREATED:  [2022-08-01 Mon 11:05]
+:UPDATED:  [2022-08-01 Mon 11:05]
+:ROAM_EXCLUDE: t
+:END:
+
+**** sshsocks
+:PROPERTIES:
+:ID:       a94c429f-77eb-4e96-b1d3-1019071e6f6e
+:CREATED:  [2022-08-01 Mon 09:49]
+:UPDATED:  [2022-08-01 Mon 12:30]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+    ;;(feature-ssh-socks-proxy
+    ;; #:host "204:cbf:3e07:e67a:424f:93bc:fc5c:b3dc")
+#+end_src
+
+**** ip2d
+:PROPERTIES:
+:ID:       73a80c20-ac38-4929-abc1-171090b6c4dd
+:CREATED:  [2022-08-01 Mon 10:41]
+:UPDATED:  [2022-08-01 Mon 10:41]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+    ;;(feature-i2pd
+    ;; #:outproxy 'http://acetone.i2p:8888
+    ;; ;; 'purokishi.i2p
+    ;; #:less-anonymous? #t)
+#+end_src
+
+#+begin_src scheme
+    (feature-custom-services
+     #:feature-name-prefix 'ixy
+     ;; #:system-services
+     ;; (list
+     ;;  (simple-service 'nvidia-udev-rule udev-service-type
+     ;;                  (list nvidia-driver)))
+     #:home-services
+     (list
+      ;; TODO: Remove it once upstreamed.
+      ((@ (gnu services) simple-service)
+       'make-guix-aware-of-guix-home-subcomand
+       (@ (gnu home services) home-environment-variables-service-type)
+       `(
+         ;;; GRAPHICS
+         ;;("LIBGL_DRIVERS_PATH" . (string-join (list "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46/lib/gbm"
+         ;;                                           "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46/lib"
+         ;;                                           "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46") ":"))
+         ;;("LIBGL_DEBUG" . "verbose")
+         ;;("G_MESSAGES_DEBUG" . "1")
+
+         ;;("MESA_LOADER_DRIVER_OVERRIDE" . "nvidia") ;; no nvidia_dri
+         ;;("MESA_LOADER_DRIVER_OVERRIDE" . "nvidia-drm") ;; no nvidia-drm_dri
+
+         ;;("MESA_DEBUG" . "1")
+         ;;("MESA_LOG_FILE" . "/tmp/mesa.log")
+
+         ;; glfw patched?
+         ;; https://github.com/bulletphysics/bullet3/issues/2595#issuecomment-588080665
+         ;; ("MESA_GL_VERSION_OVERRIDE" . "3.4")
+         ;;("MESA_GLSL_VERSION_OVERRIDE" . "340")
+
+         ;;("GBM_BACKEND" . "nvidia-drm")
+        ;;;; guix build --no-grafts -f /home/samuel/git/sys/nonguix/nongnu/packages/nvidia.scm | wl-copy
+        ;;;; or
+        ;;;; guix build nvidia-driver | wl-copy
+         ;;,@(let ((driver-path "/gnu/store/cbj701jzy9dj6cv84ak0b151y9plb5sc-nvidia-driver-495.46"))
+         ;;    `(("GBM_BACKENDS_PATH" . ,(string-join (list driver-path
+         ;;                                                 (string-append driver-path "/lib")
+         ;;                                                 (string-append driver-path "/lib/gbm")
+         ;;                                                 "$PATH") ":"))
+         ;;      ("VK_ICD_FILENAMES" . ,(string-append driver-path "/share/vulkan/icd.d/nvidia_icd.json"))
+         ;;      ("LIBGL_DRIVERS_PATH" . ,(string-join (list driver-path
+         ;;                                                  (string-append driver-path "/lib")
+         ;;                                                  (string-append driver-path "/lib/gbm")
+         ;;                                                  "$PATH") ":"))
+         ;;      ;; https://github.com/NVIDIA/egl-wayland/issues/39#issuecomment-927288015
+         ;;      ;; undocumented
+         ;;      ;; might have an issue for containerised stuff, as set(uid|gid)
+         ;;      ("__EGL_EXTERNAL_PLATFORM_CONFIG_DIRS" . ,(string-append driver-path "/share/egl/egl_external_platform.d"))
+         ;;      ))
+         ;;
+         ;;("__GLX_VENDOR_LIBRARY_NAME" . "nvidia")
+         ;;("WLR_NO_HARDWARE_CURSORS" . "1")
+         ;;("WLR_DRM_NO_ATOMIC" . "1")
+         ;; echo "/dev/dri/card$(udevadm info -a -n /dev/dri/card1 | grep boot_vga | rev | cut -c 2)"
+         ;;("WLR_DRM_DEVICES" . "/dev/dri/card1")   ;; gpu only
+         ;;("WLR_DRM_DEVICES" . "/dev/dri/card1") ;; cpu only
+         ;;("WLR_DRM_DEVICES" . "/dev/dri/card0:/dev/dri/card1") ;; gpu:cpu
+
+        ;;; GUILE
+         ("GUILE_LOAD_PATH" .
+          "$XDG_CONFIG_HOME/guix/current/share/guile/site/3.0\
+:$GUILE_LOAD_PATH")
+         ("GUILE_LOAD_COMPILED_PATH" .
+          "$XDG_CONFIG_HOME/guix/current/lib/guile/3.0/site-ccache\
+:$GUILE_LOAD_COMPILED_PATH")
+
+        ;;; JS/BABEL
+         ;; javascript sucks, npm sucks
+         ;; https://github.com/npm/npm/issues/6675#issuecomment-250318382
+         ;; https://github.com/npm/cli/issues/1451
+         ;; https://github.com/pnpm/pnpm/issues/2574
+         ;; https://github.com/rxrc/zshrc/blob/3ca83703da5bd93b015747835a8a0164160c9b83/env.zsh#L33-L928
+         ("NPM_CONFIG_USERCONFIG" . "${XDG_CONFIG_HOME}/npm/config")
+         ("NPM_CONFIG_CACHE" . "${XDG_CACHE_HOME}/npm")
+         ("NPM_CONFIG_TMP" . "${XDG_RUNTIME_DIR}/npm")
+         ("YARN_CACHE_FOLDER" . "${YARN_CACHE_FOLDER:-$XDG_CACHE_HOME/yarn}")
+         ("NODE_REPL_HISTORY" . "${NODE_REPL_HISTORY:-$XDG_CACHE_HOME/node/repl_history}")
+         ("NVM_DIR" . "${NVM_DIR:-$XDG_DATA_HOME/nvm}")
+         ("BABEL_CACHE_PATH" . "${BABEL_CACHE_PATH:-$XDG_CACHE_HOME/babel/cache.json}")
+
+        ;;; DEVELOPMENT
+         ("GUIX_CHECKOUT" . "$HOME/git/sys/guix")
+         ("GUIX_EXTRA_PROFILES" . "$HOME/.guix-extra-profiles")
+
+        ;;; ETC
+         ("GDK_BACKEND" . "wayland") ;; ... for clipboarding emasc
+         ("PATH" . (string-join (list "$PATH"
+                                      "$HOME/go/bin"
+                                      "$HOME/.local/bin"
+                                      "$HOME/.krew/bin"
+                                      "${XDG_CACHE_HOME}/npm/bin")
+                                ":"))))
+
+      (simple-service
+       'my-zshrc home-zsh-service-type
+       (home-zsh-extension
+        (zshrc
+         (append %extra-zshrc
+                (list #~(format #f "" ;;#$example-program
+                               ))))))
+
+      ;; ((@ (gnu services) simple-service)
+      ;;  'extend-shell-profile
+      ;;  (@ (gnu home-services shells) home-shell-profile-service-type)
+      ;;  (list
+      ;;   #~(string-append
+      ;;      "alias superls="
+      ;;      #$(file-append (@ (gnu packages base) coreutils) "/bin/ls"))))
+
+      ;;; home jobs
+      ;;
+      ;; see logs at ~/.local/var/log/mcron.log
+      ;;   tail --follow ~/.local/var/log/mcron.logtail --follow ~/.local/var/log/mcron.log
+      ;;
+      ;; see job spec at [[info:mcron#Guile Syntax][mcron#Guile Syntax]]
+      ((@ (gnu services) simple-service)
+       'home-jobs (@ (gnu home services mcron) home-mcron-service-type)
+       (list
+         ;;; job: commit my notes
+        #~(job '(next-minute)
+               ;;'(next-minute '(15))
+               (lambda ()
+                 (call-with-output-file "/tmp/commit.log"
+                   (lambda (port)
+                     (chdir "./life")
+                     (display
+                      (with-exception-handler
+                          (lambda (exn)
+                            (format #f "exception: ~s\n" exn))
+                        (system*
+                         (format #f "~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
+                                 (file-append #$(@ (gnu packages version-control) git) "/bin/git")
+                                 (file-append #$(@ (gnu packages version-control) git) "/bin/git")
+                                 (file-append #$(@ (gnu packages base) coreutils) "/bin/date")))
+                        port)))))
+               "notes-commit"
+               #:user "samuel")
+         ;;; job: fulltext index the universe
+        #~(job '(next-hour)
+               (lambda ()
+                 (system*
+                  (file-append #$(@ (gnu packages search) recoll) "/bin/recollindex")))
+               "index: recollindex"
+               #:user "samuel")
+         ;;; job: generate tags
+        ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
+        #~(job '(next-hour '(12 0)) ;; every 12 hours
+               (lambda ()
+                 (system*
+                  (file-append #$(@ (gnu packages idutils) idutils) "/bin/mkid") "git"))
+               "index: idutils"
+               #:user "samuel"))))
+     #:system-services
+     (remove
+      unspecified?
+      (append
+       (if gaming?
+           (@@ (gnu services desktop) %desktop-services)
+           '())
+       (list
+        ;;; metrics
+        (service (@ (gnu services monitoring)
+                    prometheus-node-exporter-service-type))
+        ;;; cron jobs
+        (simple-service
+         'system-jobs (@ (gnu services mcron) mcron-service-type)
+         ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
+         (list
+          ;; update locate database
+          ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
+          #~(job '(next-hour '(12 0)) ;; every 12 hours
+                 (lambda ()
+                   (execl (string-append #$(@ (gnu packages base) findutils) "/bin/updatedb")
+                          "updatedb"
+                          "--prunepaths=/tmp /var/tmp /gnu/store"))
+                 "updatedb")))
+
+        ;;; udev: nvidia
+        (when gaming?
+          (simple-service
+           'nvidia-udev-rule udev-service-type
+           (list nvidia-driver)))
+
+        ;;; desktop manager: X11 gdm + nvidia
+        (when #f
+          (simple-service
+           'gdm-xorg-conf gdm-service-type
+           (gdm-configuration
+            (xorg-configuration
+             (xorg-configuration (keyboard-layout %thinkpad-layout)
+                                 (modules (append
+                                           (list nvidia-driver)
+                                           %default-xorg-modules))
+                                 (drivers (list "nvidia")))))))
+
+        ;;; postgres: don't include if gaming
+        (unless gaming?
+          (service postgresql-service-type
+                   (postgresql-configuration
+                    (config-file
+                     (postgresql-config-file
+                      (hba-file
+                       (plain-file "pg_hba.conf"
+                                   "
+local	all	all			trust
+host	all	all	127.0.0.1/32    md5
+host	all	all	0.0.0.0/0       md5
+"
+                                   ))))
+                    (postgresql (@ (gnu packages databases) postgresql-10)))))
+
+        ;; analytics ; timescaledb
+        (unless gaming?
+          (service postgresql-service-type
+                   (postgresql-configuration
+                    (port 5435)
+                    (extension-packages
+                     (list (@ (gnu packages databases) timescaledb)
+                           (@ (gnu packages geo) postgis)))
+                    (postgresql (@ (gnu packages databases) postgresql-14)))))
+
+        (unless gaming?
+          (service postgresql-role-service-type
+                   (postgresql-role-configuration
+                    (roles (list (postgresql-role
+                                  (name "postgres")
+                                  (permissions '(superuser))
+                                  (create-database? #t))
+                                 (postgresql-role
+                                  (name "samuel")
+                                  (permissions '(superuser login))
+                                  (create-database? #t))
+                                 (postgresql-role
+                                  (name "newstore")
+                                  (permissions '(login))
+                                  (create-database? #t)))))))
+
+        ;;; ssh
+        ;; TODO key up, remove password method
+        (service openssh-service-type
+                 (openssh-configuration
+                  (password-authentication? #t)
+                  ;; (authorised-keys
+                  ;;  `(("hww" ,(local-file "hww.pub"))
+                  ;;    ))
+                  ))
+        ))))
+#+end_src
+
+**** base-services
+:PROPERTIES:
+:ID:       8f7a4a2a-c195-4d06-8d76-25a5671ad941
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+(unless gaming? (feature-base-services))
+#+end_src
+
+**** desktop-services
+:PROPERTIES:
+:ID:       f2840489-2e7e-483b-960c-3bc8e3b41412
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+(unless gaming? (feature-desktop-services))
+#+end_src
+
+**** backlight
+:PROPERTIES:
+:ID:       10a02289-4033-4be5-a364-555a29d77849
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+(feature-backlight #:step 5)
+#+end_src
+
+**** pipewire
+:PROPERTIES:
+:ID:       9a824aa7-0fed-4f84-a076-f2a5efc8f1b9
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+(unless gaming? (feature-pipewire))
+#+end_src
+
+**** fonts
+:PROPERTIES:
+:ID:       e4de9c1d-4566-4a53-b77b-6e2ad7662d58
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+(feature-fonts
+ #:font-monospace (font "Iosevka" #:size 14 #:weight 'regular)
+ ;; #:font-monospace (font "Fira Mono" #:size 14 #:weight 'semi-light)
+ #:font-packages (list font-iosevka font-fira-mono))
+#+end_src
+
+**** vterm
+:PROPERTIES:
+:ID:       8bd59de0-c2f4-42fb-9f31-4c8890e9e68a
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+(feature-vterm)
+#+end_src
+
+**** bash
+:PROPERTIES:
+:ID:       c5e6bc9f-9c77-46b2-a41e-883d81ae1fc5
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+(feature-bash)
+#+end_src
+
+**** direnv
+:PROPERTIES:
+:ID:       4ce3bb66-ccbb-4cf3-b92d-2e3bda91adf7
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+(feature-direnv)
+#+end_src
+
+**** zsh
+:PROPERTIES:
+:ID:       62082caa-8650-4eca-b90d-be7f82439d55
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+(feature-zsh
+ #:enable-zsh-autosuggestions? #t)
+#+end_src
+
+**** ssh
+:PROPERTIES:
+:ID:       855bb3df-f74b-4fff-9122-7c334a878dcc
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+(feature-ssh
+ #:ssh-configuration
+ (home-ssh-configuration
+  (default-options
+    '((hostkey-algorithms . "+ssh-rsa")
+      (pubkey-accepted-algorithms "+ssh-rsa")))
+  (extra-config
+   (list (ssh-host
+          (host "qz")
+          ;; <(create ixy->qz key)>
+          (options '((user . "samuel")
+                     (hostname . "192.168.0.249")
+                     (port . 22)
+                     (identity-file . "~/.ssh/qzdl.pub"))))
+         (ssh-host
+          (host "ko")
+          (options '((user . "root")
+                     (hostname . "192.168.0.240")
+                     (port . 2222)
+                     (identity-file . "~/.ssh/ko.pub"))))
+         (ssh-host
+          (host "bastion-sandbox")
+          (options '((user . "ubuntu@bastion-sandbox")
+                     (hostname . "bastion-sandbox.ssh.newstore.luminatesec.com")
+                     (port . 22)
+                     (identity-file . "~/.ssh/newstore-luminate.pem"))))
+         (ssh-host
+          (host "bastion-staging")
+          (options '((user . "ubuntu@bastion-staging")
+                     (hostname . "bastion-staging.ssh.newstore.luminatesec.com")
+                     (port . 22)
+                     (identity-file . "~/.ssh/newstore-luminate.pem"))))
+         (ssh-host
+          (host "bastion-production")
+          (options '((user . "ubuntu@bastion-production")
+                     (hostname . "bastion-production.ssh.newstore.luminatesec.com")
+                     (port . 22)
+                     (identity-file . "~/.ssh/newstore-luminate.pem"))))))))
+#+end_src
+
+**** git
+:PROPERTIES:
+:ID:       dcd3cd89-5c4d-41e3-9ed5-324a48dc3546
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+(feature-git)
+#+end_src
+
+**** i3
+:PROPERTIES:
+:ID:       4a57548b-2784-4807-befb-a02d27a02012
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:33]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main :tangle no
+;;     ;; --- WM -----------------------------------------
+;;     ;; --- i3   --------
+
+;;     ;;(feature-i3)
+;;     ;; (feature-i3-run-on-tty
+;;     ;;  #:i3-tty-number 2
+;;     ;;  ;;#:launch-args "> /tmp/i3.log"
+;;     ;;  )
+#+end_src
+
+**** sway
+:PROPERTIES:
+:ID:       05be317e-8f65-4a14-a83f-db104b19788f
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:34]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(unless gaming?
+  (feature-sway
+   ;; #:sway sway-latest ;; sway-last (transform-nvidia sway-latest)
+   ;; #:sway (transform-nvidia sway-latest)
+   ;; #:xdg-desktop-portal-wlr xdg-desktop-portal-wlr-latest
+   ;; #:xdg-desktop-portal-wlr (transform-nvidia xdg-desktop-portal-wlr-latest)
+   #:xwayland? #f
+   ;; #:opacity 0.9 ;; TODO qzdl
+   ;; #:wallpaper "$HOME/.cache/wallpaper.png" ;; TODO qzdl
+   #:extra-config
+   `(;;(include ,(local-file "./config/sway/config"))
+     ;; TODO sway: toggle opacity for WINDOW
+     (,#~"output DP-2 res 5120x1440 bg ~/.cache/wallpaper.png fill")
+     ;; TODO sway: wacom input rotation matrix
+     (,#~"input \"*\" tool_mode \"*\" relative calibration_matrix 0.0 -1.0 1.0 1.0 0.0 0.0")
+     ;; danke demis https://github.com/minikN/guix/blob/ca15b5a5954d50fe75e2b03f21afc019e002022b/config.scm#L173
+     (for_window "[app_id=\"pavucontrol\"]" floating enable, border pixel)
+     (for_window "[app_id=\"pinentry-qt\"]" floating enable, border pixel)
+     (for_window "[title=\"Nightly - Sharing Indicator\"]" floating enable, border pixel)
+
+     (bindsym $mod+Ctrl+o opacity set 1)
+     (bindsym $mod+Ctrl+p opacity minus 0.1)
+
+     (bindsym $mod+x exec $menu)
+     (bindsym $mod+Period exec "tessen -a copy")
+
+     (bindsym $mod+bracketright exec "pactl set-sink-volume @DEFAULT_SINK@ +5%")
+     (bindsym $mod+bracketleft exec "pactl set-sink-volume @DEFAULT_SINK@ -5%")
+     (bindsym $mod+Ctrl+bracketright exec "pactl set-sink-mute @DEFAULT_SINK@ toggle")
+     (bindsym $mod+Ctrl+bracketleft exec "pactl set-source-mute @DEFAULT_SOURCE@ toggle")
+     ;; alsa_input.usb-TEAC_Corporation_TASCAM_DR_Series-00.analog-stereo
+     )))
+#+end_src
+
+**** sway-run-on-tty
+:PROPERTIES:
+:ID:       1a67a54c-b9c9-4957-8bb7-24633e88c432
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:35]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(unless gaming?
+  (feature-sway-run-on-tty
+   #:sway-tty-number 2
+   ;;#:launch-args "--unsupported-gpu" ;; 1.7-rc1+ https://github.com/swaywm/sway/releases/tag/1.7-rc1
+   ;;#:launch-args "--unsupported-gpu --debug &>/tmp/sway"
+   ))
+#+end_src
+
+**** TODO sway-tessen
+:PROPERTIES:
+:ID:       3649e55b-e0c1-4e97-a561-1c48f55a6c90
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:35]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+;; (unless gaming?
+;;   (feature-sway-tessen
+;;    #:menu-arg "rofi"
+;;    #:menu-package rofi-wayland))
+#+end_src
+
+**** sway-screenshot
+:PROPERTIES:
+:ID:       af8a8d1a-38ce-4e25-9c34-f1f0c8518394
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:35]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(unless gaming? (feature-sway-screenshot))
+#+end_src
+
+**** waybar
+:PROPERTIES:
+:ID:       ddc53ffa-d988-47ee-b8cf-0ced515be0a8
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:36]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(unless gaming?
+  (feature-waybar
+   #:waybar-modules
+   (list
+    (waybar-sway-workspaces)
+    ;; (waybar-sway-window)
+    (waybar-tray)
+    (waybar-idle-inhibitor)
+    ;; (waybar-temperature)
+    ;; (waybar-sway-language)
+    ;; (waybar-volume #:intense? #f) ;; TODO qzdl
+    (waybar-battery #:intense? #f)
+    (waybar-clock))))
+#+end_src
+
+**** swayidle
+:PROPERTIES:
+:ID:       95052943-1d47-455f-903f-a40a1b8e086c
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+;; FIXME swayidle: external monitor resuming bug (probably gpu issue)e
+;; https://github.com/swaywm/sway/issues/5759
+(unless gaming?
+  (feature-swayidle))
+#+end_src
+
+**** swaylock
+:PROPERTIES:
+:ID:       3f203601-b2fa-4e25-802a-65a539120fc7
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:36]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(unless gaming?
+  (feature-swaylock
+   #:swaylock (@ (gnu packages wm) swaylock-effects)
+   ;; The blur of last-screen on lock screen is not privacy-friendly.
+   ;; TODO use blurred wallpaper from $HOME/.cache/wallpaper.png
+   #:extra-config '(;; (screenshots)
+                    (effect-blur . 7x5)
+                    (image . "~/.cache/wallpaper.png")
+                    (scale . fill)
+                    (clock))))
+#+end_src
+
+**** rofi
+:PROPERTIES:
+:ID:       3edaad94-3afa-47cf-8317-dadea891c9cf
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:37]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(unless gaming?
+  (feature-rofi
+   #:theme (local-file "config/rofi/themes/base16-default-dark.rasi")))
+#+end_src
+
+**** emacs
+:PROPERTIES:
+:ID:       c0924a65-73cc-4693-ba65-6abd6c6634dd
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:38]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+  (feature-emacs
+   ;;#:emacs emacs-next-pgtk-latest
+   #:emacs (@ (gnu packages emacs) emacs-next-pgtk)
+   ;; (if (string=? (or (getenv "BUILD_SUBMITTER") "") "git.sr.ht")
+   ;;     (@ (gnu packages emacs) emacs-next-pgtk)
+   ;;     emacs-next-pgtk-latest)
+   #:extra-init-el
+   (append
+    (list #~"(define-key key-translation-map [?\\C-x] [?\\C-u])\n"
+	  #~"(define-key key-translation-map [?\\C-u] [?\\C-x])\n")
+    init-el)
+   #:additional-elisp-packages
+   ;; TODO if feature-emacs-PACKAGE exists, advise its use
+   (append
+    (list emacs-consult-dir
+	  emacs-consult-eglot
+	  ;; TODO qzdl (4)
+	  ;; emacs-consult-recoll
+	  ;; emacs-sql-indent
+	  ;; emacs-code-review
+	  ;; emacs-ob-go
+	  )
+    (pkgs "emacs-elfeed"
+	  "emacs-calfw"
+	  "emacs-debbugs"
+	  "emacs-dimmer"
+	  "emacs-edit-server"
+	  "emacs-eglot"
+	  "emacs-ement"
+	  "emacs-eros"
+	  "emacs-ess"
+	  "emacs-explain-pause-mode"
+	  "emacs-forge"
+	  "emacs-ggtags"
+	  "emacs-gnuplot"
+	  "emacs-go-mode"
+	  "emacs-guix"
+	  "emacs-highlight-indent-guides"
+	  "emacs-hl-todo"
+	  "emacs-htmlize" ;; ement: - ox-export html: org src blocks
+	  "emacs-hyperbole"
+	  "emacs-jq-mode"
+	  "emacs-json-snatcher"
+	  "emacs-logview" ;; https://github.com/doublep/logview
+	  "emacs-lsp-mode"
+	  "emacs-lsp-ui"
+	  "emacs-ob-async"
+	  "emacs-org-download"
+	  "emacs-org-edit-latex"
+	  "emacs-org-fragtog"
+	  "emacs-org-super-agenda"
+	  "emacs-org-transclusion"
+	  "emacs-ox-hugo"
+	  "emacs-ox-pandoc"
+	  "emacs-paredit"
+	  "emacs-plantuml-mode"
+	  "emacs-protobuf-mode"
+	  "emacs-py-isort"
+	  "emacs-python-black"
+	  "emacs-repology"
+	  "emacs-restart-emacs"
+	  "emacs-slime"
+	  "emacs-slime-repl-ansi-color"
+	  "emacs-slime-volleyball"
+	  "emacs-string-inflection"
+	  "emacs-terraform-mode"
+	  "emacs-yaml-mode"
+	  "emacs-ytdl"
+	  ;; TODO feature-emacs-lsp
+	  ;;"emacs-artbollocks"
+	  ;;"emacs-vlf" ;; TODO guix: package emacs-vlf
+
+	  ;; emacs-impostman
+	  ;; "emacs-org-autotangle"
+	  )))
+#+end_src
+
+**** emacs-appearance
+:PROPERTIES:
+:ID:       e7344b77-dfd0-4bc5-aade-cd6b92dc58da
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:38]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-emacs-appearance
+ #:dark? #t
+ #:deuteranopia? #t)
+#+end_src
+
+**** emacs-faces
+:PROPERTIES:
+:ID:       1b88781f-5746-47c1-9985-b15a23aefa8d
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:38]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-emacs-faces)
+#+end_src
+
+**** TODO emacs .. etc
+:PROPERTIES:
+:ID:       480434ca-5147-45f6-9b00-e47b87345dc2
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:39]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-emacs-completion
+ #:mini-frame? #f)
+(feature-emacs-vertico)
+(feature-emacs-project)
+(feature-emacs-perspective)
+(feature-emacs-input-methods)
+(feature-emacs-which-key)
+(feature-emacs-keycast)
+
+;; (feature-emacs-perfect-margin ;; TODO qzdl
+;;  #:visible-width 150)
+
+(feature-emacs-dired)
+;;(feature-emacs-vterm) ;; TODO merge with feature-vterm
+(feature-emacs-monocle)
+(feature-emacs-message)
+#+end_src
+
+**** emacs-erc
+:PROPERTIES:
+:ID:       1019ae2e-1221-4883-bb1e-35270a6fb25d
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:40]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-emacs-erc
+ #:erc-kill-buffers-on-quit #t
+ #:erc-nick "qzdl"
+ #:align-nicknames? #f
+ #:erc-autojoin-channels-alist
+ '((Libera.Chat "#guix" "#emacs" "#tropin" "#rde" "#sway")
+   (OFTC        "#pipewire" "#wayland"))
+ #:log? #t
+ ;; #:erc-server "chat.sr.ht"
+ #:extra-config
+ `((setq rde-bouncer-network-alist
+         `((irc.libera.chat . "qzdl")
+           (irc.oftc.net . "qzdl")))
+   (setq rde-bouncer-nick "qzdl")
+
+   ;; Rename server buffers to reflect the current network name instead
+   ;; of SERVER:PORT (e.g., "freenode" instead of "irc.freenode.net:6667").
+   ;; This is useful when using a bouncer like ZNC where you have multiple
+   ;; connections to the same server.
+   (setq erc-rename-buffers t)
+
+   (defun rde-erc-connect-bouncer-oftc ()
+     (interactive)
+     (setq erc-email-userid "qzdl/irc.oftc.net")
+     (erc-tls :server "chat.sr.ht" :nick rde-bouncer-nick))
+   (defun rde-erc-connect-bouncer-libera ()
+     (interactive)
+     (setq erc-email-userid "qzdl/irc.libera.chat")
+     (erc-tls :server "chat.sr.ht" :nick rde-bouncer-nick))))
+#+end_src
+
+**** emacs-elpher
+:PROPERTIES:
+:ID:       7e6b37b2-717b-4be7-9dcc-f0dbe1cfe043
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:40]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-emacs-elpher)
+#+end_src
+
+**** emacs-ement
+:PROPERTIES:
+:ID:       18bb85c9-07d5-4b46-8719-5aac67d10670
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:41]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+;;(feature-emacs-ement) ;; TODO qzdl
+#+end_src
+
+**** emacs-telega
+:PROPERTIES:
+:ID:       49c1d710-7fd2-45f7-9db1-df885bb4db70
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+     (feature-emacs-telega)
+#+end_src
+
+**** emacs-pdf-tools
+:PROPERTIES:
+:ID:       c1f0a657-91fc-4a27-b33b-df85bfaa9ff1
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+     (feature-emacs-pdf-tools)
+#+end_src
+
+**** emacs-nov-el
+:PROPERTIES:
+:ID:       1103af98-4018-4f7d-b59d-89e4b844ce2e
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+     (feature-emacs-nov-el)
+#+end_src
+
+**** emacs-git
+:PROPERTIES:
+:ID:       81f4c2b3-136b-4a37-a40b-3c3b44163bbe
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:41]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+;;     ;; TODO: Revisit <https://en.wikipedia.org/wiki/Git-annex>
+    (feature-emacs-git)
+#+end_src
+
+**** TODO org
+:PROPERTIES:
+:ID:       7fca8716-000f-4794-b174-2ed192d51c26
+:CREATED:  [2022-08-01 Mon 12:46]
+:UPDATED:  [2022-08-01 Mon 12:46]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+(feature-emacs-org
+ #:org-directory my-org-directory
+ ;;#:org-agenda-directory my-notes-directory ;; TODO qzdl
+ )
+#+end_src
+**** org-agenda
+:PROPERTIES:
+:ID:       20c53b2d-bf63-48b9-ad00-ab417b2d9742
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-emacs-org-agenda
+ #:org-agenda-files '("~/life/roam/inbox.org"))
+#+end_src
+
+**** TODO org-roam
+:PROPERTIES:
+:ID:       af1f484c-1958-426b-8377-9a1087079086
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:42]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+;; TODO: <https://www.labri.fr/perso/nrougier/GTD/index.html#table-of-contents>
+(feature-emacs-org-roam
+ ;; TODO: Rewrite to states
+ #:org-roam-directory my-notes-directory
+ ;;#:org-roam-dailies-directory (string-append my-notes-directory "/daily")) ;; TODO qzdl
+ )
+#+end_src
+
+**** TODO org-roam-ui
+:PROPERTIES:
+:ID:       12eeeff3-fc57-497a-b344-c34824553904
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:42]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+;; FIXME guix: org-roam-ui: httpd communication problem (endemic to guix)
+;; (feature-emacs-org-roam-ui)
+#+end_src
+
+**** TODO emacs-ref
+:PROPERTIES:
+:ID:       a122ca1d-751b-4af2-8abd-6980bb1a761b
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:43]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+;; (feature-emacs-ref
+;;  ;; why error with nil for reftex-default-bibliography
+;;  ;; TODO: Rewrite to states
+;;  #:bibliography-paths
+;;  (list (string-append my-org-directory "/tex.bib"))
+;;  #:bibliography-notes
+;;  (list(string-append my-org-directory "/bib.org")
+;;       #:bibliography-directory my-notes-directory)
+#+end_src
+
+
+**** TODO es/rest
+:PROPERTIES:
+:ID:       d5965300-1774-44b2-bfc4-f8201622b065
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 10:52]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+;;     ;; TODO qzdl (2) es/rest
+;;     ;; (feature-emacs-es-mode
+;;     ;;  #:package emacs-es-mode-latest)
+;;     ;; (feature-emacs-restclient
+;;     ;;  #:package-ob emacs-ob-restclient-latest)
+#+end_src
+
+**** docker
+:PROPERTIES:
+:ID:       07f0f4f4-500d-488f-b678-88865aa775e0
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:46]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-docker)
+#+end_src
+
+**** mpv
+:PROPERTIES:
+:ID:       dc8200af-d1cd-4911-8c42-0b01e9361da2
+:CREATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-01 Mon 12:46]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-mpv)
+#+end_src
+
+**** TODO isync :broken:                                                                                             :mail:
+:PROPERTIES:
+:ID:       5f12520a-369e-43bf-ab36-64a44c5bfb98
+:CREATED:  [2022-08-01 Mon 10:55]
+:UPDATED:  [2022-08-01 Mon 12:46]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+;;(feature-isync #:isync-verbose #t)
+#+end_src
+
+**** l2md                                                                                                            :mail:
+:PROPERTIES:
+:ID:       bd9b236d-db39-449b-8314-77a79ce89fe1
+:CREATED:  [2022-08-01 Mon 10:55]
+:UPDATED:  [2022-08-01 Mon 13:21]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-l2md)
+#+end_src
+
+**** msmtp                                                                                                           :mail:
+:PROPERTIES:
+:ID:       c5548269-6010-4a9c-b92f-83b27a722b76
+:CREATED:  [2022-08-01 Mon 10:55]
+:UPDATED:  [2022-08-01 Mon 13:21]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-msmtp)
+#+end_src
+
+**** notmuch                                                                                                         :mail:
+:PROPERTIES:
+:ID:       3b57f1e4-e156-4505-8d82-085ef082408c
+:CREATED:  [2022-08-01 Mon 10:55]
+:UPDATED:  [2022-08-01 Mon 13:21]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-notmuch
+ #:extra-tag-updates-post
+ '("notmuch tag +guix-home -- 'thread:\"\
+{((subject:guix and subject:home) or subject:/home:/) and tag:new}\"'"
+   "notmuch tag +guix -- \"{to:guix or subject:guix}\"")
+ #:notmuch-saved-searches
+ (cons*
+  '(:name "Personal Inbox"  :key "P" :query "tag:personal and tag:inbox")
+  '(:name "Work Inbox"      :key "W" :query "tag:work and tag:inbox")
+  '(:name "Guix Home Inbox" :key "H" :query "tag:guix-home and tag:unread")
+  '(:name "RDE Inbox"       :key "R" :query "((to:/rde/ or cc:/rde/) or subject:/rde/) and tag:unread")
+  %rde-notmuch-saved-searches))
+#+end_src
+
+**** transmission
+:PROPERTIES:
+:ID:       6357a61f-0d61-4e62-9b8b-b4442b6923d6
+:CREATED:  [2022-08-01 Mon 10:55]
+:UPDATED:  [2022-08-01 Mon 13:21]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-transmission #:auto-start? #f)
+#+end_src
+
+**** xdg
+:PROPERTIES:
+:ID:       2a190f7d-8013-42f2-ab78-49d4f61dd180
+:CREATED:  [2022-08-01 Mon 10:55]
+:UPDATED:  [2022-08-01 Mon 10:58]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-xdg
+ #:xdg-user-directories-configuration
+ (home-xdg-user-directories-configuration
+  (music "$HOME/music")
+  (videos "$HOME/vids")
+  (pictures "$HOME/pics")
+  (documents "$HOME/docs")
+  (download "$HOME/dl")
+  (desktop "$HOME")
+  (publicshare "$HOME")
+  (templates "$HOME")))
+#+end_src
+
+**** bluetooth
+:PROPERTIES:
+:ID:       a51b2651-5026-41c7-b621-9301a8385e6c
+:CREATED:  [2022-08-01 Mon 10:58]
+:UPDATED:  [2022-08-01 Mon 12:31]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+;;     ;; (feature-bluetooth #:auto-enable? #t) ;; TODO qzdl
+#+end_src
+
+**** base pkgs
+:PROPERTIES:
+:ID:       9490f8c2-7074-4a89-a62e-f82b6bfc2f2b
+:CREATED:  [2022-08-01 Mon 10:55]
+:UPDATED:  [2022-08-02 Tue 13:56]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+(feature-base-packages
+ #:home-packages
+ (append
+  (pkgs
+   "figlet" ;; TODO: Move to emacs-artist-mode
+   "calibre"
+   "icecat" "nyxt"
+   "nss-certs"
+   "ungoogled-chromium-wayland" "ublock-origin-chromium"
+
+   "utox" "qtox" "jami"
+
+   "alsa-utils" "mpv" "youtube-dl" "imv" "vim"
+   "cozy" "pavucontrol"
+   "wev"
+   "obs" "obs-wlrobs"
+   "recutils" "binutils"
+   "fheroes2"
+   ;; TODO: Enable pipewire support to chromium by default
+   ;; chrome://flags/#enable-webrtc-pipewire-capturer
+   "ungoogled-chromium-wayland" "ublock-origin-chromium"
+   "nyxt"
+   ;;
+   "hicolor-icon-theme" "adwaita-icon-theme" "gnome-themes-standard"
+   "papirus-icon-theme" "arc-theme"
+   "thunar"
+   ;; "glib:bin"
+
+   ;; TODO: Fix telega package!
+   "ffmpeg"
+
+   "ripgrep" "curl" "make"
+   )))
+
+#+end_src
+** debug: post-%main-features
+:PROPERTIES:
+:ID:       6a9522fb-fabc-4f94-97e4-2ab8d73905a1
+:CREATED:  [2022-07-29 Fri 17:53]
+:UPDATED:  [2022-07-29 Fri 18:26]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+;;(map pretty-print %main-features)
+(pretty-print "post-%main-features")
+
+#+end_src
+
+** hw/host features
+:PROPERTIES:
+:ID:       b34224fa-7b5c-4292-9a0d-27439812a042
+:CREATED:  [2022-07-29 Fri 17:53]
+:UPDATED:  [2022-07-29 Fri 17:53]
+:ROAM_EXCLUDE: t
+:END:
+
+*** future
+:PROPERTIES:
+:ID:       23664f9a-bd24-460b-8537-22f9efd3d298
+:CREATED:  [2022-07-29 Fri 18:22]
+:UPDATED:  [2022-07-29 Fri 18:22]
+:ROAM_EXCLUDE: t
+:END:
+
+**** TODO Switch from UUIDs to partition labels For better reproducibilty and easier setup.
+:PROPERTIES:
+:ID:       8983d989-12c3-4e1b-8645-e346571cddcd
+:CREATED:  [2022-07-29 Fri 18:22]
+:UPDATED:  [2022-07-29 Fri 18:22]
+:ROAM_EXCLUDE: t
+:END:
+
+**** TODO Grub doesn't support luks2 yet.
+:PROPERTIES:
+:ID:       ea1aa05f-0279-4d55-a733-f40322f3c8f5
+:CREATED:  [2022-07-29 Fri 18:22]
+:UPDATED:  [2022-07-29 Fri 18:22]
+:ROAM_EXCLUDE: t
+:END:
+
+*** ixy :host:ixy:
+:PROPERTIES:
+:ID:       ffec3337-a453-4b25-8919-bdacb6c93562
+:CREATED:  [2022-07-29 Fri 17:53]
+:UPDATED:  [2022-07-29 Fri 17:53]
+:ROAM_EXCLUDE: t
+:END:
+**** mapped devices
+:PROPERTIES:
+:ID:       602eb92a-7d29-4c3a-8ca4-d6e9d61f0e4b
+:CREATED:  [2022-07-29 Fri 17:53]
+:UPDATED:  [2022-07-29 Fri 17:53]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(define ixy-mapped-devices
+  (list (mapped-device
+         (source (uuid "cb453366-cc17-4742-ada1-91f7f569103f"))
+         (target "sys-root")
+         (type luks-device-mapping))))
+#+end_src
+**** file systems
+:PROPERTIES:
+:ID:       40a378fb-a7a1-456a-b5e8-f15f2f7c7dd3
+:CREATED:  [2022-07-29 Fri 17:53]
+:UPDATED:  [2022-07-29 Fri 17:53]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(define ixy-file-systems
+  (list (file-system
+           (device (file-system-label "sys-root"))
+           (mount-point "/")
+           (type "ext4")
+           (dependencies ixy-mapped-devices))
+         (file-system
+           (device "/dev/nvme0n1p1")
+           (mount-point "/boot/efi")
+           (type "vfat"))
+         ))
+#+end_src
+**** file systems (from andrew)
+:PROPERTIES:
+:ID:       4228ac9b-1665-4978-9ded-bfa6e174961c
+:CREATED:  [2022-07-29 Fri 17:53]
+:UPDATED:  [2022-07-29 Fri 17:53]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+;; (define ixy-file-systems
+;;   (append
+;;    (map (match-lambda
+;;        ((subvol . mount-point)
+;;         (file-system
+;;           (type "btrfs")
+;;           (device "/dev/mapper/enc")
+;;           (mount-point mount-point)
+;;           (options (format #f "subvol=~a" subvol))
+;;           (dependencies ixy-mapped-devices))))
+;;      '((root . "/")
+;;        (boot . "/boot")
+;;        (gnu  . "/gnu")
+;;        (home . "/home")
+;;        (data . "/data")
+;;        (log  . "/var/log")))
+;;    (list
+;;     (file-system
+;;       (mount-point "/boot/efi")
+;;       (type "vfat")
+;;       (device (uuid "8C99-0704" 'fat32))))))
+#+end_src
+
+**** imports
+:PROPERTIES:
+:ID:       5b8720fd-bc7e-4a8d-bbf7-3030b057d1b7
+:CREATED:  [2022-07-29 Fri 17:53]
+:UPDATED:  [2022-07-29 Fri 17:53]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(use-modules
+ (gnu packages linux)
+ ((nongnu packages linux) #:prefix nongnu:)
+ ((nongnu system linux-initrd) #:prefix nongnu-sys:))
+#+end_src
+
+**** features
+:PROPERTIES:
+:ID:       3e09d87e-4895-4ab0-9109-4693e44ecb2d
+:CREATED:  [2022-07-29 Fri 17:53]
+:UPDATED:  [2022-07-29 Fri 17:53]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+(define %ixy-features
+  (list
+   (feature-host-info
+    #:host-name "ixy"
+    #:timezone  "Europe/Berlin")
+   ;;; Allows to declare specific bootloader configuration,
+   ;;; grub-efi-bootloader used by default
+   ;; (feature-bootloader)
+   ;; os
+   (feature-kernel
+    ;;#:kernel nongnu:linux-lts ;; nvidia
+    #:kernel nongnu:linux
+    #:kernel-arguments
+    '("quiet" "ipv6.disable=1" "net.ifnames=0"
+      "nouveau.modeset=1"
+      ;; https://forums.developer.nvidia.com/t/nvidia-495-on-sway-tutorial-questions-arch-based-distros/192212
+       ;;"nvidia-drm.modeset=1" "nouveau.blacklist=1" "modprobe.blacklist=nouveau"
+      )
+    ;; removed "modprobe.blacklist=snd_hda_intel,snd_soc_skl"
+    #:firmware (list nongnu:linux-firmware
+                     nongnu:sof-firmware
+                     ;;nvidia-driver
+                     )
+    #:initrd nongnu-sys:microcode-initrd
+    #:kernel-loadable-modules (list v4l2loopback-linux-module
+                                    ;;nvidia-driver
+                                    ))
+   (feature-file-systems
+    #:mapped-devices ixy-mapped-devices
+    #:file-systems   ixy-file-systems)
+   ;(feature-hidpi)
+   ))
+
+(pretty-print "post-%ixy-features")
+#+end_src
+
+**** config
+:PROPERTIES:
+:ID:       797b1544-85d0-4a89-b0fe-be6ba45ab847
+:CREATED:  [2022-07-29 Fri 17:53]
+:UPDATED:  [2022-08-01 Mon 13:47]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+
+;;; rde-config and helpers for generating home-environment and
+;;; operating-system records.
+
+(define-public ixy-config
+  (rde-config
+   (features
+    (append
+     %abcdw-features
+     %main-features
+     %ixy-features
+     ))))
+#+end_src
+
+***** debug: config args (features)
+:PROPERTIES:
+:ID:       49cef365-d12e-41eb-9e29-b04123e4db0a
+:CREATED:  [2022-07-29 Fri 18:04]
+:UPDATED:  [2022-07-29 Fri 18:20]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+;; (map pretty-print
+;;      (append %abcdw-features
+;;              %main-features
+;;              %ixy-features))
+#+end_src
+
+**** os
+:PROPERTIES:
+:ID:       9fa5b517-515a-4ce0-8b08-3717080553da
+:CREATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-07-29 Fri 18:19]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+;; TODISCUSS: Make rde-config-os/he to be a feature instead of getter?
+(define-public ixy-os
+  (rde-config-operating-system ixy-config))
+#+end_src
+
+***** debug: os
+:PROPERTIES:
+:ID:       24fc8fe1-79e9-45c9-a8b8-8e89db1161c5
+:CREATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-07-29 Fri 18:19]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(pretty-print "post-ixy-os")
+#+end_src
+
+**** home-environment
+:PROPERTIES:
+:ID:       a8b0c3bc-c2f6-4460-8a67-9519d36f204c
+:CREATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-07-29 Fri 18:19]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(define ixy-he
+  (rde-config-home-environment ixy-config))
+#+end_src
+
+***** debug: post-he
+:PROPERTIES:
+:ID:       58a97450-1bec-4243-b9b0-938862431fbf
+:CREATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-07-29 Fri 18:19]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(pretty-print "post-ixy-he")
+#+end_src
+
+*** live :host:live:
+:PROPERTIES:
+:ID:       f0223612-a7d9-4a9e-a6c9-993ac3cadcb2
+:CREATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-07-29 Fri 18:19]
+:ROAM_EXCLUDE: t
+:END:
+
+**** filesystem
+:PROPERTIES:
+:ID:       fca68375-9c08-4e3d-96e0-7856e9d13268
+:CREATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-07-29 Fri 18:19]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(use-modules (gnu system file-systems))
+
+(define live-file-systems
+  (list (file-system
+         (mount-point "/")
+         (device (file-system-label "Guix_image"))
+         (type "ext4"))
+
+        ;; Make /tmp a tmpfs instead of keeping the overlayfs.  This
+        ;; originally was used for unionfs because FUSE creates
+        ;; '.fuse_hiddenXYZ' files for each open file, and this confuses
+        ;; Guix's test suite, for instance (see
+        ;; <http://bugs.gnu.org/23056>).  We keep this for overlayfs to be
+        ;; on the safe side.
+        (file-system
+         (mount-point "/tmp")
+         (device "none")
+         (type "tmpfs")
+         (check? #f))
+
+        ;; XXX: This should be %BASE-FILE-SYSTEMS but we don't need
+        ;; elogind's cgroup file systems.
+        ;; (list %pseudo-terminal-file-system
+        ;;       %shared-memory-file-system
+        ;;       %efivars-file-system
+        ;;       %immutable-store)
+        ))
+#+end_src
+
+**** config
+:PROPERTIES:
+:ID:       6f2c9531-48c8-4bed-b843-e271888e207c
+:CREATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-07-29 Fri 18:19]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(use-modules (gnu services))
+(define-public live-config
+  (rde-config
+   (features
+    (append
+     %abcdw-features
+     %main-features
+     (list
+      (feature-host-info
+       #:host-name "gnu"
+       #:timezone  "Europe/Moscow")
+
+      (feature-file-systems
+       #:file-systems live-file-systems)
+      (feature-hidpi)
+      (feature-custom-services
+       #:feature-name-prefix 'live
+       #:system-services
+       (list
+        (simple-service
+         'channels-and-sources
+         etc-service-type
+         `(("channels.scm" ,(local-file "live-channels"))
+           ("guix-sources" ,(local-file "/home/bob/work/gnu/guix"
+                                        #:recursive? #t))
+           ("rde-sources" ,(local-file "/home/bob/work/abcdw/rde"
+                                       #:recursive? #t))))
+        ;; (service
+        ;;  guix-home-service-type
+        ;;  `(("bob" . ,ixy-he)))
+        (service
+         gc-root-service-type
+         (list ixy-he))
+        )))))))
+#+end_src
+
+**** os
+:PROPERTIES:
+:ID:       2c7c2f23-a1bd-4db4-8218-72035ff32495
+:CREATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-07-29 Fri 18:19]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(define-public live-os
+  (rde-config-operating-system live-config))
+#+end_src
+
+**** debug: post live
+:PROPERTIES:
+:ID:       735d9883-dafd-4b64-bca8-ba5559995532
+:CREATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-07-29 Fri 18:19]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(pretty-print "post-live-config")
+#+end_src
+
+** dispatcher
+:PROPERTIES:
+:ID:       a607e231-867a-4f99-b24d-afc9324611e2
+:CREATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-07-29 Fri 18:19]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(define (dispatcher)
+  (let ((rde-target (getenv "RDE_TARGET")))
+    (match rde-target
+      ("ixy-home" ixy-he)
+      ("ixy-system" ixy-os)
+      ("live-system" live-os)
+      (_ ixy-he))))
+#+end_src
+*** debug: total
+:PROPERTIES:
+:ID:       0ec86b5a-f300-4373-bb1e-ccd6c7327776
+:CREATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-07-29 Fri 18:19]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+;; (pretty-print-rde-config ixy-config)
+;; (use-modules (gnu services)
+;;           (gnu services base))
+;; (display
+;;  (filter (lambda (x)
+;;         (eq? (service-kind x) console-font-service-type))
+;;       (rde-config-system-services ixy-config)))
+
+;; (use-modules (rde features))
+;; ((@ (ice-9 pretty-print) pretty-print)
+;;  (map feature-name (rde-config-features ixy-config)))
+#+end_src
+
+*** debug: pre dispatch
+:PROPERTIES:
+:ID:       3ec71f5a-394c-42e9-8f7e-cd40908fe5bd
+:CREATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-07-29 Fri 18:19]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+(pretty-print "pre-dispatch")
+#+end_src
+
+** dispatch
+:PROPERTIES:
+:ID:       305b2df4-7b0c-4dc5-9c40-3f50e5d289f8
+:CREATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-07-29 Fri 18:19]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+(dispatcher)
+#+end_src
