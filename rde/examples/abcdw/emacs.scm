@@ -314,7 +314,7 @@
       (interactive)
       (let ((jq-interactive-command "yq"))
         (call-interactively 'jq-interactively)))
-    (require 'hyperbole)
+    ;;(require 'hyperbole) ;; TODO klink
     (define-key global-map (kbd "C-<down-mouse-2>") 'hkey-either)
     (define-key global-map (kbd "M-<return>") 'hkey-either)
     

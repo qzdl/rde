@@ -1105,86 +1105,87 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       c0924a65-73cc-4693-ba65-6abd6c6634dd
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-08-01 Mon 12:38]
+:UPDATED:  [2022-08-03 Wed 10:58]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src scheme :noweb-ref main
-  (feature-emacs
-   ;;#:emacs emacs-next-pgtk-latest
-   #:emacs (@ (gnu packages emacs) emacs-next-pgtk)
-   ;; (if (string=? (or (getenv "BUILD_SUBMITTER") "") "git.sr.ht")
-   ;;     (@ (gnu packages emacs) emacs-next-pgtk)
-   ;;     emacs-next-pgtk-latest)
-   #:extra-init-el
-   (append
-    (list #~"(define-key key-translation-map [?\\C-x] [?\\C-u])\n"
-	  #~"(define-key key-translation-map [?\\C-u] [?\\C-x])\n")
-    init-el)
-   #:additional-elisp-packages
-   ;; TODO if feature-emacs-PACKAGE exists, advise its use
-   (append
-    (list emacs-consult-dir
-	  emacs-consult-eglot
-	  ;; TODO qzdl (4)
-	  ;; emacs-consult-recoll
-	  ;; emacs-sql-indent
-	  ;; emacs-code-review
-	  ;; emacs-ob-go
-	  )
-    (pkgs "emacs-elfeed"
-	  "emacs-calfw"
-	  "emacs-debbugs"
-	  "emacs-dimmer"
-	  "emacs-edit-server"
-	  "emacs-eglot"
-	  "emacs-ement"
-	  "emacs-eros"
-	  "emacs-ess"
-	  "emacs-explain-pause-mode"
-	  "emacs-forge"
-	  "emacs-ggtags"
-	  "emacs-gnuplot"
-	  "emacs-go-mode"
-	  "emacs-guix"
-	  "emacs-highlight-indent-guides"
-	  "emacs-hl-todo"
-	  "emacs-htmlize" ;; ement: - ox-export html: org src blocks
-	  "emacs-hyperbole"
-	  "emacs-jq-mode"
-	  "emacs-json-snatcher"
-	  "emacs-logview" ;; https://github.com/doublep/logview
-	  "emacs-lsp-mode"
-	  "emacs-lsp-ui"
-	  "emacs-ob-async"
-	  "emacs-org-download"
-	  "emacs-org-edit-latex"
-	  "emacs-org-fragtog"
-	  "emacs-org-super-agenda"
-	  "emacs-org-transclusion"
-	  "emacs-ox-hugo"
-	  "emacs-ox-pandoc"
-	  "emacs-paredit"
-	  "emacs-plantuml-mode"
-	  "emacs-protobuf-mode"
-	  "emacs-py-isort"
-	  "emacs-python-black"
-	  "emacs-repology"
-	  "emacs-restart-emacs"
-	  "emacs-slime"
-	  "emacs-slime-repl-ansi-color"
-	  "emacs-slime-volleyball"
-	  "emacs-string-inflection"
-	  "emacs-terraform-mode"
-	  "emacs-yaml-mode"
-	  "emacs-ytdl"
-	  ;; TODO feature-emacs-lsp
-	  ;;"emacs-artbollocks"
-	  ;;"emacs-vlf" ;; TODO guix: package emacs-vlf
+(feature-emacs
+ ;;#:emacs emacs-next-pgtk-latest
+ #:emacs (@ (rde packages emacs) emacs-next-pgtk-latest)
+ ;; (if (string=? (or (getenv "BUILD_SUBMITTER") "") "git.sr.ht")
+ ;;     (@ (gnu packages emacs) emacs-next-pgtk)
+ ;;     emacs-next-pgtk-latest)
+ #:extra-init-el
+ (append
+  (list #~"(define-key key-translation-map [?\\C-x] [?\\C-u])\n"
+	#~"(define-key key-translation-map [?\\C-u] [?\\C-x])\n")
+  init-el)
+ #:additional-elisp-packages
+ ;; TODO if feature-emacs-PACKAGE exists, advise its use
+ (append
+  (list emacs-consult-dir
+	emacs-consult-eglot
+	;; TODO qzdl (4)
+	;; emacs-consult-recoll
+	;; emacs-sql-indent
+	;; emacs-code-review
+	;; emacs-ob-go
+	)
+  (pkgs "emacs-elfeed"
+	"emacs-calfw"
+	"emacs-debbugs"
+	"emacs-dimmer"
+	"emacs-edit-server"
+	"emacs-eglot"
+	"emacs-ement"
+	"emacs-eros"
+	"emacs-ess"
+	"emacs-explain-pause-mode"
+	"emacs-forge"
+	"emacs-ggtags"
+	"emacs-gnuplot"
+	"emacs-go-mode"
+	"emacs-guix"
+	"emacs-highlight-indent-guides"
+	"emacs-hl-todo"
+	"emacs-htmlize" ;; ement: - ox-export html: org src blocks
+	"emacs-hyperbole"
+	"emacs-jq-mode"
+	"emacs-json-snatcher"
+	"emacs-logview" ;; https://github.com/doublep/logview
+	"emacs-lsp-mode"
+	"emacs-lsp-ui"
+	"emacs-ob-async"
+	"emacs-org-download"
+	"emacs-org-edit-latex"
+	"emacs-org-fragtog"
+        "emacs-org-reveal"
+	"emacs-org-super-agenda"
+	"emacs-org-transclusion"
+	"emacs-ox-hugo"
+	"emacs-ox-pandoc"
+	"emacs-paredit"
+	"emacs-plantuml-mode"
+	"emacs-protobuf-mode"
+	"emacs-py-isort"
+	"emacs-python-black"
+	"emacs-repology"
+	"emacs-restart-emacs"
+	"emacs-slime"
+	"emacs-slime-repl-ansi-color"
+	"emacs-slime-volleyball"
+	"emacs-string-inflection"
+	"emacs-terraform-mode"
+	"emacs-yaml-mode"
+	"emacs-ytdl"
+	;; TODO feature-emacs-lsp
+	;;"emacs-artbollocks"
+	;;"emacs-vlf" ;; TODO guix: package emacs-vlf
 
-	  ;; emacs-impostman
-	  ;; "emacs-org-autotangle"
-	  )))
+	;; emacs-impostman
+	;; "emacs-org-autotangle"
+	)))
 #+end_src
 
 **** emacs-appearance
@@ -1614,9 +1615,14 @@ host	all	all	0.0.0.0/0       md5
    "ffmpeg"
 
    "ripgrep" "curl" "make"
-   )))
+   ))
+ )
+
 
 #+end_src
+
+#+RESULTS:
+
 ** debug: post-%main-features
 :PROPERTIES:
 :ID:       6a9522fb-fabc-4f94-97e4-2ab8d73905a1

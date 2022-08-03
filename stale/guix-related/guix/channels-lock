@@ -1,13 +1,21 @@
 (list (channel
         (name 'rde)
-        (url "https://github.com/abcdw/rde")
+        (url "https://git.sr.ht/~abcdw/rde")
+        (branch "master")
         (commit
-          "8920be155d7f05c2fff541cc22a30b4740ec9acd"))
+          "b7de89e274b01a70daa8eb5fb0604308552f4c23"))
+      (channel
+        (name 'nonguix)
+        (url "https://gitlab.com/nonguix/nonguix")
+        (branch "master")
+        (commit
+          "ec7c7b852c024095e4f34523452230406a3b4549"))
       (channel
         (name 'guix)
         (url "https://git.savannah.gnu.org/git/guix.git")
+        (branch "master")
         (commit
-          "827656c370b93ccbda3da8d116e9e603c33837c8")
+          "0ff99893bd90b0f38650fe577ebcf44dfabf627f")
         (introduction
           (make-channel-introduction
             "9edb3f66fd807b096b48283debdcddccfea34bad"
