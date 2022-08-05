@@ -64,6 +64,8 @@
           `(progn ,@body)))
     
     (qz/debug- (message "yo"))
+    (require 's)
+    
     (setq qz/newstore-envs '(sandbox staging production)
           qz/newstore-env-current nil
           qz/newstore-envs-abbrev '((sandbox . x) (staging . s) (production . p))
@@ -174,6 +176,8 @@
     ;; NOWEB KBD END
     ;; NOWEB CONSULT START
     (with-eval-after-load 'consult
+      (require 's)
+      
       (defun qz/consult-ripgrep-files (files)
         (let* ((consult-ripgrep-args (concat consult-ripgrep-args " -L"))
                (rg-dir "/tmp/null"))
@@ -376,6 +380,7 @@
     ;; NOWEB ORG START
     (message "pre org: %s" (shell-command-to-string "date"))
     (with-eval-after-load 'org
+      (require 's)
       (message "mid org: %s" (shell-command-to-string "date"))
       (define-key org-mode-map (kbd "C-c C-j") 'consult-org-heading)
       (defvar qz/org-babel-indent-exclude-lang
@@ -911,45 +916,48 @@
         
         (cons->table
          (qz/org-babel-do-lob-ingest-files))
-        ;; [[file:~/.doom.d/config.org::*templates][templates]]
-        (setq org-capture-templates
-              `(("i" "inbox" entry
-        	 (file ,(concat org-agenda-directory "/inbox.org"))
-        	 "* TODO %? \n\n - from :: %a")
-        	;; spanish language capturing
-        	("v" "vocab; spanish" entry
-        	 (file+headline ,(concat org-roam-directory "/spanish_language.org") "vocab, phrases")
-        	 ,(s-join "\n" '("** \"%?\" :es:"
-        			 "- from :: %a" ""
-        			 "*** :en:" "")))
-        	;; capture link to live `org-roam' thing
-        	("n" "now, as in NOW" entry (file ,(concat org-agenda-directory "/wip.org"))
-        	 ,(s-join "\n" '("* TODO [#A1] %? "
-        			 "DEADLINE: %T"
-        			 "CREATED: %u")))
-        	;; fire directly into inbox
-        	("c" "org-protocol-capture" entry (file ,(concat org-agenda-directory "/inbox.org"))
-        	 ,(s-join "\n" '("* TODO [[%:link][%:description]]" ""
-        			 "#+begin_quote" ""
-        			 "%i"
-        			 "#+end_quote"))
-        	 :immediate-finish t)
-        	;; push last captured item into inbox
-        	("l" "last-capture" entry (file ,(concat org-agenda-directory "/inbox.org"))
-        	 (function qz/inbox-last-captured)
-        	 :immediate-finish t)
-        	("I" "current-roam" entry (file ,(concat org-agenda-directory "/inbox.org"))
-        	 (function qz/current-roam-link)
-        	 :immediate-finish t)
-        	("w" "weekly review" entry
-        	 (file+datetree ,(concat org-agenda-directory "/reviews.org"))
-        	 (file ,(concat org-agenda-directory "/templates/weekly_review.org")))))
+          ;; [[file:~/.doom.d/config.org::*templates][templates]]
+          (setq org-capture-templates
+        	`(("i" "inbox" entry
+        	   (file ,(concat org-roam-directory "/inbox.org"))
+        	   "* TODO %? \n\n - from :: %a")
+        	  ;; spanish language capturing
+        	  ("v" "vocab; spanish" entry
+        	   (file+headline ,(concat org-roam-directory "/spanish_language.org") "vocab, phrases")
+        	   ,(s-join "\n" '("** \"%?\" :es:"
+        			   "- from :: %a" ""
+        			   "*** :en:" "")))
+        	  ;; capture link to live `org-roam' thing
+        	  ("n" "now, as in NOW" entry (file ,(concat org-roam-directory "/wip.org"))
+        	   ,(s-join "\n" '("* TODO [#A1] %? "
+        			   "DEADLINE: %T"
+        			   "CREATED: %u")))
+        	  ;; fire directly into inbox
+        	  ("c" "org-protocol-capture" entry (file ,(concat
+        org-roam-directory "/inbox.org"))
+        	   ,(s-join "\n" '("* TODO [[%:link][%:description]]" ""
+        			   "#+begin_quote" ""
+        			   "%i"
+        			   "#+end_quote"))
+        	   :immediate-finish t)
+        	  ;; push last captured item into inbox
+        	  ("l" "last-capture" entry (file ,(concat org-roam-directory "/inbox.org"))
+        	   (function qz/inbox-last-captured)
+        	   :immediate-finish t)
+        	  ("I" "current-roam" entry (file ,(concat org-roam-directory "/inbox.org"))
+        	   (function qz/current-roam-link)
+        	   :immediate-finish t)
+        	  ("w" "weekly review" entry
+        	   (file+datetree ,(concat org-roam-directory "/reviews.org"))
+        	   (file ,(concat org-roam-directory "/templates/weekly_review.org")))))
         
         
         
         
-        ;; [[file:~/.doom.d/config.org::*capture templates][roam capture templates]]
+          ;; [[file:~/.doom.d/config.org::*capture templates][roam capture templates]]
         
+        (unless (boundp 'org-agenda-directory)
+          (setq org-agenda-directory nil))
         (defun qz/create-node ()
           "assumes point is at the desired headline"
           (interactive)
@@ -1444,16 +1452,14 @@
         "&& sudo -E make ixy-system-reconfigure"
         "&& echo 'system bal-eggd-e complete' | espeak --stdin")))
     
-    
-    (defun qz/reload-config-both ()
+    (defun qz/reload-config-all ()
       (interactive)
       (qz/tangle)
       (async-shell-command
        (concat
         "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
-        "&& guix pull -C $HOME/git/sys/rde/stale/guix-related/guix/channels "
+        "&& ( cd ../../.. && make channels-update-lock && make channels-pull )"
         "&& make ixy-home-reconfigure "
-        "&& echo 'bal-eggd-e' | espeak --stdin "
         "&& sudo -E make ixy-system-reconfigure "
         "&& echo 'system bal-eggd-e complete' | espeak --stdin")))
     

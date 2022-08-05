@@ -159,6 +159,7 @@ imenu's leaf-nodes-only display is wack and cba to find out why right now
 :END:
 #+begin_src emacs-lisp :results drawer :tangle no
 (require 'consult)
+(require 's)
 
 (pp (let ((h (s-join "/" (org-get-outline-path nil nil))))
       (car (seq-filter (lambda (s)
@@ -638,6 +639,8 @@ not elegant AT ALL, but the API to ripgrep from consult uses
 'default-directory', so suck it up
 
 #+begin_src emacs-lisp :noweb-ref consult
+(require 's)
+
 (defun qz/consult-ripgrep-files (files)
   (let* ((consult-ripgrep-args (concat consult-ripgrep-args " -L"))
          (rg-dir "/tmp/null"))
@@ -1081,6 +1084,8 @@ body      *values you wish to transform*: a list; cons, proper,
 :END:
 
 #+begin_src emacs-lisp :noweb-ref general
+(require 's)
+
 (setq qz/newstore-envs '(sandbox staging production)
       qz/newstore-env-current nil
       qz/newstore-envs-abbrev '((sandbox . x) (staging . s) (production . p))
@@ -2842,7 +2847,7 @@ org-roam loading, as we use it's variables.
   ;; [[file:~/.doom.d/config.org::*templates][templates]]
   (setq org-capture-templates
 	`(("i" "inbox" entry
-	   (file ,(concat org-agenda-directory "/inbox.org"))
+	   (file ,(concat org-roam-directory "/inbox.org"))
 	   "* TODO %? \n\n - from :: %a")
 	  ;; spanish language capturing
 	  ("v" "vocab; spanish" entry
@@ -2851,27 +2856,28 @@ org-roam loading, as we use it's variables.
 			   "- from :: %a" ""
 			   "*** :en:" "")))
 	  ;; capture link to live `org-roam' thing
-	  ("n" "now, as in NOW" entry (file ,(concat org-agenda-directory "/wip.org"))
+	  ("n" "now, as in NOW" entry (file ,(concat org-roam-directory "/wip.org"))
 	   ,(s-join "\n" '("* TODO [#A1] %? "
 			   "DEADLINE: %T"
 			   "CREATED: %u")))
 	  ;; fire directly into inbox
-	  ("c" "org-protocol-capture" entry (file ,(concat org-agenda-directory "/inbox.org"))
+	  ("c" "org-protocol-capture" entry (file ,(concat
+org-roam-directory "/inbox.org"))
 	   ,(s-join "\n" '("* TODO [[%:link][%:description]]" ""
 			   "#+begin_quote" ""
 			   "%i"
 			   "#+end_quote"))
 	   :immediate-finish t)
 	  ;; push last captured item into inbox
-	  ("l" "last-capture" entry (file ,(concat org-agenda-directory "/inbox.org"))
+	  ("l" "last-capture" entry (file ,(concat org-roam-directory "/inbox.org"))
 	   (function qz/inbox-last-captured)
 	   :immediate-finish t)
-	  ("I" "current-roam" entry (file ,(concat org-agenda-directory "/inbox.org"))
+	  ("I" "current-roam" entry (file ,(concat org-roam-directory "/inbox.org"))
 	   (function qz/current-roam-link)
 	   :immediate-finish t)
 	  ("w" "weekly review" entry
-	   (file+datetree ,(concat org-agenda-directory "/reviews.org"))
-	   (file ,(concat org-agenda-directory "/templates/weekly_review.org")))))
+	   (file+datetree ,(concat org-roam-directory "/reviews.org"))
+	   (file ,(concat org-roam-directory "/templates/weekly_review.org")))))
 
 
 
@@ -2890,14 +2896,15 @@ org-roam loading, as we use it's variables.
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src emacs-lisp :noweb yes :noweb-ref conf
-  ;; NOWEB ORG START
-  (message "pre org: %s" (shell-command-to-string "date"))
-  (with-eval-after-load 'org
-    (message "mid org: %s" (shell-command-to-string "date"))
-    <<org>>
-    )
-  (message "post org: %s" (shell-command-to-string "date"))
-  ;; NOWEB ORG END
+;; NOWEB ORG START
+(message "pre org: %s" (shell-command-to-string "date"))
+(with-eval-after-load 'org
+  (require 's)
+  (message "mid org: %s" (shell-command-to-string "date"))
+  <<org>>
+  )
+(message "post org: %s" (shell-command-to-string "date"))
+;; NOWEB ORG END
 #+end_src
 
 *** [[id:b33372ae-f731-4482-8e3a-0c5e986ac70a][roam]]
@@ -2907,6 +2914,11 @@ org-roam loading, as we use it's variables.
 :ROAM_EXCLUDE: t
 :END:
 
+**** ensure org-agenda-directory
+#+begin_src elisp :noweb-ref roam
+(unless (boundp 'org-agenda-directory)
+  (setq org-agenda-directory nil))
+#+end_src
 **** create node :: ensure id, and non-exclusion
 :PROPERTIES:
 :ID:       38d5adfe-f060-4d06-af94-eba7fbe74621
@@ -4981,60 +4993,58 @@ check with (org-redisplay-inline-images)
 :UPDATED:  [2022-08-01 Mon 17:38]
 :END:
 #+begin_src emacs-lisp :noweb yes :noweb-ref conf
-  (defun qz/tangle ()
-    (mapcar 
-     'org-babel-tangle-file
-     '("~/git/sys/rde/rde/examples/abcdw/configs.org"
-       "~/git/sys/rde/rde/examples/abcdw/emacs.org"))
-    (sleep-for .5))
+(defun qz/tangle ()
+  (mapcar 
+   'org-babel-tangle-file
+   '("~/git/sys/rde/rde/examples/abcdw/configs.org"
+     "~/git/sys/rde/rde/examples/abcdw/emacs.org"))
+  (sleep-for .5))
 
-  (defun qz/reload-config-home ()
-    (interactive)
-    (qz/tangle)
-    (async-shell-command
-     (concat
-      "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
-      "&& make ixy-home-reconfigure"
-      "&& echo 'bal-eggd-e' "
-      "| espeak --stdin ")))
+(defun qz/reload-config-home ()
+  (interactive)
+  (qz/tangle)
+  (async-shell-command
+   (concat
+    "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
+    "&& make ixy-home-reconfigure"
+    "&& echo 'bal-eggd-e' "
+    "| espeak --stdin ")))
 
-  (defun qz/reload-config-system ()
-    (interactive)
-    (qz/tangle)
-    (async-shell-command
-     (concat
-      "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
-      "&& sudo -E make ixy-system-reconfigure"
-      "&& echo 'system bal-eggd-e complete' | espeak --stdin")))
+(defun qz/reload-config-system ()
+  (interactive)
+  (qz/tangle)
+  (async-shell-command
+   (concat
+    "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
+    "&& sudo -E make ixy-system-reconfigure"
+    "&& echo 'system bal-eggd-e complete' | espeak --stdin")))
 
+(defun qz/reload-config-all ()
+  (interactive)
+  (qz/tangle)
+  (async-shell-command
+   (concat
+    "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
+    "&& ( cd ../../.. && make channels-update-lock && make channels-pull )"
+    "&& make ixy-home-reconfigure "
+    "&& sudo -E make ixy-system-reconfigure "
+    "&& echo 'system bal-eggd-e complete' | espeak --stdin")))
 
-  (defun qz/reload-config-both ()
-    (interactive)
-    (qz/tangle)
-    (async-shell-command
-     (concat
-      "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
-      "&& guix pull -C $HOME/git/sys/rde/stale/guix-related/guix/channels "
-      "&& make ixy-home-reconfigure "
-      "&& echo 'bal-eggd-e' | espeak --stdin "
-      "&& sudo -E make ixy-system-reconfigure "
-      "&& echo 'system bal-eggd-e complete' | espeak --stdin")))
+(defun qz/reload-config-emacs ()
+  (interactive)
+  (load-file "~/.config/emacs/init.el"))
 
-  (defun qz/reload-config-emacs ()
-    (interactive)
-    (load-file "~/.config/emacs/init.el"))
+(defun qz/reload-guix-pins ()
+  (interactive)
+  (async-shell-command
+   (concat "cd $HOME/git/sys/rde/ "
+	   "&& make channels-update-lock && make channels-pull")))
 
-  (defun qz/reload-guix-pins ()
-    (interactive)
-    (async-shell-command
-     (concat "cd $HOME/git/sys/rde/ "
-	     "&& make channels-update-lock && make channels-pull")))
-
-  (defun qz/guix-upgrade ()
-    (interactive)
-    (async-shell-command
-     (concat "cd $HOME/git/sys/rde"
-	     "&& make channels-update-lock && make channels-pull && guix upgrade && make")))
+(defun qz/guix-upgrade ()
+  (interactive)
+  (async-shell-command
+   (concat "cd $HOME/git/sys/rde"
+	   "&& make channels-update-lock && make channels-pull && guix upgrade && make")))
 #+end_src
 
 #+RESULTS:

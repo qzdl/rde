@@ -798,6 +798,7 @@
 =======
         ;;; ETC
          ("GDK_BACKEND" . "wayland") ;; ... for clipboarding emasc
+         ("DISABLE_RTKIT" . "1") ;; TODO [2022-08-03] pipewire broken
          ("PATH" . (string-join (list "$PATH"
                                       "$HOME/go/bin"
                                       "$HOME/.local/bin"
