@@ -158,17 +158,17 @@
     ;; Activate occur easily inside isearch
     
     (define-key isearch-mode-map (kbd "C-o")
-      (lambda () (interactive)
-        (let ((case-fold-search isearch-case-fold-search))
-          (occur (if isearch-regexp
-                     isearch-string
-                   (regexp-quote isearch-string))))))
+                (lambda () (interactive)
+                  (let ((case-fold-search isearch-case-fold-search))
+                    (occur (if isearch-regexp
+                               isearch-string
+                             (regexp-quote isearch-string))))))
     (define-key isearch-mode-map (kbd "M-o")
-      (lambda () (interactive)
-        (let ((case-fold-search isearch-case-fold-search))
-          (consult-line (if isearch-regexp
-                            isearch-string
-                          (regexp-quote isearch-string))))))
+                (lambda () (interactive)
+                  (let ((case-fold-search isearch-case-fold-search))
+                    (consult-line (if isearch-regexp
+                                      isearch-string
+                                    (regexp-quote isearch-string))))))
     (global-set-key (kbd "C-s") 'isearch-forward-regexp)
     (global-set-key (kbd "C-r") 'isearch-backward-regexp)
     (global-set-key (kbd "C-M-s") 'isearch-forward)
@@ -401,7 +401,7 @@
             (call-interactively 'indent-region))))
       
       (define-key org-mode-map
-        (kbd "C-c C-v C-\\") 'qz/org-babel-indent-block)
+                  (kbd "C-c C-v C-\\") 'qz/org-babel-indent-block)
       
       ;; NOTE: blocks default
       ;;(add-to-list 'org-ctrl-c-ctrl-c-hook 'qz/org-babel-indent-block)
@@ -425,6 +425,13 @@
                     "go to default opening mode -- see `org-startup-folded'"
                     (interactive)
                     (funcall-interactively 'org-global-cycle '(4))))
+      
+      (setq org-babel-default-header-args:sql
+            '((:engine . "postgres")
+              (:dbport . 5432) ;; NEVER connect to an external on 5433 by default
+              (:dbhost . "localhost")
+              ))
+      
       (setq org-babel-python-command "python3")
       (setq org-babel-default-header-args:jq
             '((:results . "output")

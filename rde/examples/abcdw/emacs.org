@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-08-03 Wed 13:16]
+:UPDATED:  [2022-08-15 Mon 11:38]
 :ID:       84700327-3a84-4d33-9918-dd06a809c28f
 :CREATED:  <2022-03-03 Thu 12:06>
 :END:
@@ -8,6 +8,7 @@
 #+auto-tangle: yes
 #+PROPERTY: header-args    :tangle-mode (identity #o444)
 #+PROPERTY: header-args:sh :tangle-mode (identity #o755)
+
 
 * tangling
 :PROPERTIES:
@@ -227,7 +228,7 @@ nil
       (call-interactively 'indent-region))))
 
 (define-key org-mode-map
-  (kbd "C-c C-v C-\\") 'qz/org-babel-indent-block)
+            (kbd "C-c C-v C-\\") 'qz/org-babel-indent-block)
 
 ;; NOTE: blocks default
 ;;(add-to-list 'org-ctrl-c-ctrl-c-hook 'qz/org-babel-indent-block)
@@ -560,11 +561,11 @@ I don't use this very much, as it curls my whole left hand up (qwerty troubles)
 ;; Activate occur easily inside isearch
 
 (define-key isearch-mode-map (kbd "C-o")
-  (lambda () (interactive)
-    (let ((case-fold-search isearch-case-fold-search))
-      (occur (if isearch-regexp
-                 isearch-string
-               (regexp-quote isearch-string))))))
+            (lambda () (interactive)
+              (let ((case-fold-search isearch-case-fold-search))
+                (occur (if isearch-regexp
+                           isearch-string
+                         (regexp-quote isearch-string))))))
 #+end_src
 
 #+RESULTS:
@@ -581,11 +582,11 @@ hmm, doesn't allow further input
 
 #+begin_src emacs-lisp :noweb-ref kbd
 (define-key isearch-mode-map (kbd "M-o")
-  (lambda () (interactive)
-    (let ((case-fold-search isearch-case-fold-search))
-      (consult-line (if isearch-regexp
-                        isearch-string
-                      (regexp-quote isearch-string))))))
+            (lambda () (interactive)
+              (let ((case-fold-search isearch-case-fold-search))
+                (consult-line (if isearch-regexp
+                                  isearch-string
+                                (regexp-quote isearch-string))))))
 #+end_src
 
 #+RESULTS:
@@ -1401,6 +1402,24 @@ CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
 #+end_src
 
 #+RESULTS:
+**** org-babel-default-header-args:sql
+:PROPERTIES:
+:ID:       51e144e6-da9d-4293-974d-9639cbee4173
+:CREATED:  [2022-08-11 Thu 11:01]
+:UPDATED:  [2022-08-11 Thu 12:04]
+:END:
+#+begin_src emacs-lisp :noweb-ref org
+
+(setq org-babel-default-header-args:sql
+      '((:engine . "postgres")
+        (:dbport . 5432) ;; NEVER connect to an external on 5433 by default
+        (:dbhost . "localhost")
+        ))
+
+#+end_src
+
+#+RESULTS:
+: ((:engine . postgres) (:dbport . 5432) (:dbhost . localhost))
 
 *** [[id:091ac573-6b34-4e0e-88b8-415785d5ae85][python]]
 :PROPERTIES:
@@ -2915,6 +2934,12 @@ org-roam-directory "/inbox.org"))
 :END:
 
 **** ensure org-agenda-directory
+:PROPERTIES:
+:ID:       49b913ee-235d-419e-862a-3e372946e181
+:CREATED:  [2022-08-08 Mon 12:11]
+:UPDATED:  [2022-08-08 Mon 12:11]
+:ROAM_EXCLUDE: t
+:END:
 #+begin_src elisp :noweb-ref roam
 (unless (boundp 'org-agenda-directory)
   (setq org-agenda-directory nil))

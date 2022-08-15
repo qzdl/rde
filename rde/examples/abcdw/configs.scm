@@ -208,6 +208,73 @@
     (car (lookup-inferior-packages inferior pkg-name)))
 
    (map get-inferior-pkg lst))
+
+(use-modules
+ (gnu packages)
+ (guix packages)
+ (guix gexp)
+ (guix utils)
+ (guix download)
+ (guix git-download)
+ (gnu packages emacs)
+ (gnu packages emacs-xyz)
+ (guix build-system emacs)
+ (guix build-system gnu)
+ ((guix licenses) #:prefix license:))
+
+(define-public emacs-sql-indent
+  (package
+   (name "emacs-sql-indent")
+   (version "1.6")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "https://elpa.gnu.org/packages/sql-indent-"
+           version
+           ".tar"))
+     (sha256
+      (base32 "000pimlg0k4mrv2wpqq8w8l51wpr1lzlaq6ai8iaximm2a92ap5b"))))
+   (build-system emacs-build-system)
+   (home-page "https://github.com/alex-hhh/emacs-sql-indent")
+   (synopsis "Support for indenting code in SQL files.")
+   (description
+    "`sqlind-minor-mode' is a minor mode that enables syntax-based indentation for
+`sql-mode' buffers: the TAB key indents the current line based on the SQL code
+on previous lines.  To setup syntax-based indentation for every SQL buffer, add
+`sqlind-minor-mode' to `sql-mode-hook'.  Indentation rules are flexible and can
+be customized to match your personal coding style.  For more information, see
+the \"sql-indent.org\" file.
+
+The package also defines align rules so that the `align' function works for SQL
+statements, see `sqlind-align-rules'.")
+   (license license:gpl3+)))
+
+(define-public emacs-ob-go
+  (package
+   (name "emacs-ob-go")
+   (version "20190201.214")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/pope/ob-go")
+           (commit "2067ed55f4c1d33a43cb3f6948609d240a8915f5")))
+     (sha256
+      (base32 "069w9dymiv97cvlpzabf193nyw174r38lz5j11x23x956ladvpbw"))))
+   (build-system emacs-build-system)
+   (propagated-inputs (list emacs-org))
+   (home-page "https://github.com/pope/ob-go")
+   (synopsis "Org-Babel support for evaluating go code.")
+   (description
+    "@code{ob-go} enables @{Org-Babel} support for evaluating @code{go}
+code. It was created based on the usage of @code{ob-C}. The @code{go}
+code is compiled and run via the @code{go run} command. If a
+@code{main} function isn’t present, by default the code is wrapped in
+a simple @{main func}. If @code{:package} option isn’t set, and no
+package is declared in the code, then the @code{main package} is
+declared.")
+   (license license:gpl3+)))
 (use-modules (gnu services)
              (gnu services databases)
              (gnu services desktop))
@@ -254,6 +321,256 @@
     ;; #:outproxy 'http://acetone.i2p:8888
     ;; ;; 'purokishi.i2p
     ;; #:less-anonymous? #t)
+    (feature-custom-services
+     #:feature-name-prefix 'ixy
+     ;; #:system-services
+     ;; (list
+     ;;  (simple-service 'nvidia-udev-rule udev-service-type
+     ;;                  (list nvidia-driver)))
+     #:home-services
+     (list
+      ;; TODO: Remove it once upstreamed.
+      ((@ (gnu services) simple-service)
+       'make-guix-aware-of-guix-home-subcomand
+       (@ (gnu home services) home-environment-variables-service-type)
+       `(
+             ;;; GRAPHICS
+         ;;("LIBGL_DRIVERS_PATH" . (string-join (list "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46/lib/gbm"
+         ;;                                           "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46/lib"
+         ;;                                           "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46") ":"))
+         ;;("LIBGL_DEBUG" . "verbose")
+         ;;("G_MESSAGES_DEBUG" . "1")
+    
+         ;;("MESA_LOADER_DRIVER_OVERRIDE" . "nvidia") ;; no nvidia_dri
+         ;;("MESA_LOADER_DRIVER_OVERRIDE" . "nvidia-drm") ;; no nvidia-drm_dri
+    
+         ;;("MESA_DEBUG" . "1")
+         ;;("MESA_LOG_FILE" . "/tmp/mesa.log")
+    
+         ;; glfw patched?
+         ;; https://github.com/bulletphysics/bullet3/issues/2595#issuecomment-588080665
+         ;; ("MESA_GL_VERSION_OVERRIDE" . "3.4")
+         ;;("MESA_GLSL_VERSION_OVERRIDE" . "340")
+    
+         ;;("GBM_BACKEND" . "nvidia-drm")
+            ;;;; guix build --no-grafts -f /home/samuel/git/sys/nonguix/nongnu/packages/nvidia.scm | wl-copy
+            ;;;; or
+            ;;;; guix build nvidia-driver | wl-copy
+         ;;,@(let ((driver-path "/gnu/store/cbj701jzy9dj6cv84ak0b151y9plb5sc-nvidia-driver-495.46"))
+         ;;    `(("GBM_BACKENDS_PATH" . ,(string-join (list driver-path
+         ;;                                                 (string-append driver-path "/lib")
+         ;;                                                 (string-append driver-path "/lib/gbm")
+         ;;                                                 "$PATH") ":"))
+         ;;      ("VK_ICD_FILENAMES" . ,(string-append driver-path "/share/vulkan/icd.d/nvidia_icd.json"))
+         ;;      ("LIBGL_DRIVERS_PATH" . ,(string-join (list driver-path
+         ;;                                                  (string-append driver-path "/lib")
+         ;;                                                  (string-append driver-path "/lib/gbm")
+         ;;                                                  "$PATH") ":"))
+         ;;      ;; https://github.com/NVIDIA/egl-wayland/issues/39#issuecomment-927288015
+         ;;      ;; undocumented
+         ;;      ;; might have an issue for containerised stuff, as set(uid|gid)
+         ;;      ("__EGL_EXTERNAL_PLATFORM_CONFIG_DIRS" . ,(string-append driver-path "/share/egl/egl_external_platform.d"))
+         ;;      ))
+         ;;
+         ;;("__GLX_VENDOR_LIBRARY_NAME" . "nvidia")
+         ;;("WLR_NO_HARDWARE_CURSORS" . "1")
+         ;;("WLR_DRM_NO_ATOMIC" . "1")
+         ;; echo "/dev/dri/card$(udevadm info -a -n /dev/dri/card1 | grep boot_vga | rev | cut -c 2)"
+         ;;("WLR_DRM_DEVICES" . "/dev/dri/card1")   ;; gpu only
+         ;;("WLR_DRM_DEVICES" . "/dev/dri/card1") ;; cpu only
+         ;;("WLR_DRM_DEVICES" . "/dev/dri/card0:/dev/dri/card1") ;; gpu:cpu
+    
+            ;;; GUILE
+         ("GUILE_LOAD_PATH" .
+          "$XDG_CONFIG_HOME/guix/current/share/guile/site/3.0\
+    :$GUILE_LOAD_PATH")
+         ("GUILE_LOAD_COMPILED_PATH" .
+          "$XDG_CONFIG_HOME/guix/current/lib/guile/3.0/site-ccache\
+    :$GUILE_LOAD_COMPILED_PATH")
+    
+            ;;; JS/BABEL
+         ;; javascript sucks, npm sucks
+         ;; https://github.com/npm/npm/issues/6675#issuecomment-250318382
+         ;; https://github.com/npm/cli/issues/1451
+         ;; https://github.com/pnpm/pnpm/issues/2574
+         ;; https://github.com/rxrc/zshrc/blob/3ca83703da5bd93b015747835a8a0164160c9b83/env.zsh#L33-L928
+         ("NPM_CONFIG_USERCONFIG" . "${XDG_CONFIG_HOME}/npm/config")
+         ("NPM_CONFIG_CACHE" . "${XDG_CACHE_HOME}/npm")
+         ("NPM_CONFIG_TMP" . "${XDG_RUNTIME_DIR}/npm")
+         ("YARN_CACHE_FOLDER" . "${YARN_CACHE_FOLDER:-$XDG_CACHE_HOME/yarn}")
+         ("NODE_REPL_HISTORY" . "${NODE_REPL_HISTORY:-$XDG_CACHE_HOME/node/repl_history}")
+         ("NVM_DIR" . "${NVM_DIR:-$XDG_DATA_HOME/nvm}")
+         ("BABEL_CACHE_PATH" . "${BABEL_CACHE_PATH:-$XDG_CACHE_HOME/babel/cache.json}")
+    
+            ;;; DEVELOPMENT
+         ("GUIX_CHECKOUT" . "$HOME/git/sys/guix")
+         ("GUIX_EXTRA_PROFILES" . "$HOME/.guix-extra-profiles")
+    
+            ;;; ETC
+         ("GDK_BACKEND" . "wayland") ;; ... for clipboarding emasc
+         ;;("DISABLE_RTKIT" . "1") ;; TODO [2022-08-03] pipewire broken ;; commented [2022-08-11 Thu]
+         ;; TODO fix this path issue
+         ("PATH" . (string-join (list "$PATH"
+                                      "$HOME/go/bin"
+                                      "$HOME/.local/bin"
+                                      "$HOME/.krew/bin"
+                                      "${XDG_CACHE_HOME}/npm/bin")
+                                ":"))))
+    
+      (simple-service
+       'my-zshrc home-zsh-service-type
+       (home-zsh-extension
+        (zshrc
+         (append %extra-zshrc
+                 (list #~(format #f "" ;;#$example-program
+                                 ))))))
+    
+      ;; ((@ (gnu services) simple-service)
+      ;;  'extend-shell-profile
+      ;;  (@ (gnu home-services shells) home-shell-profile-service-type)
+      ;;  (list
+      ;;   #~(string-append
+      ;;      "alias superls="
+      ;;      #$(file-append (@ (gnu packages base) coreutils) "/bin/ls"))))
+    
+          ;;; home jobs
+      ;;
+      ;; see logs at ~/.local/var/log/mcron.log
+      ;;   tail --follow ~/.local/var/log/mcron.log
+      ;;
+      ;; see job spec at [[info:mcron#Guile Syntax][mcron#Guile Syntax]]
+      ((@ (gnu services) simple-service)
+       'home-jobs (@ (gnu home services mcron) home-mcron-service-type)
+       (list
+             ;;; job: commit my notes
+        #~(job '(next-minute)
+               ;;'(next-minute '(15))
+               (lambda ()
+                 (call-with-output-file "/tmp/commit.log"
+                   (lambda (port)
+                     (chdir "./life")
+                     (display
+                      (with-exception-handler
+                          (lambda (exn)
+                            (format #f "exception: ~s\n" exn))
+                        (system*
+                         (format #f "~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
+                                 (file-append #$(@ (gnu packages version-control) git) "/bin/git")
+                                 (file-append #$(@ (gnu packages version-control) git) "/bin/git")
+                                 (file-append #$(@ (gnu packages base) coreutils) "/bin/date")))
+                        port)))))
+               "notes-commit"
+               #:user "samuel")
+             ;;; job: fulltext index the universe
+        #~(job '(next-hour)
+               (lambda ()
+                 (system*
+                  (file-append #$(@ (gnu packages search) recoll) "/bin/recollindex")))
+               "index: recollindex"
+               #:user "samuel")
+             ;;; job: generate tags
+        ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
+        #~(job '(next-hour '(12 0)) ;; every 12 hours
+               (lambda ()
+                 (system*
+                  (file-append #$(@ (gnu packages idutils) idutils) "/bin/mkid") "git"))
+               "index: idutils"
+               #:user "samuel"))))
+     #:system-services
+     (remove
+      unspecified?
+      (append
+       (if gaming?
+           (@@ (gnu services desktop) %desktop-services)
+           '())
+       (list
+            ;;; metrics
+        (service (@ (gnu services monitoring)
+                    prometheus-node-exporter-service-type))
+            ;;; cron jobs
+        (simple-service
+         'system-jobs (@ (gnu services mcron) mcron-service-type)
+         ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
+         (list
+          ;; update locate database
+          ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
+          #~(job '(next-hour '(12 0)) ;; every 12 hours
+                 (lambda ()
+                   (execl (string-append #$(@ (gnu packages base) findutils) "/bin/updatedb")
+                          "updatedb"
+                          "--prunepaths=/tmp /var/tmp /gnu/store"))
+                 "updatedb")))
+    
+            ;;; udev: nvidia
+        (when gaming?
+          (simple-service
+           'nvidia-udev-rule udev-service-type
+           (list nvidia-driver)))
+    
+            ;;; desktop manager: X11 gdm + nvidia
+        (when #f
+          (simple-service
+           'gdm-xorg-conf gdm-service-type
+           (gdm-configuration
+            (xorg-configuration
+             (xorg-configuration (keyboard-layout %thinkpad-layout)
+                                 (modules (append
+                                           (list nvidia-driver)
+                                           %default-xorg-modules))
+                                 (drivers (list "nvidia")))))))
+    
+            ;;; postgres: don't include if gaming
+        (unless gaming?
+          (service postgresql-service-type
+                   (postgresql-configuration
+                    (config-file
+                     (postgresql-config-file
+                      (hba-file
+                       (plain-file "pg_hba.conf"
+                                   "
+    local	all	all			trust
+    host	all	all	127.0.0.1/32    md5
+    host	all	all	0.0.0.0/0       md5
+    "
+                                   ))))
+                    (postgresql (@ (gnu packages databases) postgresql-10)))))
+    
+        ;; analytics ; timescaledb
+        (unless gaming?
+          (service postgresql-service-type
+                   (postgresql-configuration
+                    (port 5435)
+                    (extension-packages
+                     (list (@ (gnu packages databases) timescaledb)
+                           (@ (gnu packages geo) postgis)))
+                    (postgresql (@ (gnu packages databases) postgresql-14)))))
+    
+        (unless gaming?
+          (service postgresql-role-service-type
+                   (postgresql-role-configuration
+                    (roles (list (postgresql-role
+                                  (name "postgres")
+                                  (permissions '(superuser))
+                                  (create-database? #t))
+                                 (postgresql-role
+                                  (name "samuel")
+                                  (permissions '(superuser login))
+                                  (create-database? #t))
+                                 (postgresql-role
+                                  (name "newstore")
+                                  (permissions '(login))
+                                  (create-database? #t)))))))
+    
+            ;;; ssh
+        ;; TODO key up, remove password method
+        (service openssh-service-type
+                 (openssh-configuration
+                  (password-authentication? #t)
+                  ;; (authorised-keys
+                  ;;  `(("hww" ,(local-file "hww.pub"))
+                  ;;    ))
+                  ))
+        ))))
     (unless gaming? (feature-base-services))
     (unless gaming? (feature-desktop-services))
     (feature-backlight #:step 5)
@@ -326,13 +643,15 @@
        #:extra-config
        `(;;(include ,(local-file "./config/sway/config"))
          ;; TODO sway: toggle opacity for WINDOW
-         (,#~"output DP-2 res 5120x1440 bg ~/.cache/wallpaper.png fill")
+         (,#~"output eDP-1 bg ~/.cache/wallpaper.png fill")
          ;; TODO sway: wacom input rotation matrix
          (,#~"input \"*\" tool_mode \"*\" relative calibration_matrix 0.0 -1.0 1.0 1.0 0.0 0.0")
-         ;; danke demis https://github.com/minikN/guix/blob/ca15b5a5954d50fe75e2b03f21afc019e002022b/config.scm#L173
+         ;; danke demis ht - Sharing Indicatortps://github.com/minikN/guix/blob/ca15b5a5954d50fe75e2b03f21afc019e002022b/config.scm#L173
          (for_window "[app_id=\"pavucontrol\"]" floating enable, border pixel)
          (for_window "[app_id=\"pinentry-qt\"]" floating enable, border pixel)
+    
          (for_window "[title=\"Nightly - Sharing Indicator\"]" floating enable, border pixel)
+         (for_window "[title=\"FLOAT\"]" floating enable, border pixel)
     
          (bindsym $mod+Ctrl+o opacity set 1)
          (bindsym $mod+Ctrl+p opacity minus 0.1)
@@ -367,7 +686,7 @@
         (waybar-idle-inhibitor)
         ;; (waybar-temperature)
         ;; (waybar-sway-language)
-        ;; (waybar-volume #:intense? #f) ;; TODO qzdl
+        (waybar-volume) ;; TODO qzdl
         (waybar-battery #:intense? #f)
         (waybar-clock))))
     ;; FIXME swayidle: external monitor resuming bug (probably gpu issue)e
@@ -396,73 +715,76 @@
      #:extra-init-el
      (append
       (list #~"(define-key key-translation-map [?\\C-x] [?\\C-u])\n"
-    	#~"(define-key key-translation-map [?\\C-u] [?\\C-x])\n")
+            #~"(define-key key-translation-map [?\\C-u] [?\\C-x])\n")
       init-el)
      #:additional-elisp-packages
      ;; TODO if feature-emacs-PACKAGE exists, advise its use
      (append
       (list emacs-consult-dir
-    	emacs-consult-eglot
-    	;; TODO qzdl (4)
-    	;; emacs-consult-recoll
-    	;; emacs-sql-indent
-    	;; emacs-code-review
-    	;; emacs-ob-go
-    	)
-      (pkgs "emacs-elfeed"
-    	"emacs-calfw"
-    	"emacs-debbugs"
-    	"emacs-dimmer"
-    	"emacs-edit-server"
-    	"emacs-eglot"
-    	"emacs-ement"
-    	"emacs-eros"
-    	"emacs-ess"
-    	"emacs-explain-pause-mode"
-    	"emacs-forge"
-    	"emacs-ggtags"
-    	"emacs-gnuplot"
-    	"emacs-go-mode"
-    	"emacs-guix"
-    	"emacs-highlight-indent-guides"
-    	"emacs-hl-todo"
-    	"emacs-htmlize" ;; ement: - ox-export html: org src blocks
-    	"emacs-hyperbole"
-    	"emacs-jq-mode"
-    	"emacs-json-snatcher"
-    	"emacs-logview" ;; https://github.com/doublep/logview
-    	"emacs-lsp-mode"
-    	"emacs-lsp-ui"
-    	"emacs-ob-async"
-    	"emacs-org-download"
-    	"emacs-org-edit-latex"
-    	"emacs-org-fragtog"
-            "emacs-org-reveal"
-    	"emacs-org-super-agenda"
-    	"emacs-org-transclusion"
-    	"emacs-ox-hugo"
-    	"emacs-ox-pandoc"
-    	"emacs-paredit"
-    	"emacs-plantuml-mode"
-    	"emacs-protobuf-mode"
-    	"emacs-py-isort"
-    	"emacs-python-black"
-    	"emacs-repology"
-    	"emacs-restart-emacs"
-    	"emacs-slime"
-    	"emacs-slime-repl-ansi-color"
-    	"emacs-slime-volleyball"
-    	"emacs-string-inflection"
-    	"emacs-terraform-mode"
-    	"emacs-yaml-mode"
-    	"emacs-ytdl"
-    	;; TODO feature-emacs-lsp
-    	;;"emacs-artbollocks"
-    	;;"emacs-vlf" ;; TODO guix: package emacs-vlf
+            emacs-consult-eglot
     
-    	;; emacs-impostman
-    	;; "emacs-org-autotangle"
-    	)))
+            ;;; QZDL
+            emacs-sql-indent
+            emacs-ob-go
+            
+            ;; TODO qzdl (2)
+            ;; emacs-consult-recoll
+            ;; emacs-code-review
+            )
+      (pkgs "emacs-elfeed"
+            "emacs-calfw"
+            "emacs-debbugs"
+            "emacs-dimmer"
+            "emacs-edit-server"
+            "emacs-eglot"
+            "emacs-ement"
+            "emacs-eros"
+            "emacs-ess"
+            "emacs-explain-pause-mode"
+            "emacs-forge"
+            "emacs-ggtags"
+            "emacs-gnuplot"
+            "emacs-go-mode"
+            "emacs-guix"
+            "emacs-highlight-indent-guides"
+            "emacs-hl-todo"
+            "emacs-htmlize" ;; ement: - ox-export html: org src blocks
+            "emacs-hyperbole"
+            "emacs-jq-mode"
+            "emacs-json-snatcher"
+            "emacs-logview" ;; https://github.com/doublep/logview
+            "emacs-lsp-mode"
+            "emacs-lsp-ui"
+            "emacs-ob-async"
+            "emacs-org-download"
+            "emacs-org-edit-latex"
+            "emacs-org-fragtog"
+            "emacs-org-reveal"
+            "emacs-org-super-agenda"
+            "emacs-org-transclusion"
+            "emacs-ox-hugo"
+            "emacs-ox-pandoc"
+            "emacs-paredit"
+            "emacs-plantuml-mode"
+            "emacs-protobuf-mode"
+            "emacs-py-isort"
+            "emacs-python-black"
+            "emacs-repology"
+            "emacs-restart-emacs"
+            "emacs-slime"
+            "emacs-slime-repl-ansi-color"
+            "emacs-slime-volleyball"
+            "emacs-string-inflection"
+            "emacs-terraform-mode"
+            "emacs-yaml-mode"
+            "emacs-ytdl"
+            ;; TODO feature-emacs-lsp
+            ;;"emacs-artbollocks"
+            ;;"emacs-vlf" ;; TODO guix: package emacs-vlf
+    
+            ;; emacs-impostman
+            ;; "emacs-org-autotangle"
+            )))
     (feature-emacs-appearance
      #:dark? #t
      #:deuteranopia? #t)
@@ -577,9 +899,46 @@
       (publicshare "$HOME")
       (templates "$HOME")))
     ;;     ;; (feature-bluetooth #:auto-enable? #t) ;; TODO qzdl
+    (feature-base-packages
+     #:home-packages
+     (append
+      (pkgs
+       "figlet" ;; TODO: Move to emacs-artist-mode
+       "calibre"
+       "icecat" "nyxt"
+       "nss-certs"
+       "ungoogled-chromium-wayland" "ublock-origin-chromium"
+    
+       "utox" "qtox" "jami"
+    
+       "alsa-utils" "mpv" "youtube-dl" "imv" "vim"
+       "cozy" "pavucontrol"
+       "wev"
+       "obs" "obs-wlrobs"
+       "recutils" "binutils"
+       "fheroes2"
+       ;; TODO: Enable pipewire support to chromium by default
+       ;; chrome://flags/#enable-webrtc-pipewire-capturer
+       "ungoogled-chromium-wayland" "ublock-origin-chromium"
+       "nyxt"
+       ;;
+       "hicolor-icon-theme" "adwaita-icon-theme" "gnome-themes-standard"
+       "papirus-icon-theme" "arc-theme"
+       "thunar"
+       ;; "glib:bin"
+    
+       ;; TODO: Fix telega package!
+       "ffmpeg"
+    
+       "ripgrep" "curl" "make"
+       ))
+     )
+    
+    
     ;;; END; main
  )))
 
+<<<<<<< HEAD
     (feature-custom-services
      #:feature-name-prefix 'ixy
      ;; #:system-services
@@ -1325,6 +1684,294 @@ host	all	all	0.0.0.0/0       md5
 ;; TODO: Switch from UUIDs to partition labels For better
 ;; reproducibilty and easier setup.  Grub doesn't support luks2 yet.
 =======
+||||||| parent of a631134 (qz: configs)
+    (feature-custom-services
+     #:feature-name-prefix 'ixy
+     ;; #:system-services
+     ;; (list
+     ;;  (simple-service 'nvidia-udev-rule udev-service-type
+     ;;                  (list nvidia-driver)))
+     #:home-services
+     (list
+      ;; TODO: Remove it once upstreamed.
+      ((@ (gnu services) simple-service)
+       'make-guix-aware-of-guix-home-subcomand
+       (@ (gnu home services) home-environment-variables-service-type)
+       `(
+         ;;; GRAPHICS
+         ;;("LIBGL_DRIVERS_PATH" . (string-join (list "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46/lib/gbm"
+         ;;                                           "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46/lib"
+         ;;                                           "/gnu/store/bg8mrp0ply34c76xq1i8b4hgjyh6hi8k-nvidia-driver-495.46") ":"))
+         ;;("LIBGL_DEBUG" . "verbose")
+         ;;("G_MESSAGES_DEBUG" . "1")
+
+         ;;("MESA_LOADER_DRIVER_OVERRIDE" . "nvidia") ;; no nvidia_dri
+         ;;("MESA_LOADER_DRIVER_OVERRIDE" . "nvidia-drm") ;; no nvidia-drm_dri
+
+         ;;("MESA_DEBUG" . "1")
+         ;;("MESA_LOG_FILE" . "/tmp/mesa.log")
+
+         ;; glfw patched?
+         ;; https://github.com/bulletphysics/bullet3/issues/2595#issuecomment-588080665
+         ;; ("MESA_GL_VERSION_OVERRIDE" . "3.4")
+         ;;("MESA_GLSL_VERSION_OVERRIDE" . "340")
+
+         ;;("GBM_BACKEND" . "nvidia-drm")
+        ;;;; guix build --no-grafts -f /home/samuel/git/sys/nonguix/nongnu/packages/nvidia.scm | wl-copy
+        ;;;; or
+        ;;;; guix build nvidia-driver | wl-copy
+         ;;,@(let ((driver-path "/gnu/store/cbj701jzy9dj6cv84ak0b151y9plb5sc-nvidia-driver-495.46"))
+         ;;    `(("GBM_BACKENDS_PATH" . ,(string-join (list driver-path
+         ;;                                                 (string-append driver-path "/lib")
+         ;;                                                 (string-append driver-path "/lib/gbm")
+         ;;                                                 "$PATH") ":"))
+         ;;      ("VK_ICD_FILENAMES" . ,(string-append driver-path "/share/vulkan/icd.d/nvidia_icd.json"))
+         ;;      ("LIBGL_DRIVERS_PATH" . ,(string-join (list driver-path
+         ;;                                                  (string-append driver-path "/lib")
+         ;;                                                  (string-append driver-path "/lib/gbm")
+         ;;                                                  "$PATH") ":"))
+         ;;      ;; https://github.com/NVIDIA/egl-wayland/issues/39#issuecomment-927288015
+         ;;      ;; undocumented
+         ;;      ;; might have an issue for containerised stuff, as set(uid|gid)
+         ;;      ("__EGL_EXTERNAL_PLATFORM_CONFIG_DIRS" . ,(string-append driver-path "/share/egl/egl_external_platform.d"))
+         ;;      ))
+         ;;
+         ;;("__GLX_VENDOR_LIBRARY_NAME" . "nvidia")
+         ;;("WLR_NO_HARDWARE_CURSORS" . "1")
+         ;;("WLR_DRM_NO_ATOMIC" . "1")
+         ;; echo "/dev/dri/card$(udevadm info -a -n /dev/dri/card1 | grep boot_vga | rev | cut -c 2)"
+         ;;("WLR_DRM_DEVICES" . "/dev/dri/card1")   ;; gpu only
+         ;;("WLR_DRM_DEVICES" . "/dev/dri/card1") ;; cpu only
+         ;;("WLR_DRM_DEVICES" . "/dev/dri/card0:/dev/dri/card1") ;; gpu:cpu
+
+        ;;; GUILE
+         ("GUILE_LOAD_PATH" .
+          "$XDG_CONFIG_HOME/guix/current/share/guile/site/3.0\
+:$GUILE_LOAD_PATH")
+         ("GUILE_LOAD_COMPILED_PATH" .
+          "$XDG_CONFIG_HOME/guix/current/lib/guile/3.0/site-ccache\
+:$GUILE_LOAD_COMPILED_PATH")
+
+        ;;; JS/BABEL
+         ;; javascript sucks, npm sucks
+         ;; https://github.com/npm/npm/issues/6675#issuecomment-250318382
+         ;; https://github.com/npm/cli/issues/1451
+         ;; https://github.com/pnpm/pnpm/issues/2574
+         ;; https://github.com/rxrc/zshrc/blob/3ca83703da5bd93b015747835a8a0164160c9b83/env.zsh#L33-L928
+         ("NPM_CONFIG_USERCONFIG" . "${XDG_CONFIG_HOME}/npm/config")
+         ("NPM_CONFIG_CACHE" . "${XDG_CACHE_HOME}/npm")
+         ("NPM_CONFIG_TMP" . "${XDG_RUNTIME_DIR}/npm")
+         ("YARN_CACHE_FOLDER" . "${YARN_CACHE_FOLDER:-$XDG_CACHE_HOME/yarn}")
+         ("NODE_REPL_HISTORY" . "${NODE_REPL_HISTORY:-$XDG_CACHE_HOME/node/repl_history}")
+         ("NVM_DIR" . "${NVM_DIR:-$XDG_DATA_HOME/nvm}")
+         ("BABEL_CACHE_PATH" . "${BABEL_CACHE_PATH:-$XDG_CACHE_HOME/babel/cache.json}")
+
+        ;;; DEVELOPMENT
+         ("GUIX_CHECKOUT" . "$HOME/git/sys/guix")
+         ("GUIX_EXTRA_PROFILES" . "$HOME/.guix-extra-profiles")
+
+        ;;; ETC
+         ("GDK_BACKEND" . "wayland") ;; ... for clipboarding emasc
+         ("DISABLE_RTKIT" . "1") ;; TODO [2022-08-03] pipewire broken
+         ("PATH" . (string-join (list "$PATH"
+                                      "$HOME/go/bin"
+                                      "$HOME/.local/bin"
+                                      "$HOME/.krew/bin"
+                                      "${XDG_CACHE_HOME}/npm/bin")
+                                ":"))))
+
+      (simple-service
+       'my-zshrc home-zsh-service-type
+       (home-zsh-extension
+        (zshrc
+         (append %extra-zshrc
+                (list #~(format #f "" ;;#$example-program
+                               ))))))
+
+      ;; ((@ (gnu services) simple-service)
+      ;;  'extend-shell-profile
+      ;;  (@ (gnu home-services shells) home-shell-profile-service-type)
+      ;;  (list
+      ;;   #~(string-append
+      ;;      "alias superls="
+      ;;      #$(file-append (@ (gnu packages base) coreutils) "/bin/ls"))))
+
+      ;;; home jobs
+      ;;
+      ;; see logs at ~/.local/var/log/mcron.log
+      ;;   tail --follow ~/.local/var/log/mcron.logtail --follow ~/.local/var/log/mcron.log
+      ;;
+      ;; see job spec at [[info:mcron#Guile Syntax][mcron#Guile Syntax]]
+      ((@ (gnu services) simple-service)
+       'home-jobs (@ (gnu home services mcron) home-mcron-service-type)
+       (list
+         ;;; job: commit my notes
+        #~(job '(next-minute)
+               ;;'(next-minute '(15))
+               (lambda ()
+                 (call-with-output-file "/tmp/commit.log"
+                   (lambda (port)
+                     (chdir "./life")
+                     (display
+                      (with-exception-handler
+                          (lambda (exn)
+                            (format #f "exception: ~s\n" exn))
+                        (system*
+                         (format #f "~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
+                                 (file-append #$(@ (gnu packages version-control) git) "/bin/git")
+                                 (file-append #$(@ (gnu packages version-control) git) "/bin/git")
+                                 (file-append #$(@ (gnu packages base) coreutils) "/bin/date")))
+                        port)))))
+               "notes-commit"
+               #:user "samuel")
+         ;;; job: fulltext index the universe
+        #~(job '(next-hour)
+               (lambda ()
+                 (system*
+                  (file-append #$(@ (gnu packages search) recoll) "/bin/recollindex")))
+               "index: recollindex"
+               #:user "samuel")
+         ;;; job: generate tags
+        ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
+        #~(job '(next-hour '(12 0)) ;; every 12 hours
+               (lambda ()
+                 (system*
+                  (file-append #$(@ (gnu packages idutils) idutils) "/bin/mkid") "git"))
+               "index: idutils"
+               #:user "samuel"))))
+     #:system-services
+     (remove
+      unspecified?
+      (append
+       (if gaming?
+           (@@ (gnu services desktop) %desktop-services)
+           '())
+       (list
+        ;;; metrics
+        (service (@ (gnu services monitoring)
+                    prometheus-node-exporter-service-type))
+        ;;; cron jobs
+        (simple-service
+         'system-jobs (@ (gnu services mcron) mcron-service-type)
+         ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
+         (list
+          ;; update locate database
+          ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
+          #~(job '(next-hour '(12 0)) ;; every 12 hours
+                 (lambda ()
+                   (execl (string-append #$(@ (gnu packages base) findutils) "/bin/updatedb")
+                          "updatedb"
+                          "--prunepaths=/tmp /var/tmp /gnu/store"))
+                 "updatedb")))
+
+        ;;; udev: nvidia
+        (when gaming?
+          (simple-service
+           'nvidia-udev-rule udev-service-type
+           (list nvidia-driver)))
+
+        ;;; desktop manager: X11 gdm + nvidia
+        (when #f
+          (simple-service
+           'gdm-xorg-conf gdm-service-type
+           (gdm-configuration
+            (xorg-configuration
+             (xorg-configuration (keyboard-layout %thinkpad-layout)
+                                 (modules (append
+                                           (list nvidia-driver)
+                                           %default-xorg-modules))
+                                 (drivers (list "nvidia")))))))
+
+        ;;; postgres: don't include if gaming
+        (unless gaming?
+          (service postgresql-service-type
+                   (postgresql-configuration
+                    (config-file
+                     (postgresql-config-file
+                      (hba-file
+                       (plain-file "pg_hba.conf"
+                                   "
+local	all	all			trust
+host	all	all	127.0.0.1/32    md5
+host	all	all	0.0.0.0/0       md5
+"
+                                   ))))
+                    (postgresql (@ (gnu packages databases) postgresql-10)))))
+
+        ;; analytics ; timescaledb
+        (unless gaming?
+          (service postgresql-service-type
+                   (postgresql-configuration
+                    (port 5435)
+                    (extension-packages
+                     (list (@ (gnu packages databases) timescaledb)
+                           (@ (gnu packages geo) postgis)))
+                    (postgresql (@ (gnu packages databases) postgresql-14)))))
+
+        (unless gaming?
+          (service postgresql-role-service-type
+                   (postgresql-role-configuration
+                    (roles (list (postgresql-role
+                                  (name "postgres")
+                                  (permissions '(superuser))
+                                  (create-database? #t))
+                                 (postgresql-role
+                                  (name "samuel")
+                                  (permissions '(superuser login))
+                                  (create-database? #t))
+                                 (postgresql-role
+                                  (name "newstore")
+                                  (permissions '(login))
+                                  (create-database? #t)))))))
+
+        ;;; ssh
+        ;; TODO key up, remove password method
+        (service openssh-service-type
+                 (openssh-configuration
+                  (password-authentication? #t)
+                  ;; (authorised-keys
+                  ;;  `(("hww" ,(local-file "hww.pub"))
+                  ;;    ))
+                  ))
+        ))))
+(feature-base-packages
+ #:home-packages
+ (append
+  (pkgs
+   "figlet" ;; TODO: Move to emacs-artist-mode
+   "calibre"
+   "icecat" "nyxt"
+   "nss-certs"
+   "ungoogled-chromium-wayland" "ublock-origin-chromium"
+
+   "utox" "qtox" "jami"
+
+   "alsa-utils" "mpv" "youtube-dl" "imv" "vim"
+   "cozy" "pavucontrol"
+   "wev"
+   "obs" "obs-wlrobs"
+   "recutils" "binutils"
+   "fheroes2"
+   ;; TODO: Enable pipewire support to chromium by default
+   ;; chrome://flags/#enable-webrtc-pipewire-capturer
+   "ungoogled-chromium-wayland" "ublock-origin-chromium"
+   "nyxt"
+   ;;
+   "hicolor-icon-theme" "adwaita-icon-theme" "gnome-themes-standard"
+   "papirus-icon-theme" "arc-theme"
+   "thunar"
+   ;; "glib:bin"
+
+   ;; TODO: Fix telega package!
+   "ffmpeg"
+
+   "ripgrep" "curl" "make"
+   ))
+ )
+
+
+=======
+>>>>>>> a631134 (qz: configs)
 ;;(map pretty-print %main-features)
 (pretty-print "post-%main-features")
 >>>>>>> 0376ffb (qz: at least it confs)
