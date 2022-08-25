@@ -391,7 +391,7 @@ make: *** [Makefile:14: %-home-reconfigure] Error 1
 :PROPERTIES:
 :ID:       ad67e350-c601-49f4-ba21-ca6486ed96fb
 :CREATED:  [2022-07-29 Fri 17:48]
-:UPDATED:  [2022-07-29 Fri 17:48]
+:UPDATED:  [2022-08-22 Mon 17:34]
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src scheme
@@ -400,7 +400,10 @@ make: *** [Makefile:14: %-home-reconfigure] Error 1
 ;; PipeWire/iwd:
 ;; https://github.com/J-Lentz/iwgtk
 ;; https://github.com/krevedkokun/guix-config/blob/master/system/yggdrasil.scm
+;; https://github.com/werman/noise-suppression-for-voice#pipewire
 #+end_src
+
+#+RESULTS:
 
 ** packages
 :PROPERTIES:
@@ -1730,7 +1733,6 @@ host	all	all	0.0.0.0/0       md5
    "figlet" ;; TODO: Move to emacs-artist-mode
    "calibre"
    "icecat" "nyxt"
-   "nss-certs"
    "ungoogled-chromium-wayland" "ublock-origin-chromium"
 
    "utox" "qtox" "jami"
@@ -2219,9 +2221,13 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       bd9f9bf3-e5e9-4f43-adc6-a30b64378c66
 :CREATED:  [2022-08-15 Mon 12:01]
-:UPDATED:  [2022-08-15 Mon 12:02]
+:UPDATED:  [2022-08-15 Mon 12:18]
 :ROAM_EXCLUDE: t
 :END:
 :LOGBOOK:
-CLOCK: [2022-08-15 Mon 12:02]
+CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
 :END:
+
+- made commit 7e655baad683b49c53a2683012576b7fb35dafa1
+   
+  

@@ -188,6 +188,7 @@
 ;; PipeWire/iwd:
 ;; https://github.com/J-Lentz/iwgtk
 ;; https://github.com/krevedkokun/guix-config/blob/master/system/yggdrasil.scm
+;; https://github.com/werman/noise-suppression-for-voice#pipewire
 
 ;;; Generic features should be applicable for various hosts/users/etc
 
@@ -906,7 +907,6 @@ declared.")
        "figlet" ;; TODO: Move to emacs-artist-mode
        "calibre"
        "icecat" "nyxt"
-       "nss-certs"
        "ungoogled-chromium-wayland" "ublock-origin-chromium"
     
        "utox" "qtox" "jami"

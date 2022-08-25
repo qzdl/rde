@@ -424,7 +424,10 @@
                   (lambda ()
                     "go to default opening mode -- see `org-startup-folded'"
                     (interactive)
-                    (funcall-interactively 'org-global-cycle '(4))))
+                    (let ((org-startup-folded (if current-prefix-arg
+                                                  t
+                                                org-startup-folded)))
+                      (funcall-interactively 'org-global-cycle '(4)))))
       
       (setq org-babel-default-header-args:sql
             '((:engine . "postgres")
@@ -688,7 +691,7 @@
       
       ;; NOWEB AGENDA END
       
-      	      ;(require 'ob-async)
+      ;(require 'ob-async)
       (setq org-confirm-babel-evaluate nil)
       (setq org-structure-template-alist
             '(;; yp
@@ -872,6 +875,12 @@
           (qz/to-shell command)))
       
       (define-key org-babel-map (kbd "C-<return>") 'qz/shell-current-src-block)
+      (defun qz/org-kill-expanded-src-block ()
+        (interactive)
+        (kill-new (org-babel-expand-src-block))
+        (message "copied: %s" (s-truncate 25 (car kill-ring))))
+      
+      (define-key org-babel-map (kbd "M-w") 'qz/org-kill-expanded-src-block)
       (defun qz/org-babel--list->rows (name lst)
         (cons (list name)
       	(cons 'hline (mapcar 'list lst))))
@@ -879,6 +888,20 @@
         (interactive)
         "Capture a task in agenda mode."
         (org-capture nil "i"))
+      (define-key org-mode-map (kbd "C-<return>")
+                  'org-insert-heading-respect-content)
+      (define-key org-mode-map (kbd "C-S-<return>")
+                  'org-insert-heading)
+      
+      (defun org-insert-subheading-respect-content (arg)
+        (interactive "P")
+        (let ((org-insert-heading-respect-content t))
+          (org-insert-subheading arg)))
+      
+      (define-key org-mode-map (kbd "C-M-<return>")
+                  'org-insert-subheading-respect-content)
+      (define-key org-mode-map (kbd "C-M-S-<return>")
+                  'org-insert-subheading)
       (with-eval-after-load 'org-roam
         ;; NOWEB ROAM START
         (message "roam start")
@@ -1009,6 +1032,11 @@
         			    ,qz/org-roam-capture-head)
         	 :immediate-finish t)
         	))
+        (define-key global-map (kbd "C-c n j") 'org-roam-dailies-capture-today)
+        (define-key global-map (kbd "C-c n J") 'org-roam-dailies-goto-today)
+        
+        (define-key global-map (kbd "C-c n C-r") 'org-roam-refile)
+        (define-key global-map (kbd "C-c n r") 'org-roam-node-random)
         (setq org-roam-dailies-capture-templates
               `(("d" "default" entry
         	 ,(s-join "\n" '("* [%<%H:%M>] %?"
