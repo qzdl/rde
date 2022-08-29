@@ -173,6 +173,18 @@
     (global-set-key (kbd "C-r") 'isearch-backward-regexp)
     (global-set-key (kbd "C-M-s") 'isearch-forward)
     (global-set-key (kbd "C-M-r") 'isearch-backward)
+    (define-key global-map (kbd "C-c n j") 'org-roam-dailies-capture-today)
+    (define-key global-map (kbd "C-c n J") 'org-roam-dailies-goto-today)
+    
+    (define-key global-map (kbd "C-c n C-r") 'org-roam-refile)
+    (define-key global-map (kbd "C-c n r") 'org-roam-node-random)
+    
+    (defun qz/consult-notes ()
+      (interactive)
+      (let ((default-directory org-roam-directory))
+        (call-interactively 'consult-ripgrep)))
+    
+    (define-key global-map (kbd "C-c n s") 'qz/consult-notes)
     ;; NOWEB KBD END
     ;; NOWEB CONSULT START
     (with-eval-after-load 'consult
@@ -480,20 +492,20 @@
            'car
            (org-roam-db-query
             '(:select :distinct file
-        	      :from tags
-        	      :inner :join nodes
-        	      :on (= tags:node_id nodes:id)
-        	      :where (= tags:tag "project")))))
+                      :from tags
+                      :inner :join nodes
+                      :on (= tags:node_id nodes:id)
+                      :where (= tags:tag "project")))))
         (defun qz/org-roam-private-files ()
           "Return a list of note files containing tag =private="
           (seq-map
            'car
            (org-roam-db-query
             [:select :distinct file
-        	     :from tags
-        	     :inner :join nodes
-        	     :on (= tags:node_id nodes:id)
-        	     :where (= tags:tag "private")])))
+                     :from tags
+                     :inner :join nodes
+                     :on (= tags:node_id nodes:id)
+                     :where (= tags:tag "private")])))
         ;; current (default) sorting strat
         '((agenda habit-down time-up priority-down category-keep)
           (todo priority-down category-keep)
@@ -511,7 +523,7 @@
         - see `org-agenda-sorting-strategy' for sort permutations."
           (interactive)
           (let* ((org-agenda-files (qz/agenda-daily-files-f))
-        	 (org-agenda-sorting-strategy '(timestamp-down category-down)))
+                 (org-agenda-sorting-strategy '(timestamp-down category-down)))
             (org-todo-list)))
         
         (define-key global-map (kbd "C-c n t") 'qz/agenda-todo-dailies)
@@ -530,47 +542,47 @@
          `("g" "GTD"
            ((agenda "" ((org-agenda-span 'day) (org-deadline-warning-days 60)))
             (tags-todo "now"
-        	       ((org-agenda-overriding-header "\nnow\n")))
+                       ((org-agenda-overriding-header "\nnow\n")))
             (tags-todo "wip"
-        	       ((org-agenda-overriding-header "\nwip\n")))
+                       ((org-agenda-overriding-header "\nwip\n")))
             (todo "TODO"
-        	  ((org-agenda-overriding-header "\nto process\n")
-        	   (org-agenda-files '(,(format "%s/%s" org-roam-directory "inbox.org")))))
+                  ((org-agenda-overriding-header "\nto process\n")
+                   (org-agenda-files '(,(format "%s/%s" org-roam-directory "inbox.org")))))
             (todo "TODO"
-        	  ((org-agenda-overriding-header "\ndaily inbox\n")
-        	   (org-agenda-files qz/agenda-daily-files)))
+                  ((org-agenda-overriding-header "\ndaily inbox\n")
+                   (org-agenda-files qz/agenda-daily-files)))
             (todo "TODO"
-        	  ((org-agenda-overriding-header "\nemails\n")
-        	   (org-agenda-files '(,(format "%s/%s" org-roam-directory "emails.org")))))
+                  ((org-agenda-overriding-header "\nemails\n")
+                   (org-agenda-files '(,(format "%s/%s" org-roam-directory "emails.org")))))
             (todo "TODO"
-        	  ((org-agenda-overriding-header "\none-off Tasks\n")
-        	   (org-agenda-files '(,(format "%s/%s" org-roam-directory "next.org")))))
+                  ((org-agenda-overriding-header "\none-off Tasks\n")
+                   (org-agenda-files '(,(format "%s/%s" org-roam-directory "next.org")))))
             (todo "TODO"
-        	  ((org-agenda-overriding-header "\nto yak shave\n")
-        	   (org-agenda-files '(,(format "%s/%s" org-roam-directory "emacs.org"))))))))
+                  ((org-agenda-overriding-header "\nto yak shave\n")
+                   (org-agenda-files '(,(format "%s/%s" org-roam-directory "emacs.org"))))))))
         (add-to-list
          'org-agenda-custom-commands
          `("c" "create"
            ((agenda "" ((org-agenda-span 'day) (org-deadline-warning-days 60)))
             (tags-todo "diy+create+do+buy+make+wip"
-        	       ((org-agenda-overriding-header "wip")))
+                       ((org-agenda-overriding-header "wip")))
             (tags-todo "diy+create+do"
-        	       ((org-agenda-overriding-header "create")))
+                       ((org-agenda-overriding-header "create")))
             (tags-todo "buy"
-        	       ((org-agenda-overriding-header "buy")))
+                       ((org-agenda-overriding-header "buy")))
             (tags-todo "make"
-        	       ((org-agenda-overriding-header "make"))))))
+                       ((org-agenda-overriding-header "make"))))))
         (add-to-list
          'org-agenda-custom-commands
          `("w" "work"
            ((tags-todo "{work}+wip"
-        	       ((org-agenda-overriding-header "wip")
-        		(org-tags-match-list-sublevels nil) ;; show subheadings!!!! inherited!!!!
-        		;; (org-agenda-hide-tags-regexp
-        		;;  (concat org-agenda-hide-tags-regexp "\\|work"))
-        		))
+                       ((org-agenda-overriding-header "wip")
+                        (org-tags-match-list-sublevels nil) ;; show subheadings!!!! inherited!!!!
+                        ;; (org-agenda-hide-tags-regexp
+                        ;;  (concat org-agenda-hide-tags-regexp "\\|work"))
+                        ))
             (tags-todo "{work}"
-        	       ((org-agenda-overriding-header "work")))
+                       ((org-agenda-overriding-header "work")))
             )))
         
         ;;(pp org-agenda-custom-commands)
@@ -588,13 +600,13 @@
           (let* ((len (or len 25)))
             (->>
              (if buffer-file-name
-        	 (file-name-sans-extension (file-name-nondirectory buffer-file-name))
+                 (file-name-sans-extension (file-name-nondirectory buffer-file-name))
                "")
              (replace-regexp-in-string "private-" "")
              (replace-regexp-in-string
               ;; datetime from file, could do "[0-9]\\{6\\}T[0-9]\\{6\\}Z?-"
               (concat "[0-9][0-9][0-9][0-9]" "[0-9][0-9]" "[0-9][0-9]"
-        	      "T" "[0-9][0-9]" "[0-9][0-9]" "[0-9][0-9]" "Z-")
+                      "T" "[0-9][0-9]" "[0-9][0-9]" "[0-9][0-9]" "Z-")
               "")
              (s-pad-right len " ")
              (s-truncate len))))
@@ -603,10 +615,10 @@
         (let* ((agenda "  %(qz/org-category)%-12t% s")
                (other "%i%(qz/org-category 12)%l"))
           (setq org-agenda-prefix-format (list (cons 'agenda agenda)
-        				       (cons 'todo other)
-        				       (cons 'todo other)
-        				       (cons 'todo other)
-        				       (cons 'search other))))
+                                               (cons 'todo other)
+                                               (cons 'todo other)
+                                               (cons 'todo other)
+                                               (cons 'search other))))
         
         (defun vulpea-agenda-category (&optional len)
           "Get category of item at point for agenda.
@@ -624,40 +636,40 @@
         Usage example:
         
           (setq org-agenda-prefix-format
-        	'((agenda . \" Emacs Configuration %?-12t %12s\")))
+                '((agenda . \" Emacs Configuration %?-12t %12s\")))
         
         Refer to `org-agenda-prefix-format' for more information."
           (let* ((file-name (when buffer-file-name
-        		      (file-name-sans-extension
-        		       (file-name-nondirectory buffer-file-name))))
-        	 (title (qz/node-title))
-        	 (category (org-get-category))
-        	 (result
-        	  (or (if (and title
-        		       (string-equal category file-name))
-        		  title
-        		category)
-        	      "")))
+                              (file-name-sans-extension
+                               (file-name-nondirectory buffer-file-name))))
+                 (title (qz/node-title))
+                 (category (org-get-category))
+                 (result
+                  (or (if (and title
+                               (string-equal category file-name))
+                          title
+                        category)
+                      "")))
             (if (numberp len)
-        	(s-truncate len (s-pad-right len " " result))
+                (s-truncate len (s-pad-right len " " result))
               result)))
         (org-no-warnings (defvar date))
         (defun qz/org-lunar-phases ()
           "Show lunar phase in Agenda buffer."
           (require 'lunar)
           (let* ((phase-list (lunar-phase-list (nth 0 date)
-        				       (nth 2 date)))
-        	 (phase (cl-find-if (lambda (phase)
-        			      (equal (car phase) date))
-        			    phase-list)))
+                                               (nth 2 date)))
+                 (phase (cl-find-if (lambda (phase)
+                                      (equal (car phase) date))
+                                    phase-list)))
             (when phase
               (setq ret (concat (lunar-phase-name (nth 2 phase)))))))
         ;; 🌑🌒🌓🌔🌕🌖🌗🌘🌙🌚🌛🌜
         (setq lunar-phase-names
               '("🌚 new moon" ; unicode symbol : 🌑 use full circle as fallback
-        	"🌛 first quarter moon"
-        	"🌝 full moon" ; unicode symbol: 🌕 use empty circle as fallback
-        	"🌜 last quarter moon"))
+                "🌛 first quarter moon"
+                "🌝 full moon" ; unicode symbol: 🌕 use empty circle as fallback
+                "🌜 last quarter moon"))
         (setq calendar-latitude 52.5)  ; imprecise
         (setq calendar-longitude 13.4)
         (setq calendar-location-name "berlin")
@@ -672,8 +684,8 @@
             (when (car l)
               (concat
                (if (string= entry "")
-        	   "🌄 sunrise"
-        	 (format entry (eval calendar-location-name))) " "
+                   "🌄 sunrise"
+                 (format entry (eval calendar-location-name))) " "
                (solar-time-string (caar l) nil)))))
         
         (defun qz/diary-sunset ()
@@ -684,8 +696,8 @@
             (when (cadr l)
               (concat
                (if (string= entry "")
-        	   "🌅 sunset"
-        	 (format entry (eval calendar-location-name))) " "
+                   "🌅 sunset"
+                 (format entry (eval calendar-location-name))) " "
                (solar-time-string (caadr l) nil)))))
         )
       
@@ -695,20 +707,20 @@
       (setq org-confirm-babel-evaluate nil)
       (setq org-structure-template-alist
             '(;; yp
-      	("d"  . "definition")
-      	("ee" . "example")
-      	("es" . "src es")
-      	("el" . "src emacs-lisp")
-      	("q"  . "quote")
-      	("sb" . "src shell")
-      	("se" . "src emacs-lisp")
-      	("sl" . "src scheme")
-      	("sp" . "src sql :engine postgres")
-      	("sr" . "src R")
-      	("ss" . "src")
-      	("jp" . "src jupyter-python")
-      	("jr" . "src jupyter-R")
-      	("r"  . "src restclient")))
+              ("d"  . "definition")
+              ("ee" . "example")
+              ("es" . "src es")
+              ("el" . "src emacs-lisp")
+              ("q"  . "quote")
+              ("sb" . "src shell")
+              ("se" . "src emacs-lisp")
+              ("sl" . "src scheme")
+              ("sp" . "src sql :engine postgres")
+              ("sr" . "src R")
+              ("ss" . "src")
+              ("jp" . "src jupyter-python")
+              ("jr" . "src jupyter-R")
+              ("r"  . "src restclient")))
       (org-babel-do-load-languages
        'org-babel-load-languages
        '((emacs-lisp . t)
@@ -737,26 +749,26 @@
         (interactive)
         (message "prefix: %s" (list current-prefix-arg prefix-arg lob))
         (let ((lob (or lob
-      		 (intern (completing-read
-      			  "lob: " (mapcar 'car org-babel-library-of-babel))))))
+                       (intern (completing-read
+                                "lob: " (mapcar 'car org-babel-library-of-babel))))))
           (with-current-buffer (current-buffer)
             (end-of-line)
             (newline)
             (insert (format "#+name: call-%s\n#+call: %s(%s)"
-      		      lob lob (or (and current-prefix-arg
-      				       "(org-table-get-constant \"bonk\")")
-      				  "")))
+                            lob lob (or (and current-prefix-arg
+                                             "(org-table-get-constant \"bonk\")")
+                                        "")))
       
             (when-let
-      	  ((args (remove
-      		  nil (cl-loop for a in (assoc lob org-babel-library-of-babel)
-      			       append
-      			       (when (listp a)
-      				 (cl-loop for b in a
-      					  collect
-      					  (when (eq :var (car b)) (cdr b))))))))
-      	(message "%s" args)
-      	(insert (format "(%s)" (s-join ", " args)))))))
+                ((args (remove
+                        nil (cl-loop for a in (assoc lob org-babel-library-of-babel)
+                                     append
+                                     (when (listp a)
+                                       (cl-loop for b in a
+                                                collect
+                                                (when (eq :var (car b)) (cdr b))))))))
+              (message "%s" args)
+              (insert (format "(%s)" (s-join ", " args)))))))
       
       ;;(qz/org-babel-choose-block 'newstore-get-order-by-type)
       (defun qz/lob-get-named-src-block-body (name)
@@ -764,8 +776,8 @@
             (file . pt) (qz/lob-get-named-src-block name)
           (with-current-buffer (find-file-noselect file)
             (save-excursion
-      	(goto-char pt)
-      	(org-babel-expand-src-block)))))
+              (goto-char pt)
+              (org-babel-expand-src-block)))))
       
       ;;(apply 'format "hey %s %s %s" (list 1 2 4))
       
@@ -778,14 +790,14 @@
         (cl-block named    ; thank u cltl, thank u 1980s, thank u guy steele
           (save-excursion  ; check current-buffer
             (when (not (org-babel-goto-named-src-block name))
-      	(cl-return-from named (cons (buffer-file-name) (point)))))
+              (cl-return-from named (cons (buffer-file-name) (point)))))
           (mapcar (lambda (f)
-      	      (with-current-buffer (find-file-noselect f)
-      		(save-excursion
-      		  ;; it's odd that nil means "i found it"
-      		  (when (not (org-babel-goto-named-src-block name))
-      		    (cl-return-from named (cons f (point)))))))
-      	    (remove nil qz/org-babel-lob-ingest-files))))
+                    (with-current-buffer (find-file-noselect f)
+                      (save-excursion
+                        ;; it's odd that nil means "i found it"
+                        (when (not (org-babel-goto-named-src-block name))
+                          (cl-return-from named (cons f (point)))))))
+                  (remove nil qz/org-babel-lob-ingest-files))))
       
       (defun qz/lob-goto-named-src-block (name)
         (interactive
@@ -800,19 +812,19 @@
         (interactive)
         (when-let ((name (or name (thing-at-point 'symbol))))
           (cl-destructuring-bind
-      	(file . pt) (qz/lob-get-named-src-block name)
+              (file . pt) (qz/lob-get-named-src-block name)
             (save-excursion
-      	(with-current-buffer (find-file-noselect file)
-      	  (goto-char pt)
-      	  (next-line)
-      	  (let ((expanded (org-babel-expand-src-block)))
-      	    (message "expanded: %s" expanded)
-      	    (with-temp-buffer ;;(get-buffer-create "*restclient*") ;;TODO replace w temp
-      	      (restclient-mode)
-      	      (insert expanded)
-      	      (goto-char (point-min))
-      	      (restclient-jump-next)
-      	      (restclient-copy-curl-command))))))))
+              (with-current-buffer (find-file-noselect file)
+                (goto-char pt)
+                (next-line)
+                (let ((expanded (org-babel-expand-src-block)))
+                  (message "expanded: %s" expanded)
+                  (with-temp-buffer ;;(get-buffer-create "*restclient*") ;;TODO replace w temp
+                    (restclient-mode)
+                    (insert expanded)
+                    (goto-char (point-min))
+                    (restclient-jump-next)
+                    (restclient-copy-curl-command))))))))
       (define-key org-babel-map (kbd "M-l") 'qz/org-babel-choose-block)
       (define-key org-babel-map (kbd "M-l") 'qz/org-babel-choose-block)
       (define-key org-babel-map (kbd "M-g") 'qz/lob-goto-named-src-block)
@@ -820,30 +832,30 @@
         "exec from the top of a tree"
         (interactive)
         (let* ((hi-lock-auto-select-face t)
-      	 (write-constants (equal '(4) current-prefix-arg))
-      	 ;; above is 100x better when you patch `hi-lock-face-symbol-at-point'
-      	 ;; with `(or (and hi-lock-auto-select-face (hi-lock-read-face-name)) 'hi-yellow)'
-      	 (col '()))
+               (write-constants (equal '(4) current-prefix-arg))
+               ;; above is 100x better when you patch `hi-lock-face-symbol-at-point'
+               ;; with `(or (and hi-lock-auto-select-face (hi-lock-read-face-name)) 'hi-yellow)'
+               (col '()))
           (save-mark-and-excursion
             (org-map-tree
              (lambda ()
-      	 (when-let* ((s (org-get-heading))
-      		     (s (org-no-properties s))
-      		     (i (string-match "::" s))
-      		     (k (substring s 0 (- i 1)))
-      		     (v (substring s (+ 3 i))))
-      	   (message "key: %s" k)
-      	   (message "value: %s" v)
-      	   (setq col (cons (format "%s=%s" k v) col))
-      	   (funcall-interactively 'highlight-phrase v)
-      	   (message "applied highlight for '%s'" v)
-      	   )))
+               (when-let* ((s (org-get-heading))
+                           (s (org-no-properties s))
+                           (i (string-match "::" s))
+                           (k (substring s 0 (- i 1)))
+                           (v (substring s (+ 3 i))))
+                 (message "key: %s" k)
+                 (message "value: %s" v)
+                 (setq col (cons (format "%s=%s" k v) col))
+                 (funcall-interactively 'highlight-phrase v)
+                 (message "applied highlight for '%s'" v)
+                 )))
             (when write-constants
-      	(org-back-to-heading)
-      	(next-line)
-      	(newline)
-      	(previous-line)
-      	(insert (format "#+constants: %s" (s-join " " (reverse col))))))
+              (org-back-to-heading)
+              (next-line)
+              (newline)
+              (previous-line)
+              (insert (format "#+constants: %s" (s-join " " (reverse col))))))
           (message "col: %s" col)
           col))
       
@@ -863,11 +875,11 @@
         (s-split
          "[\n]"
          (kill-new (nth 6 (car ;; lspec
-      		     (cdr (car
-      			   (save-excursion
-      			     (when-let ((head (org-babel-where-is-src-block-head)))
-      			       (goto-char head))
-      			     (org-babel-tangle-single-block 1 t)))))))))
+                           (cdr (car
+                                 (save-excursion
+                                   (when-let ((head (org-babel-where-is-src-block-head)))
+                                     (goto-char head))
+                                   (org-babel-tangle-single-block 1 t)))))))))
       
       (defun qz/shell-current-src-block ()
         (interactive)
@@ -883,7 +895,7 @@
       (define-key org-babel-map (kbd "M-w") 'qz/org-kill-expanded-src-block)
       (defun qz/org-babel--list->rows (name lst)
         (cons (list name)
-      	(cons 'hline (mapcar 'list lst))))
+              (cons 'hline (mapcar 'list lst))))
       (defun qz/org-inbox-capture ()
         (interactive)
         "Capture a task in agenda mode."
@@ -914,77 +926,77 @@
               (qz/agenda-daily-files-f . ,(length (qz/agenda-daily-files-f)))))))
         (defun qz/inspect-agenda-updates ()
           (mapcar (lambda (s) `(,s . (,(progn (funcall s)
-        				      (qz/inspect-agenda-files)))))
-        	  '(qz/agenda-files-update qz/agenda-files-update-clock)))
+                                              (qz/inspect-agenda-files)))))
+                  '(qz/agenda-files-update qz/agenda-files-update-clock)))
         (setq qz/org-agenda-files
               (mapcar (lambda (f) (expand-file-name (format "%s/%s" org-roam-directory f)))
-        	      '("calendar-home.org" "calendar-work.org" "schedule.org")))
+                      '("calendar-home.org" "calendar-work.org" "schedule.org")))
         (defvar qz/org-babel-lob-ingest-files
           (append (mapcar (lambda (s)
-        		    (when-let ((n (org-roam-node-from-title-or-alias s)))
-        		      (org-roam-node-file n)))
-        		  '("NewStore"
-        		    "kubernetes"
-        		    "postgres"
-        		    "es-mode"
-        		    "elisp"
-        		    "plantuml"
-        		    "GNU Guix"
-        		    ))
-        	  ;; .. other files
-        	  nil
-        	  ;; ..
-        	  )
+                            (when-let ((n (org-roam-node-from-title-or-alias s)))
+                              (org-roam-node-file n)))
+                          '("NewStore"
+                            "kubernetes"
+                            "postgres"
+                            "es-mode"
+                            "elisp"
+                            "plantuml"
+                            "GNU Guix"
+                            ))
+                  ;; .. other files
+                  nil
+                  ;; ..
+                  )
           "files from which named `src' blocks should be loaded")
         
         (defun qz/org-babel-do-lob-ingest-files (&optional files)
           (interactive)
           (let ((r (mapcar (lambda (f) (cons (org-babel-lob-ingest f) f))
-        		   (append qz/org-babel-lob-ingest-files files))))
+                           (append qz/org-babel-lob-ingest-files files))))
             (message "%s" (pp r))
             r))
         
         (cons->table
          (qz/org-babel-do-lob-ingest-files))
-          ;; [[file:~/.doom.d/config.org::*templates][templates]]
-          (setq org-capture-templates
-        	`(("i" "inbox" entry
-        	   (file ,(concat org-roam-directory "/inbox.org"))
-        	   "* TODO %? \n\n - from :: %a")
-        	  ;; spanish language capturing
-        	  ("v" "vocab; spanish" entry
-        	   (file+headline ,(concat org-roam-directory "/spanish_language.org") "vocab, phrases")
-        	   ,(s-join "\n" '("** \"%?\" :es:"
-        			   "- from :: %a" ""
-        			   "*** :en:" "")))
-        	  ;; capture link to live `org-roam' thing
-        	  ("n" "now, as in NOW" entry (file ,(concat org-roam-directory "/wip.org"))
-        	   ,(s-join "\n" '("* TODO [#A1] %? "
-        			   "DEADLINE: %T"
-        			   "CREATED: %u")))
-        	  ;; fire directly into inbox
-        	  ("c" "org-protocol-capture" entry (file ,(concat
-        org-roam-directory "/inbox.org"))
-        	   ,(s-join "\n" '("* TODO [[%:link][%:description]]" ""
-        			   "#+begin_quote" ""
-        			   "%i"
-        			   "#+end_quote"))
-        	   :immediate-finish t)
-        	  ;; push last captured item into inbox
-        	  ("l" "last-capture" entry (file ,(concat org-roam-directory "/inbox.org"))
-        	   (function qz/inbox-last-captured)
-        	   :immediate-finish t)
-        	  ("I" "current-roam" entry (file ,(concat org-roam-directory "/inbox.org"))
-        	   (function qz/current-roam-link)
-        	   :immediate-finish t)
-        	  ("w" "weekly review" entry
-        	   (file+datetree ,(concat org-roam-directory "/reviews.org"))
-        	   (file ,(concat org-roam-directory "/templates/weekly_review.org")))))
+        ;; [[file:~/.doom.d/config.org::*templates][templates]]
+        (setq org-capture-templates
+              `(("i" "inbox" entry
+                 (file ,(concat org-roam-directory "/inbox.org"))
+                 "* TODO %? \n\n - from :: %a")
+                ;; spanish language capturing
+                ("v" "vocab; spanish" entry
+                 (file+headline ,(concat org-roam-directory "/spanish_language.org") "vocab, phrases")
+                 ,(s-join "\n" '("** \"%?\" :es:"
+                                 "- from :: %a" ""
+                                 "*** :en:" "")))
+                ;; capture link to live `org-roam' thing
+                ("n" "now, as in NOW" entry (file ,(concat org-roam-directory "/wip.org"))
+                 ,(s-join "\n" '("* TODO [#A1] %? "
+                                 "DEADLINE: %T"
+                                 "CREATED: %u")))
+                ;; fire directly into inbox
+                ("c" "org-protocol-capture" entry (file ,(concat
+                                                          org-roam-directory "/inbox.org"))
+                 ,(s-join "\n" '("* TODO [[%:link][%:description]]" ""
+                                 "#+begin_quote" ""
+                                 "%i"
+                                 "#+end_quote"))
+                 :immediate-finish t)
+                ;; push last captured item into inbox
+                ("l" "last-capture" entry (file ,(concat org-roam-directory "/inbox.org"))
+                 (function qz/inbox-last-captured)
+                 :immediate-finish t)
+                ("I" "current-roam" entry (file ,(concat org-roam-directory "/inbox.org"))
+                 (function qz/current-roam-link)
+                 :immediate-finish t)
+                ("w" "weekly review" entry
+                 (file+datetree ,(concat org-roam-directory "/reviews.org"))
+                 (file ,(concat org-roam-directory "/templates/weekly_review.org")))))
         
         
         
         
-          ;; [[file:~/.doom.d/config.org::*capture templates][roam capture templates]]
+        ;; [[file:~/.doom.d/config.org::*capture templates][roam capture templates]]
         
         (unless (boundp 'org-agenda-directory)
           (setq org-agenda-directory nil))
@@ -1011,11 +1023,11 @@
           (cl-destructuring-bind (thing region)
               (qz/thing-at-point-or-region-and-region)
             (org-roam-capture- :goto t
-        		       :keys "n"
-        		       :node (org-roam-node-create :title thing)
-        		       :props `(:immediate-finish t :jump-to-captured nil
-        						  :region ,region     :insert-at ,(point-marker)
-        						  :finalize 'insert-link))
+                               :keys "n"
+                               :node (org-roam-node-create :title thing)
+                               :props `(:immediate-finish t :jump-to-captured nil
+                                                          :region ,region     :insert-at ,(point-marker)
+                                                          :finalize 'insert-link))
             (qz/capture-last-captured)))
         (defun qz/utc-timestamp ()
           (format-time-string "%Y%m%dT%H%M%SZ" (current-time) t))
@@ -1024,46 +1036,41 @@
         
         (setq org-roam-capture-templates
               `(("d" "default" plain "%?"
-        	 :if-new (file+head ,qz/capture-title-timestamp-roam
-        			    ,qz/org-roam-capture-head)
-        	 :unnarrowed t)
-        	("n" "empty" plain "%?"
-        	 :if-new (file+head ,qz/capture-title-timestamp-roam
-        			    ,qz/org-roam-capture-head)
-        	 :immediate-finish t)
-        	))
-        (define-key global-map (kbd "C-c n j") 'org-roam-dailies-capture-today)
-        (define-key global-map (kbd "C-c n J") 'org-roam-dailies-goto-today)
-        
-        (define-key global-map (kbd "C-c n C-r") 'org-roam-refile)
-        (define-key global-map (kbd "C-c n r") 'org-roam-node-random)
+                 :if-new (file+head ,qz/capture-title-timestamp-roam
+                                    ,qz/org-roam-capture-head)
+                 :unnarrowed t)
+                ("n" "empty" plain "%?"
+                 :if-new (file+head ,qz/capture-title-timestamp-roam
+                                    ,qz/org-roam-capture-head)
+                 :immediate-finish t)
+                ))
         (setq org-roam-dailies-capture-templates
               `(("d" "default" entry
-        	 ,(s-join "\n" '("* [%<%H:%M>] %?"
-        			 ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
-        			 "- from :: %a"))
-        	 :if-new (file+head+olp
-        		  ,qz/org-roam-dailies-filespec
-        		  ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
-        				  "#+filetags: daily private project" "" ""
-        				  "%(qz/today-dateref)" "" ""
-        				  "* today, I will"))
-        		  ("journal")))))
+                 ,(s-join "\n" '("* [%<%H:%M>] %?"
+                                 ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
+                                 "- from :: %a"))
+                 :if-new (file+head+olp
+                          ,qz/org-roam-dailies-filespec
+                          ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
+                                          "#+filetags: daily private project" "" ""
+                                          "%(qz/today-dateref)" "" ""
+                                          "* today, I will"))
+                          ("journal")))))
         
         (setq qz/org-roam-dailies-capture-templates--tangent
               '("d" "default" entry
-        	,(s-join "\n" '("* TANGENT [%<%H:%M>] %?"
-        			;;"CREATED: <%<%Y-%m-%d %H:%M>>"
-        			"- from :: %a"))
-        	:if-new (file+head+olp
-        		 ,qz/org-roam-dailies-filespec
-        		 ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
-        				 "#+filetags: daily private project" ""
-        				 "%(qz/today-dateref)" ""
-        				 "* today, I will"
-        				 "* journal"
-        				 "* tangent"))
-        		 ("tangent"))))
+                ,(s-join "\n" '("* TANGENT [%<%H:%M>] %?"
+                                ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
+                                "- from :: %a"))
+                :if-new (file+head+olp
+                         ,qz/org-roam-dailies-filespec
+                         ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
+                                         "#+filetags: daily private project" ""
+                                         "%(qz/today-dateref)" ""
+                                         "* today, I will"
+                                         "* journal"
+                                         "* tangent"))
+                         ("tangent"))))
         ;;; day lookup
         (defvar qz/day-lookup
           '((Mon . "[[id:d5ad0bac-e82b-43d0-960f-26eeb1daf91b][Monday]]")
@@ -1093,14 +1100,14 @@
               (split-string
                (format-time-string "%a:%d:%m:%Y" (or nil (current-time))) ":")
             (format "%s %s %s, %s"
-        	    (cdr (assoc (intern day) qz/day-lookup))
-        	    nday
-        	    (nth (- (string-to-number month) 1) qz/month-lookup)
-        	    (or (if-let ((node (org-roam-node-from-title-or-alias year)))
-        		    (org-link-make-string
-        		     (concat "id:" (org-roam-node-id node))
-        		     (org-roam-node-title node)))
-        		year))))
+                    (cdr (assoc (intern day) qz/day-lookup))
+                    nday
+                    (nth (- (string-to-number month) 1) qz/month-lookup)
+                    (or (if-let ((node (org-roam-node-from-title-or-alias year)))
+                            (org-link-make-string
+                             (concat "id:" (org-roam-node-id node))
+                             (org-roam-node-title node)))
+                        year))))
         (defun qz/org-daily-tangent-capture ()
           (interactive)
           "Capture the inevitable tangent"
@@ -1113,31 +1120,31 @@
           (interactive)
         
           (concat "* TODO "
-        	  (let ((n (qz/org-roam-node-at-point)))
-        	    (org-link-make-string
-        	     (concat "id:" (org-roam-node-id n))
-        	     (org-roam-node-title n)))))
+                  (let ((n (qz/org-roam-node-at-point)))
+                    (org-link-make-string
+                     (concat "id:" (org-roam-node-id n))
+                     (org-roam-node-title n)))))
         (defun qz/node-tags (&optional node)
           (or (and node (org-roam-node-tags node))
               (save-excursion
-        	(goto-char (org-roam-node-point (org-roam-node-at-point 'assert)))
-        	(if (= (org-outline-level) 0)
-        	    (split-string-and-unquote (or (cadr (car (org-collect-keywords '("filetags")))) ""))
-        	  (org-get-tags)))))
+                (goto-char (org-roam-node-point (org-roam-node-at-point 'assert)))
+                (if (= (org-outline-level) 0)
+                    (split-string-and-unquote (or (cadr (car (org-collect-keywords '("filetags")))) ""))
+                  (org-get-tags)))))
         
         (defun qz/node-title (&optional node limit)
           (or (and node (org-roam-node-title node))
               (save-excursion
-        	(goto-char (org-roam-node-point (org-roam-node-at-point 'assert)))
-        	(if (= (org-outline-level) 0)
-        	    (cadr (car (org-collect-keywords '("title"))))
-        	  (substring-no-properties (org-get-heading t t t))))))
+                (goto-char (org-roam-node-point (org-roam-node-at-point 'assert)))
+                (if (= (org-outline-level) 0)
+                    (cadr (car (org-collect-keywords '("title"))))
+                  (substring-no-properties (org-get-heading t t t))))))
         (defun qz/title->roam-id (title)
           (org-roam-node-id (org-roam-node-from-title-or-alias title)))
         (defun qz/ensure-tag (tagstring tag)
           "Apply `org-roam-tag-add' for `tag' to `(OR node@pt NODE)'"
           (let ((ltag (-flatten (or (and (listp tag) tag)
-        			    (list tag)))))
+                                    (list tag)))))
             (message "ensuring tag for %s" ltag)
             (org-roam-tag-add ltag)))
         
@@ -1150,20 +1157,20 @@
           "on the current-heading, and current-node"
           (interactive)
           (mapcar (lambda (pt)
-        	    (when pt
-        	      (org-entry-put
-        	       pt "UPDATED"
-        	       (format-time-string "[%Y-%m-%d %a %H:%M]"))))
-        	  (list (and (org-roam-node-at-point)
-        		     (org-roam-node-point (org-roam-node-at-point)))
-        		(save-excursion
-        		  (org-back-to-heading-or-point-min)
-        		  (point)))))
+                    (when pt
+                      (org-entry-put
+                       pt "UPDATED"
+                       (format-time-string "[%Y-%m-%d %a %H:%M]"))))
+                  (list (and (org-roam-node-at-point)
+                             (org-roam-node-point (org-roam-node-at-point)))
+                        (save-excursion
+                          (org-back-to-heading-or-point-min)
+                          (point)))))
         
         (add-hook 'org-roam-capture-new-node-hook 'qz/org-roam--insert-timestamp)
         (add-hook 'org-mode-hook (lambda ()
-        			   (add-hook 'before-save-hook
-        				     'qz/org-roam--updated-timestamp nil t)))
+                                   (add-hook 'before-save-hook
+                                             'qz/org-roam--updated-timestamp nil t)))
         (qz/advice- org-id-get-create :after qz/org-roam--insert-timestamp)
         (defun qz/hard-refresh-org-tags-in-buffer ()
           (interactive)
@@ -1175,18 +1182,18 @@
           (if (equal "@" (cl-subseq title 0 1))
               title
             (concat "@" (s-replace " " ""
-        			   (or (and capitalize?
-        				    (capitalize title))
-        			       title)))))
+                                   (or (and capitalize?
+                                            (capitalize title))
+                                       title)))))
         (defun qz/org-roam-node-from-tag (tag)
           (seq-map
            'car
            (org-roam-db-query
             [:select :distinct file
-        	     :from tags
-        	     :inner :join nodes
-        	     :on (= tags:node_id nodes:id)
-        	     :where (= tags:tag tag)])))
+                     :from tags
+                     :inner :join nodes
+                     :on (= tags:node_id nodes:id)
+                     :where (= tags:tag tag)])))
         (defun qz/note-buffer-p (&optional node &rest _)
           "Return non-nil if the currently visited buffer is a note."
           (interactive)
@@ -1196,19 +1203,19 @@
           (interactive)
           (let ((title (qz/node-title node)))
             (if (not title)
-        	(and (message "unable to evaluate privateness; no title") nil) ; return false (not private)
+                (and (message "unable to evaluate privateness; no title") nil) ; return false (not private)
               (or (string-match-p qz/daily-title-regexp title) ; daily
-        	  (string-match-p "meeting" title)             ; concerns a meeting
-        	  (qz/has-link-to-p
-        	   (list (qz/title->roam-id "thinkproject")
-        		 (qz/title->roam-id "NewStore")))))))   ; concerns work
+                  (string-match-p "meeting" title)             ; concerns a meeting
+                  (qz/has-link-to-p
+                   (list (qz/title->roam-id "thinkproject")
+                         (qz/title->roam-id "NewStore")))))))   ; concerns work
         (defun qz/has-links (node)
           "connections exist, for id of `node'"
           (org-roam-db-query
            [:select [source dest]
-        	    :from links
-        	    :where (or  (= dest $s1)
-        			(= source $s1))]
+                    :from links
+                    :where (or  (= dest $s1)
+                                (= source $s1))]
            node))
         
         (defun qz/node-has-links (node)
@@ -1217,24 +1224,24 @@
         (defun qz/has-link-to-p (dst &optional src)
           "directed connection exists, from `src' to `dst'"
           (if-let* ((nap (or src (org-roam-node-at-point)))
-        	    (src (or src (org-roam-node-id nap))))
+                    (src (or src (org-roam-node-id nap))))
               (org-roam-db-query
                [:select dest
-        		:from links
-        		:where (and (= source $s1)
-        			    (IN dest $v2))]
+                        :from links
+                        :where (and (= source $s1)
+                                    (IN dest $v2))]
                src (apply 'vector (qz/ensure-list dst)))))
         
         (defun qz/node-has-link-to-p (dst &optional src)
           (qz/has-link-to-p (org-roam-node-id dst)
-        		    (and dst (org-roam-node-id dst))))
+                            (and dst (org-roam-node-id dst))))
         ;;; ref capture
         (setq org-roam-capture-ref-templates
               `(("r" "ref" plain
-        	 "\n#+begin_quote\n${body}\n#+end_quote\n%?"
-        	 :if-new (file+head ,qz/capture-title-timestamp-roam
-        			    "#+title: ${title}\n")
-        	 :unnarrowed t)))
+                 "\n#+begin_quote\n${body}\n#+end_quote\n%?"
+                 :if-new (file+head ,qz/capture-title-timestamp-roam
+                                    "#+title: ${title}\n")
+                 :unnarrowed t)))
         (defun qz/roam-buffer-image-width ()
           (setq-local org-image-actual-width 150)
           (org-redisplay-inline-images))
@@ -1247,12 +1254,12 @@
       (setq org-confirm-babel-evaluate nil)
       ;; [[file:~/.doom.d/config.org::*refile][refile]]
       (setq org-refile-targets '(("reading.org" :level . 0)
-      			   ("emacs.org" :level . 0)
-      			   ("watching.org" :level . 0)
-      			   ("learning.org" :level . 0)
-      			   ("inbox.org" :level . 0)
-      			   ("sample.org" :level . 0)
-      			   ("wip.org" :level . 0)))
+                                 ("emacs.org" :level . 0)
+                                 ("watching.org" :level . 0)
+                                 ("learning.org" :level . 0)
+                                 ("inbox.org" :level . 0)
+                                 ("sample.org" :level . 0)
+                                 ("wip.org" :level . 0)))
       (setq org-log-refile 'note)
       (setq org-log-redeadline 'note)
       (setq org-log-reschedule 'note)
@@ -1261,23 +1268,23 @@
       (setq org-tags-column 120)
       (setq org-tag-alist
             '(("@errand" . ?e)
-      	("@work" . ?w)
-      	("@home" . ?h)
-      	("@blog" . ?B)
-      	(:newline)
-      	("emacs" . ?E)
-      	("wip" . ?W)
-      	("CANCELLED" . ?c)
-      	(:newline)
-      	("learning" . ?l)
-      	("research" . ?r)
-      	(:newline)
-      	("book" . ?b)
-      	("article" . ?a)
-      	("paper" . ?p)
-      	(:newline)
-      	("talk" . ?t)
-      	("film" . ?f)))
+              ("@work" . ?w)
+              ("@home" . ?h)
+              ("@blog" . ?B)
+              (:newline)
+              ("emacs" . ?E)
+              ("wip" . ?W)
+              ("CANCELLED" . ?c)
+              (:newline)
+              ("learning" . ?l)
+              ("research" . ?r)
+              (:newline)
+              ("book" . ?b)
+              ("article" . ?a)
+              ("paper" . ?p)
+              (:newline)
+              ("talk" . ?t)
+              ("film" . ?f)))
       
       ;;(cons->table org-tag-alist)
       (setq org-enforce-todo-dependencies t)
@@ -1286,19 +1293,19 @@
       (defun qz/org-choose-current-attachment ()
         (let ((attach-dir (org-attach-dir)))
           (if attach-dir
-      	(let* ((file (pcase (org-attach-file-list attach-dir)
-      		       (`(,file) file)
-      		       (files (completing-read "Open attachment: "
-      					       (mapcar 'list files) nil t))))
-      	       (path (expand-file-name file attach-dir)))
-      	  path))))
+              (let* ((file (pcase (org-attach-file-list attach-dir)
+                             (`(,file) file)
+                             (files (completing-read "Open attachment: "
+                                                     (mapcar 'list files) nil t))))
+                     (path (expand-file-name file attach-dir)))
+                path))))
       
       (defun qz/org-insert-current-attachment ()
         (interactive)
         (insert
          (format "[[file:./%s]]"
-      	   (dired-make-relative
-      	    (qz/org-choose-current-attachment)))))
+                 (dired-make-relative
+                  (qz/org-choose-current-attachment)))))
       
       (define-key org-mode-map (kbd "C-c M-a") 'qz/org-insert-current-attachment)
       
@@ -1315,24 +1322,24 @@
       prepend or to append."
         (interactive "P")
         (let ((org-link-keep-stored-after-insertion (equal arg '(4)))
-      	(links (copy-sequence org-stored-links))
-      	(pr (or pre "- "))
-      	(po (or post "\n"))
-      	(cnt 1) l)
+              (links (copy-sequence org-stored-links))
+              (pr (or pre "- "))
+              (po (or post "\n"))
+              (cnt 1) l)
           (if (null org-stored-links)
-      	(message "No link to insert")
+              (message "No link to insert")
             (while (and (or (listp arg) (>= arg cnt))
-      		  (setq l (if (listp arg)
-      			      (pop links)
-      			    (pop org-stored-links))))
-      	(setq cnt (+ 1 cnt))
-      	(insert pr)
-      	(org-insert-link nil (car l)
-      			 (or (cadr l)
-      			     ;; (car (last (s-split "/" "file/path/goop.boop::pattern")))
-      			     ;; => "goop.boop::pattern"
-      			     (car (last (s-split "/" (car l))))))
-      	(insert po)))))
+                        (setq l (if (listp arg)
+                                    (pop links)
+                                  (pop org-stored-links))))
+              (setq cnt (+ 1 cnt))
+              (insert pr)
+              (org-insert-link nil (car l)
+                               (or (cadr l)
+                                   ;; (car (last (s-split "/" "file/path/goop.boop::pattern")))
+                                   ;; => "goop.boop::pattern"
+                                   (car (last (s-split "/" (car l))))))
+              (insert po)))))
       
       (define-key org-mode-map (kbd "C-c M-l") 'qz/org-insert-last-stored-link)
       (defun qz/create-excluded-ids-for-headlines-in-buffer ()
@@ -1340,15 +1347,15 @@
       do not already have one."
         (interactive)
         (org-map-entries (lambda (&rest r)
-      		     (unless (org-id-get)
-      		       (org-id-get-create)
-      		       (org-set-property "ROAM_EXCLUDE" "t")))))
+                           (unless (org-id-get)
+                             (org-id-get-create)
+                             (org-set-property "ROAM_EXCLUDE" "t")))))
       
       
       (add-hook 'org-mode-hook
-      	  (lambda ()
-      	    (add-hook 'before-save-hook
-      		      'qz/create-excluded-ids-for-headlines-in-buffer nil 'local)))
+                (lambda ()
+                  (add-hook 'before-save-hook
+                            'qz/create-excluded-ids-for-headlines-in-buffer nil 'local)))
       
       (setq org-id-link-to-org-use-id t)
       (setq org-image-actual-width 640)
@@ -1363,9 +1370,9 @@
     ;; (add-hook 'minibuffer-mode-hook 'olivetti-mode)
     
     (add-hook 'minibuffer-mode-hook
-    	  (lambda ()
-    	    (setq-local olivetti-body-width 200)
-    	    (olivetti-mode)))
+              (lambda ()
+                (setq-local olivetti-body-width 200)
+                (olivetti-mode)))
     
     (with-eval-after-load 'pdf-view
       (add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode))
@@ -1376,19 +1383,19 @@
       (defun qz/restclient-choose-env (&optional env)
         (interactive)
         (message "qz/restclient-env: %s"
-      	   (setq qz/restclient-env
-      		 (cdr (assoc (intern (or env
-      					 (completing-read "restclient-env: " qz/newstore-envs)))
-      			     qz/newstore-envs-abbrev))))
+                 (setq qz/restclient-env
+                       (cdr (assoc (intern (or env
+                                               (completing-read "restclient-env: " qz/newstore-envs)))
+                                   qz/newstore-envs-abbrev))))
         qz/restclient-env)
       (defvar qz/restclient-tenant nil)
       
       (defun qz/restclient-choose-tenant (&optional tenant)
         (interactive)
         (message "qz/restclient-tenant: %s"
-      	   (setq qz/restclient-tenant
-      		 (or tenant (completing-read
-      			     "restclient-tenant: " qz/newstore-tenants))))
+                 (setq qz/restclient-tenant
+                       (or tenant (completing-read
+                                   "restclient-tenant: " qz/newstore-tenants))))
         qz/restclient-tenant)
       (defvar qz/restclient-token nil)
       (defvar qz/restclient-token-field 'access_token)
@@ -1400,14 +1407,14 @@
           (save-excursion
             (cond
              ((string-suffix-p "/token" url)
-      	(condition-case nil
-      	    (progn
-      	      (setq result (cdr (assoc qz/restclient-token-field (json-read))))
-      	      (when (stringp result)
-      		(progn
-      		  (setq qz/restclient-token result)
-      		  (message (concat "stored token: " qz/restclient-token)))))
-      	  (error (message "That wasn't cleanly handled."))))))))
+              (condition-case nil
+                  (progn
+                    (setq result (cdr (assoc qz/restclient-token-field (json-read))))
+                    (when (stringp result)
+                      (progn
+                        (setq qz/restclient-token result)
+                        (message (concat "stored token: " qz/restclient-token)))))
+                (error (message "That wasn't cleanly handled."))))))))
       
       (add-hook 'restclient-response-loaded-hook 'qz/restclient-hook)
       (provide 'restclient-hooks)
@@ -1425,15 +1432,15 @@
     (defun qz/choose-aws-env (&optional env)
       (interactive)
       (setq qz/aws-env
-    	(or env (completing-read
-    		 "aws-env: "
-    		 (->> (shell-command-to-string
-    		       "cat ~/.saml2aws | grep '^name' | cut -d'=' -f2")
-    		      (s-split "\n")
-    		      (remove "")))))
+            (or env (completing-read
+                     "aws-env: "
+                     (->> (shell-command-to-string
+                           "cat ~/.saml2aws | grep '^name' | cut -d'=' -f2")
+                          (s-split "\n")
+                          (remove "")))))
       (async-shell-command (format "saml2aws login -a %s"
-    			       qz/aws-env)
-    		       "*aws*"))
+                                   qz/aws-env)
+                           "*aws*"))
     (defvar qz/kubectl-context nil
       "the operating kubernetes context.
     
@@ -1444,12 +1451,12 @@
     (defun qz/choose-kubectl-context (ctx)
       (interactive)
       (setq qz/kubectl-context
-    	(or ctx (completing-read "k8s ctx: "
-    				 (qz/shell-command-to-list-of-strings
-    				  "kubectl config get-contexts -o name"))))
+            (or ctx (completing-read "k8s ctx: "
+                                     (qz/shell-command-to-list-of-strings
+                                      "kubectl config get-contexts -o name"))))
       (async-shell-command (format "kubectl config use-context %s"
-    			       qz/kubectl-context)
-    		       "*kubectl*"))
+                                   qz/kubectl-context)
+                           "*kubectl*"))
     
     ;; optional; quality of life improvement to bury kubectl buffer
     (add-to-list 'display-buffer-alist '("*kubectl*" display-buffer-no-window))
@@ -1460,9 +1467,9 @@
       (interactive)
       (async-shell-command
        (concat "cd $HOME/git/sys/rde"
-    	   "&& guix repl -L . sanity.scm")))
+               "&& guix repl -L . sanity.scm")))
     (defun qz/tangle ()
-      (mapcar 
+      (mapcar
        'org-babel-tangle-file
        '("~/git/sys/rde/rde/examples/abcdw/configs.org"
          "~/git/sys/rde/rde/examples/abcdw/emacs.org"))
@@ -1493,10 +1500,12 @@
       (async-shell-command
        (concat
         "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
-        "&& ( cd ../../.. && make channels-update-lock && make channels-pull )"
+        "&& ( cd ../../.. "
+        "     && make rde/channels/update-locked"
+        "     && make rde/channels/pull-locked ) "
         "&& make ixy-home-reconfigure "
         "&& sudo -E make ixy-system-reconfigure "
-        "&& echo 'system bal-eggd-e complete' | espeak --stdin")))
+        "&& echo 'pull & home & system bal-eggd-e complete' | espeak --stdin")))
     
     (defun qz/reload-config-emacs ()
       (interactive)
@@ -1505,30 +1514,36 @@
     (defun qz/reload-guix-pins ()
       (interactive)
       (async-shell-command
-       (concat "cd $HOME/git/sys/rde/ "
-    	   "&& make channels-update-lock && make channels-pull")))
+       (s-join " " '("cd $HOME/git/sys/rde"
+                     "&& make rde/channels/update-locked"
+                     "&& make rde/channels/pull-locked"))))
     
     (defun qz/guix-upgrade ()
       (interactive)
       (async-shell-command
-       (concat "cd $HOME/git/sys/rde"
-    	   "&& make channels-update-lock && make channels-pull && guix upgrade && make")))
+       (s-join " "
+               '("cd $HOME/git/sys/rde"
+                 "&& make rde/channels/update-locked"
+                 "&& make rde/channels/pull-locked"
+                 "&& guix package -u"
+                 "&& guix upgrade"
+                 "&& make"))))
     (defun qz/sway-choose-output-res (&optional display res)
       (interactive)
       (let* ((cur (s-trim (shell-command-to-string
-    		       "swaymsg -t get_outputs | jq -r 'map( . | select(.focused == true) | .name) | first'")))
-    	 (cmd (format "swaymsg 'output %s enable res %s'"
-    		      (or display
-    			  (completing-read "display: "
-    					   '("DP-1" "DP-2"
-    					     "eDP-1"
-    					     "HDMI-1" "HDMI-2")
-    					   nil t cur))
-    		      (or res
-    			  (completing-read "resolution: "
-    					   '("1920x1080"
-    					     "5120x1440")
-    					   nil t)))))
+                           "swaymsg -t get_outputs | jq -r 'map( . | select(.focused == true) | .name) | first'")))
+             (cmd (format "swaymsg 'output %s enable res %s'"
+                          (or display
+                              (completing-read "display: "
+                                               '("DP-1" "DP-2"
+                                                 "eDP-1"
+                                                 "HDMI-1" "HDMI-2")
+                                               nil t cur))
+                          (or res
+                              (completing-read "resolution: "
+                                               '("1920x1080"
+                                                 "5120x1440")
+                                               nil t)))))
         (when (y-or-n-p (format "exec ~%s~?" cmd))
           (shell-command cmd))))
     (setq tramp-cache-read-persistent-data t)

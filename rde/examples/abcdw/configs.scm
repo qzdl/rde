@@ -43,7 +43,7 @@
 
   ;;#:use-module (gnu home-services shellutils)
 
-  #:use-module (nongnu packages nvidia)
+  ;;#:use-module (nongnu packages nvidia)
 
   #:use-module (gnu services base)
   #:use-module (gnu services ssh)
@@ -122,7 +122,7 @@
      #:user-name "samuel"
      #:full-name "Samuel Culpepper"
      #:email "samuel@samuelculpepper.com"
-     #:user-groups '("lp")) ;; TODO confluence of features -> groups
+     #:user-groups '("lp" "wheel")) ;; TODO confluence of features -> groups
 
     (feature-gnupg
      #:gpg-primary-key "EE20E25391AAB9BB"
@@ -316,6 +316,8 @@ declared.")
    (lambda (s) (or (not s) (unspecified? s)))
    (list
     ;;; BEGIN; main
+    (use-modules (rde features bluetooth))
+    (feature-bluetooth #:auto-enable? #t)
     ;;(feature-ssh-socks-proxy
     ;; #:host "204:cbf:3e07:e67a:424f:93bc:fc5c:b3dc")
     ;;(feature-i2pd
@@ -537,14 +539,15 @@ declared.")
                     (postgresql (@ (gnu packages databases) postgresql-10)))))
     
         ;; analytics ; timescaledb
-        (unless gaming?
-          (service postgresql-service-type
-                   (postgresql-configuration
-                    (port 5435)
-                    (extension-packages
-                     (list (@ (gnu packages databases) timescaledb)
-                           (@ (gnu packages geo) postgis)))
-                    (postgresql (@ (gnu packages databases) postgresql-14)))))
+        ;; (unless gaming?
+        ;;   (service postgresql-service-type
+        ;;            (name "postgres-tsdb-14")
+        ;;            (postgresql-configuration
+        ;;             (port 5435)
+        ;;             (extension-packages
+        ;;              (list (@ (gnu packages databases) timescaledb)
+        ;;                    (@ (gnu packages geo) postgis)))
+        ;;             (postgresql (@ (gnu packages databases) postgresql-14)))))
     
         (unless gaming?
           (service postgresql-role-service-type
@@ -904,6 +907,7 @@ declared.")
      #:home-packages
      (append
       (pkgs
+       "wl-clipboard"
        "figlet" ;; TODO: Move to emacs-artist-mode
        "calibre"
        "icecat" "nyxt"
@@ -2240,3 +2244,20 @@ host	all	all	0.0.0.0/0       md5
 ;;  (map feature-name (rde-config-features ixy-config)))
 (pretty-print "pre-dispatch")
 (dispatcher)
+;; -*- mode: scheme -*-
+(use-modules (guix ci)
+	     (guix channels))
+
+(list
+ %default-guix-channel
+ (channel
+  (name 'rde)
+  (url "https://git.sr.ht/~abcdw/rde")
+  (introduction
+   (make-channel-introduction
+    "257cebd587b66e4d865b3537a9a88cccd7107c95"
+    (openpgp-fingerprint
+     "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))
+ (channel
+  (name 'nonguix)
+  (url "https://gitlab.com/nonguix/nonguix")))

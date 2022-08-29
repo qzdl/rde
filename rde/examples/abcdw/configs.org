@@ -69,6 +69,7 @@ make: *** [Makefile:14: %-home-reconfigure] Error 1
 :ROAM_EXCLUDE: t
 :END:
 
+
 ** defmodule
 :PROPERTIES:
 :ID:       6bb15998-32c1-4674-890a-85180a89d66a
@@ -121,7 +122,7 @@ make: *** [Makefile:14: %-home-reconfigure] Error 1
 
   ;;#:use-module (gnu home-services shellutils)
 
-  #:use-module (nongnu packages nvidia)
+  ;;#:use-module (nongnu packages nvidia)
 
   #:use-module (gnu services base)
   #:use-module (gnu services ssh)
@@ -305,7 +306,7 @@ make: *** [Makefile:14: %-home-reconfigure] Error 1
      #:user-name "samuel"
      #:full-name "Samuel Culpepper"
      #:email "samuel@samuelculpepper.com"
-     #:user-groups '("lp")) ;; TODO confluence of features -> groups
+     #:user-groups '("lp" "wheel")) ;; TODO confluence of features -> groups
 
     (feature-gnupg
      #:gpg-primary-key "EE20E25391AAB9BB"
@@ -606,6 +607,17 @@ declared.")
 :ROAM_EXCLUDE: t
 :END:
 
+**** bluetooth
+:PROPERTIES:
+:ID:       4f2da545-1b08-4465-9e3e-060a5dcbc4c5
+:CREATED:  [2022-08-26 Fri 11:49]
+:UPDATED:  [2022-08-26 Fri 11:49]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+(use-modules (rde features bluetooth))
+(feature-bluetooth #:auto-enable? #t)
+#+end_src
 **** sshsocks
 :PROPERTIES:
 :ID:       a94c429f-77eb-4e96-b1d3-1019071e6f6e
@@ -638,7 +650,7 @@ declared.")
 :PROPERTIES:
 :ID:       52dbdae7-459f-4950-9961-c2a9cd035844
 :CREATED:  [2022-08-09 Tue 12:44]
-:UPDATED:  [2022-08-11 Thu 10:27]
+:UPDATED:  [2022-08-25 Thu 16:09]
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src scheme :noweb-ref main
@@ -857,14 +869,15 @@ host	all	all	0.0.0.0/0       md5
                 (postgresql (@ (gnu packages databases) postgresql-10)))))
 
     ;; analytics ; timescaledb
-    (unless gaming?
-      (service postgresql-service-type
-               (postgresql-configuration
-                (port 5435)
-                (extension-packages
-                 (list (@ (gnu packages databases) timescaledb)
-                       (@ (gnu packages geo) postgis)))
-                (postgresql (@ (gnu packages databases) postgresql-14)))))
+    ;; (unless gaming?
+    ;;   (service postgresql-service-type
+    ;;            (name "postgres-tsdb-14")
+    ;;            (postgresql-configuration
+    ;;             (port 5435)
+    ;;             (extension-packages
+    ;;              (list (@ (gnu packages databases) timescaledb)
+    ;;                    (@ (gnu packages geo) postgis)))
+    ;;             (postgresql (@ (gnu packages databases) postgresql-14)))))
 
     (unless gaming?
       (service postgresql-role-service-type
@@ -1269,7 +1282,7 @@ host	all	all	0.0.0.0/0       md5
         ;;; QZDL
         emacs-sql-indent
         emacs-ob-go
-        
+
         ;; TODO qzdl (2)
         ;; emacs-consult-recoll
         ;; emacs-code-review
@@ -1721,7 +1734,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       9490f8c2-7074-4a89-a62e-f82b6bfc2f2b
 :CREATED:  [2022-08-01 Mon 10:55]
-:UPDATED:  [2022-08-09 Tue 12:44]
+:UPDATED:  [2022-08-26 Fri 16:01]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -1730,6 +1743,7 @@ host	all	all	0.0.0.0/0       md5
  #:home-packages
  (append
   (pkgs
+   "wl-clipboard"
    "figlet" ;; TODO: Move to emacs-artist-mode
    "calibre"
    "icecat" "nyxt"
@@ -2159,7 +2173,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       0ec86b5a-f300-4373-bb1e-ccd6c7327776
 :CREATED:  [2022-07-29 Fri 18:19]
-:UPDATED:  [2022-07-29 Fri 18:19]
+:UPDATED:  [2022-08-29 Mon 16:47]
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src scheme
@@ -2200,6 +2214,42 @@ host	all	all	0.0.0.0/0       md5
 (dispatcher)
 #+end_src
 
+** channels
+:PROPERTIES:
+:ID:       4ef23979-355a-4858-841a-3551e4af3eb2
+:CREATED:  [2022-08-29 Mon 16:40]
+:UPDATED:  [2022-08-29 Mon 16:40]
+:ROAM_EXCLUDE: t
+:END:
+
+*** channels.tmpl
+:PROPERTIES:
+:ID:       21ce54e0-18e0-460f-82c7-2b43e243ad45
+:CREATED:  [2022-08-29 Mon 16:40]
+:UPDATED:  [2022-08-29 Mon 16:41]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :tangle ../channels.tmpl
+;; -*- mode: scheme -*-
+(use-modules (guix ci)
+             (guix channels))
+
+(list
+ %default-guix-channel
+ (channel
+  (name 'rde)
+  (url "https://git.sr.ht/~abcdw/rde")
+  (introduction
+   (make-channel-introduction
+    "257cebd587b66e4d865b3537a9a88cccd7107c95"
+    (openpgp-fingerprint
+     "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))
+ (channel
+  (name 'nonguix)
+  (url "https://gitlab.com/nonguix/nonguix")))
+#+end_src
+
 * rde
 :PROPERTIES:
 :ID:       31909571-94cc-4718-a971-558ac7074120
@@ -2207,7 +2257,6 @@ host	all	all	0.0.0.0/0       md5
 :UPDATED:  [2022-08-15 Mon 12:01]
 :ROAM_EXCLUDE: t
 :END:
-
 
 ** TODO org heading binds =C-M-=
 :PROPERTIES:
@@ -2221,7 +2270,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       bd9f9bf3-e5e9-4f43-adc6-a30b64378c66
 :CREATED:  [2022-08-15 Mon 12:01]
-:UPDATED:  [2022-08-15 Mon 12:18]
+:UPDATED:  [2022-08-29 Mon 16:40]
 :ROAM_EXCLUDE: t
 :END:
 :LOGBOOK:
@@ -2229,5 +2278,27 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
 :END:
 
 - made commit 7e655baad683b49c53a2683012576b7fb35dafa1
-   
-  
+
+** TODO system-wide media status
+:PROPERTIES:
+:ID:       5923dc5e-4e2f-473a-9145-d0858d5d811d
+:CREATED:  [2022-08-26 Fri 11:49]
+:UPDATED:  [2022-08-26 Fri 11:49]
+:ROAM_EXCLUDE: t
+:END:
+
+*** feature: respect play / pause / skip from media controls (airpods)
+:PROPERTIES:
+:ID:       bbee3792-cbb4-4064-b9c8-7dcb742031a5
+:CREATED:  [2022-08-26 Fri 11:49]
+:UPDATED:  [2022-08-26 Fri 11:49]
+:ROAM_EXCLUDE: t
+:END:
+
+** TODO kde-connect
+:PROPERTIES:
+:ID:       1548dc33-dceb-4e69-8326-32f9559e4e21
+:CREATED:  [2022-08-26 Fri 11:49]
+:UPDATED:  [2022-08-26 Fri 11:49]
+:ROAM_EXCLUDE: t
+:END:
