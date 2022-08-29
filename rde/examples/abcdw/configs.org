@@ -188,6 +188,14 @@ make: *** [Makefile:14: %-home-reconfigure] Error 1
             (urls urls)))))
 #+end_src
 
+*** bravehost mail serializer
+:PROPERTIES:
+:ID:       fb637534-e1ae-493b-bf5e-0cdc5ec1cc2f
+:CREATED:  [2022-08-29 Mon 17:06]
+:UPDATED:  [2022-08-29 Mon 17:07]
+:ROAM_EXCLUDE: t
+:END:
+
 *** keyboard
 :PROPERTIES:
 :ID:       2ff244bf-5916-4a3b-afa6-6b2e34cb7e21

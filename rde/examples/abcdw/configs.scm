@@ -730,7 +730,7 @@ declared.")
             ;;; QZDL
             emacs-sql-indent
             emacs-ob-go
-            
+    
             ;; TODO qzdl (2)
             ;; emacs-consult-recoll
             ;; emacs-code-review
@@ -2246,7 +2246,7 @@ host	all	all	0.0.0.0/0       md5
 (dispatcher)
 ;; -*- mode: scheme -*-
 (use-modules (guix ci)
-	     (guix channels))
+             (guix channels))
 
 (list
  %default-guix-channel
