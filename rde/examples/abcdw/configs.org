@@ -1,5 +1,7 @@
 :PROPERTIES:
-:UPDATED:  [2022-08-08 Mon 12:10]
+:UPDATED:  [2022-08-30 Tue 11:12]
+:ID:       12f7748c-7095-4969-8261-94ad0169a24c
+:CREATED:  [2022-08-30 Tue 11:12]
 :END:
 #+title: gnu guix & rde config
 #+property: header-args        :tangle-mode (identity #o444)
@@ -192,9 +194,25 @@ make: *** [Makefile:14: %-home-reconfigure] Error 1
 :PROPERTIES:
 :ID:       fb637534-e1ae-493b-bf5e-0cdc5ec1cc2f
 :CREATED:  [2022-08-29 Mon 17:06]
-:UPDATED:  [2022-08-29 Mon 17:07]
+:UPDATED:  [2022-08-29 Mon 17:39]
 :ROAM_EXCLUDE: t
 :END:
+
+#+begin_src scheme
+(define bravehost-folder-mapping
+  '(("inbox"  . "INBOX")
+    ("accounts" . "INBOX/Accounts")
+    ("cv" . "INBOX/CV")
+    ("info" . "INBOX/info")
+    ("sent"   . "Sent")
+    ("drafts" . "Drafts")
+    ("trash"  . "Deleted Items")
+    ("spam"   . "Spam")))
+
+;; https://wiki.bravenet.com/Using_your_Bravenet_e-mail_account
+(define bravehost-isync-settings
+  (generate-isync-serializer "mail.bravehost.com" bravehost-folder-mapping))
+#+end_src
 
 *** keyboard
 :PROPERTIES:
@@ -285,6 +303,61 @@ make: *** [Makefile:14: %-home-reconfigure] Error 1
 :UPDATED:  [2022-07-29 Fri 18:24]
 :ROAM_EXCLUDE: t
 :END:
+
+*** my features
+:PROPERTIES:
+:ID:       b290c986-542c-46ef-9729-defbd20da2ea
+:CREATED:  [2022-08-29 Mon 17:10]
+:UPDATED:  [2022-08-29 Mon 17:10]
+:ROAM_EXCLUDE: t
+:END:
+
+**** bluetooth
+:PROPERTIES:
+:ID:       a65bf448-712a-4f32-840c-b7524c7a7120
+:CREATED:  [2022-08-29 Mon 17:10]
+:UPDATED:  [2022-08-29 Mon 17:49]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+;; (define-module (rde features bluetooth)
+;;   #:use-module (rde features)
+;;   #:use-module (rde features predicates)
+;;   ;#:use-module (gnu home-services bluetooth) ;; TODO implement as 'fork' (in rde), then upstream to guix home proper
+;;   #:use-module (gnu services)
+;;   #:use-module (gnu services desktop)
+;;   #:export (feature-bluetooth)
+;;   ;;#:re-export (home-bluetooth-configuration) ;; ^^ as above
+;;   )
+
+(use-modules ;;(rde features bluetooth)
+             (rde features)
+             (rde features predicates)
+             (gnu services)
+             (gnu services desktop))
+
+;; TODO ensure group "lp" exists and is applicable for USER
+(define* (feature-bluetooth
+          #:key
+          ;;(bluetooth-configuration (home-bluetooth-configuration))
+          (dual-mode #f)
+          (auto-enable? #t)) ;; XXX should this stick to guix defaults, or tailor to ease for users?
+  "Setup and configure Bluetooth."
+  ;;(ensure-pred home-bluetooth-configuration? bluetooth-configuration)
+
+  (define (bluetooth-home-services config)
+    "Returns home services related to bluetooth."
+    (list ;;(service bluetooth-service-type bluetooth-configuration)
+     (bluetooth-service #:auto-enable? auto-enable?)))
+
+  (feature
+   (name 'bluetooth)
+   (values '((bluetooth . #t)))
+   ;; TODO port etc-service reference to make home-service > system-service
+   (system-services-getter bluetooth-home-services)))
+#+end_src
+
 *** debug; pre features
 :PROPERTIES:
 :ID:       36dc9e54-a5c8-43c8-a464-6349186edd50
@@ -300,7 +373,7 @@ make: *** [Makefile:14: %-home-reconfigure] Error 1
 :PROPERTIES:
 :ID:       1532c6ba-0d0c-499e-bddd-ae1caa1dc778
 :CREATED:  [2022-07-29 Fri 17:48]
-:UPDATED:  [2022-08-01 Mon 17:42]
+:UPDATED:  [2022-08-29 Mon 17:35]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -320,13 +393,14 @@ make: *** [Makefile:14: %-home-reconfigure] Error 1
      #:gpg-primary-key "EE20E25391AAB9BB"
      #:gpg-smart-card? #f)
     (feature-password-store)
+
     (feature-mail-settings
      #:mail-accounts
      (list
-      ;; (mail-account
-      ;;  (id   'personal)
-      ;;  (fqda "samuel@samuelculpepper.com")
-      ;;  (type 'bravehost))
+      (mail-account
+       (id   'personal)
+       (fqda "samuel@samuelculpepper.com")
+       (type 'bravehost))
       (mail-account
        (id   'work)
        (fqda "sculpepper@newstore.com")
@@ -619,11 +693,10 @@ declared.")
 :PROPERTIES:
 :ID:       4f2da545-1b08-4465-9e3e-060a5dcbc4c5
 :CREATED:  [2022-08-26 Fri 11:49]
-:UPDATED:  [2022-08-26 Fri 11:49]
+:UPDATED:  [2022-08-29 Mon 17:40]
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src scheme :noweb-ref main
-(use-modules (rde features bluetooth))
 (feature-bluetooth #:auto-enable? #t)
 #+end_src
 **** sshsocks
@@ -1637,12 +1710,16 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       5f12520a-369e-43bf-ab36-64a44c5bfb98
 :CREATED:  [2022-08-01 Mon 10:55]
-:UPDATED:  [2022-08-01 Mon 12:46]
+:UPDATED:  [2022-08-29 Mon 17:49]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src scheme :noweb-ref main
-;;(feature-isync #:isync-verbose #t)
+(feature-isync
+ #:isync-verbose #t
+ #:isync-serializers
+ (append %default-isync-serializers
+         `((bravehost . ,bravehost-isync-settings))))
 #+end_src
 
 **** l2md                                                                                                            :mail:
@@ -1661,12 +1738,17 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       c5548269-6010-4a9c-b92f-83b27a722b76
 :CREATED:  [2022-08-01 Mon 10:55]
-:UPDATED:  [2022-08-01 Mon 13:21]
+:UPDATED:  [2022-08-29 Mon 17:36]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src scheme :noweb-ref main
-(feature-msmtp)
+(feature-msmtp
+ #:msmtp-provider-settings
+ (append
+  %default-msmtp-provider-settings
+  `((bravehost . ((host . "mail.bravehost.com")
+                  (port . 587))))))
 #+end_src
 
 **** notmuch                                                                                                         :mail:
@@ -2234,11 +2316,11 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       21ce54e0-18e0-460f-82c7-2b43e243ad45
 :CREATED:  [2022-08-29 Mon 16:40]
-:UPDATED:  [2022-08-29 Mon 16:41]
+:UPDATED:  [2022-08-29 Mon 17:53]
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src scheme :tangle ../channels.tmpl
+#+begin_src scheme :tangle ../channels.tmpl :noweb-ref 2chan
 ;; -*- mode: scheme -*-
 (use-modules (guix ci)
              (guix channels))

@@ -79,6 +79,19 @@
    (config (l2md-repo ;; XXX maildir issue might be here
             (name (symbol->string id))
             (urls urls)))))
+(define bravehost-folder-mapping
+  '(("inbox"  . "INBOX")
+    ("accounts" . "INBOX/Accounts")
+    ("cv" . "INBOX/CV")
+    ("info" . "INBOX/info")
+    ("sent"   . "Sent")
+    ("drafts" . "Drafts")
+    ("trash"  . "Deleted Items")
+    ("spam"   . "Spam")))
+
+;; https://wiki.bravenet.com/Using_your_Bravenet_e-mail_account
+(define bravehost-isync-settings
+  (generate-isync-serializer "mail.bravehost.com" bravehost-folder-mapping))
 (define %thinkpad-layout
   (keyboard-layout
    "us" "altgr-intl"
@@ -112,6 +125,41 @@
 (define my-notes-directory
   (string-append my-org-directory "/roam"))
 (define gaming? #f)
+;; (define-module (rde features bluetooth)
+;;   #:use-module (rde features)
+;;   #:use-module (rde features predicates)
+;;   ;#:use-module (gnu home-services bluetooth) ;; TODO implement as 'fork' (in rde), then upstream to guix home proper
+;;   #:use-module (gnu services)
+;;   #:use-module (gnu services desktop)
+;;   #:export (feature-bluetooth)
+;;   ;;#:re-export (home-bluetooth-configuration) ;; ^^ as above
+;;   )
+
+(use-modules ;;(rde features bluetooth)
+             (rde features)
+             (rde features predicates)
+             (gnu services)
+             (gnu services desktop))
+
+;; TODO ensure group "lp" exists and is applicable for USER
+(define* (feature-bluetooth
+          #:key
+          ;;(bluetooth-configuration (home-bluetooth-configuration))
+          (dual-mode #f)
+          (auto-enable? #t)) ;; XXX should this stick to guix defaults, or tailor to ease for users?
+  "Setup and configure Bluetooth."
+  ;;(ensure-pred home-bluetooth-configuration? bluetooth-configuration)
+
+  (define (bluetooth-home-services config)
+    "Returns home services related to bluetooth."
+    (list ;;(service bluetooth-service-type bluetooth-configuration)
+     (bluetooth-service #:auto-enable? auto-enable?)))
+
+  (feature
+   (name 'bluetooth)
+   (values '((bluetooth . #t)))
+   ;; TODO port etc-service reference to make home-service > system-service
+   (system-services-getter bluetooth-home-services)))
 (pretty-print "pre-%abcdw-features")
 (define %abcdw-features
   (remove
@@ -128,13 +176,14 @@
      #:gpg-primary-key "EE20E25391AAB9BB"
      #:gpg-smart-card? #f)
     (feature-password-store)
+
     (feature-mail-settings
      #:mail-accounts
      (list
-      ;; (mail-account
-      ;;  (id   'personal)
-      ;;  (fqda "samuel@samuelculpepper.com")
-      ;;  (type 'bravehost))
+      (mail-account
+       (id   'personal)
+       (fqda "samuel@samuelculpepper.com")
+       (type 'bravehost))
       (mail-account
        (id   'work)
        (fqda "sculpepper@newstore.com")
@@ -316,7 +365,6 @@ declared.")
    (lambda (s) (or (not s) (unspecified? s)))
    (list
     ;;; BEGIN; main
-    (use-modules (rde features bluetooth))
     (feature-bluetooth #:auto-enable? #t)
     ;;(feature-ssh-socks-proxy
     ;; #:host "204:cbf:3e07:e67a:424f:93bc:fc5c:b3dc")
@@ -875,9 +923,18 @@ declared.")
     ;;     ;;  #:package-ob emacs-ob-restclient-latest)
     (feature-docker)
     (feature-mpv)
-    ;;(feature-isync #:isync-verbose #t)
+    (feature-isync
+     #:isync-verbose #t
+     #:isync-serializers
+     (append %default-isync-serializers
+             `((bravehost . ,bravehost-isync-settings))))
     (feature-l2md)
-    (feature-msmtp)
+    (feature-msmtp
+     #:msmtp-provider-settings
+     (append
+      %default-msmtp-provider-settings
+      `((bravehost . ((host . "mail.bravehost.com")
+                      (port . 587))))))
     (feature-notmuch
      #:extra-tag-updates-post
      '("notmuch tag +guix-home -- 'thread:\"\
@@ -2244,20 +2301,3 @@ host	all	all	0.0.0.0/0       md5
 ;;  (map feature-name (rde-config-features ixy-config)))
 (pretty-print "pre-dispatch")
 (dispatcher)
-;; -*- mode: scheme -*-
-(use-modules (guix ci)
-             (guix channels))
-
-(list
- %default-guix-channel
- (channel
-  (name 'rde)
-  (url "https://git.sr.ht/~abcdw/rde")
-  (introduction
-   (make-channel-introduction
-    "257cebd587b66e4d865b3537a9a88cccd7107c95"
-    (openpgp-fingerprint
-     "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))
- (channel
-  (name 'nonguix)
-  (url "https://gitlab.com/nonguix/nonguix")))
