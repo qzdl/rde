@@ -696,6 +696,7 @@ declared.")
        `(;;(include ,(local-file "./config/sway/config"))
          ;; TODO sway: toggle opacity for WINDOW
          (,#~"output eDP-1 bg ~/.cache/wallpaper.png fill")
+         (,#~"output DP-1 enable res 5120x1440 bg ~/.cache/wallpaper.png fill")
          ;; TODO sway: wacom input rotation matrix
          (,#~"input \"*\" tool_mode \"*\" relative calibration_matrix 0.0 -1.0 1.0 1.0 0.0 0.0")
          ;; danke demis ht - Sharing Indicatortps://github.com/minikN/guix/blob/ca15b5a5954d50fe75e2b03f21afc019e002022b/config.scm#L173
