@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-08-30 Tue 11:12]
+:UPDATED:  [2022-09-23 Fri 14:50]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :CREATED:  [2022-08-30 Tue 11:12]
 :END:
@@ -1072,7 +1072,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       4ce3bb66-ccbb-4cf3-b92d-2e3bda91adf7
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-09-07 Wed 18:16]
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src scheme :noweb-ref main
@@ -1095,7 +1095,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       855bb3df-f74b-4fff-9122-7c334a878dcc
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2022-08-31 Wed 14:25]
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src scheme :noweb-ref main
@@ -1173,7 +1173,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       05be317e-8f65-4a14-a83f-db104b19788f
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-08-05 Fri 13:25]
+:UPDATED:  [2022-09-23 Fri 14:50]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -1191,6 +1191,7 @@ host	all	all	0.0.0.0/0       md5
    `(;;(include ,(local-file "./config/sway/config"))
      ;; TODO sway: toggle opacity for WINDOW
      (,#~"output eDP-1 bg ~/.cache/wallpaper.png fill")
+     (,#~"output DP-1 enable res 5120x1440 bg ~/.cache/wallpaper.png fill")
      ;; TODO sway: wacom input rotation matrix
      (,#~"input \"*\" tool_mode \"*\" relative calibration_matrix 0.0 -1.0 1.0 1.0 0.0 0.0")
      ;; danke demis ht - Sharing Indicatortps://github.com/minikN/guix/blob/ca15b5a5954d50fe75e2b03f21afc019e002022b/config.scm#L173
@@ -1824,7 +1825,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       9490f8c2-7074-4a89-a62e-f82b6bfc2f2b
 :CREATED:  [2022-08-01 Mon 10:55]
-:UPDATED:  [2022-08-26 Fri 16:01]
+:UPDATED:  [2022-09-15 Thu 15:13]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -1849,7 +1850,7 @@ host	all	all	0.0.0.0/0       md5
    "fheroes2"
    ;; TODO: Enable pipewire support to chromium by default
    ;; chrome://flags/#enable-webrtc-pipewire-capturer
-   "ungoogled-chromium-wayland" "ublock-origin-chromium"
+   "ispell"
    "nyxt"
    ;;
    "hicolor-icon-theme" "adwaita-icon-theme" "gnome-themes-standard"
@@ -1861,6 +1862,7 @@ host	all	all	0.0.0.0/0       md5
    "ffmpeg"
 
    "ripgrep" "curl" "make"
+   "sqlite"
    ))
  )
 

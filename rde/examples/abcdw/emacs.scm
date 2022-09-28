@@ -179,6 +179,10 @@
     (define-key global-map (kbd "C-c n C-r") 'org-roam-refile)
     (define-key global-map (kbd "C-c n r") 'org-roam-node-random)
     
+    (define-key global-map (kbd "C-c n a r") 'org-roam-ref-add)
+    (define-key global-map (kbd "C-c n a t") 'org-roam-tag-add)
+    (define-key global-map (kbd "C-c n a a") 'org-roam-alias-add)
+    
     (defun qz/consult-notes ()
       (interactive)
       (let ((default-directory org-roam-directory))
@@ -1334,14 +1338,50 @@
                                   (pop org-stored-links))))
               (setq cnt (+ 1 cnt))
               (insert pr)
-              (org-insert-link nil (car l)
-                               (or (cadr l)
-                                   ;; (car (last (s-split "/" "file/path/goop.boop::pattern")))
-                                   ;; => "goop.boop::pattern"
-                                   (car (last (s-split "/" (car l))))))
-              (insert po)))))
+              (message "%s" `((:l ,l)
+                              (:car-l ,(car l))
+                              (:cadr-l ,(cadr l))
+                              (:mod-l ,(car (last (s-split "/" (car l)))))))
+              (org-insert-link
+               nil (car l)
+               (or (cadr l)
+                   (qz/ol-file l)))
+              (insert po))))))
       
       (define-key org-mode-map (kbd "C-c M-l") 'qz/org-insert-last-stored-link)
+      
+      (defun qz/ol-file (link)
+        "transform file path into pretty ol-output
+                  - respect projects; truncate prior path, keeping only basename
+      "
+        ;; (car (last (s-split "/" "file:~/sys/rde/goop.boop::pattern")))
+        ;; == "goop.boop::pattern"
+        ;; (message  "HELLO :: %s/%s" p (car (last (s-split "/" p))))
+        (let* ((p (car link))
+               (inner (mapcar
+                       (lambda (s) (let ((ss (car s)))
+                                     (and (s-contains? (f-base ss) p)
+                                          (cons (f-base ss) ss))))
+                       project--list))
+               (suffix (s-join
+                        " . "
+                        ;; sort by length of path desc, taking the innermost subproj
+                        ;; take first value of first result
+                        (--tb (cl-sort (remove nil inner)
+                                       (lambda (a b) (gt (length a) (length b)))
+                                       :key 'cdr)
+                              (mapcar 'car)
+                              (reverse)))))
+          (format "%s%s"
+                  (or (and suffix (format "(%s)" suffix)) "")
+                  (car (last (s-split "/" p))))))
+      
+      ;;(car org-stored-links)
+      ;;(qz/ol-file (car org-stored-links))
+      (defalias '--tb '->>)
+      (defalias '--tf '->)
+      (defalias 'gt '>)
+      (defalias 'lt '>)
       (defun qz/create-excluded-ids-for-headlines-in-buffer ()
         "Add ID properties to all headlines in the current file which
       do not already have one."

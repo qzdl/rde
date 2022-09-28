@@ -981,7 +981,7 @@ declared.")
        "fheroes2"
        ;; TODO: Enable pipewire support to chromium by default
        ;; chrome://flags/#enable-webrtc-pipewire-capturer
-       "ungoogled-chromium-wayland" "ublock-origin-chromium"
+       "ispell"
        "nyxt"
        ;;
        "hicolor-icon-theme" "adwaita-icon-theme" "gnome-themes-standard"
@@ -993,6 +993,7 @@ declared.")
        "ffmpeg"
     
        "ripgrep" "curl" "make"
+       "sqlite"
        ))
      )
     

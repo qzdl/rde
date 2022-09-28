@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-09-23 Fri 14:52]
+:UPDATED:  [2022-09-28 Wed 12:10]
 :ID:       84700327-3a84-4d33-9918-dd06a809c28f
 :CREATED:  <2022-03-03 Thu 12:06>
 :END:
@@ -57,7 +57,9 @@
 :ID:       0b25418b-3898-42da-81f2-cfc93aa51017
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-09-28 Wed 12:10]
 :END:
+
 ** about this file
 :PROPERTIES:
 :ID:       7bc94a51-be51-4019-b34b-bb55295f09db
@@ -4599,7 +4601,7 @@ a most controversial decision
 :END:
 
 #+begin_src emacs-lisp :noweb-ref org
-  (setq org-enforce-todo-dependencies t)
+(setq org-enforce-todo-dependencies t)
 #+end_src
 
 #+RESULTS:
@@ -4662,13 +4664,14 @@ a most controversial decision
 (define-key org-mode-map (kbd "C-c M-a") 'qz/org-insert-current-attachment)
 
 #+end_src
-**** refine org-link for generic files
+**** refine org-link for generic files ; replaces {C-c M-l}
 :PROPERTIES:
 :ID:       220874c8-4330-4440-a616-31b2e0a47ef2
 :CREATED:  [2022-05-23 Mon 10:46]
-:UPDATED:  [2022-05-25 Wed 12:31]
+:UPDATED:  [2022-09-23 Fri 13:28]
 :ROAM_EXCLUDE: t
 :END:
+
 #+begin_src emacs-lisp :noweb-ref org
 (defun qz/org-insert-last-stored-link (arg)
   "Insert the last link stored in `org-stored-links'."
@@ -4695,19 +4698,76 @@ prepend or to append."
                             (pop org-stored-links))))
         (setq cnt (+ 1 cnt))
         (insert pr)
-        (org-insert-link nil (car l)
-                         (or (cadr l)
-                             ;; (car (last (s-split "/" "file/path/goop.boop::pattern")))
-                             ;; => "goop.boop::pattern"
-                             (car (last (s-split "/" (car l))))))
-        (insert po)))))
+        (message "%s" `((:l ,l)
+                        (:car-l ,(car l))
+                        (:cadr-l ,(cadr l))
+                        (:mod-l ,(car (last (s-split "/" (car l)))))))
+        (org-insert-link
+         nil (car l)
+         (or (cadr l)
+             (qz/ol-file l)))
+        (insert po))))))
 
 (define-key org-mode-map (kbd "C-c M-l") 'qz/org-insert-last-stored-link)
 #+end_src
 
-#+RESULTS:
-: qz/org-insert-last-stored-link
+#+name: def-ol-file
+#+begin_src emacs-lisp :noweb-ref org
 
+(defun qz/ol-file (link)
+  "transform file path into pretty ol-output
+            - respect projects; truncate prior path, keeping only basename
+"
+  ;; (car (last (s-split "/" "file:~/sys/rde/goop.boop::pattern")))
+  ;; == "goop.boop::pattern"
+  ;; (message  "HELLO :: %s/%s" p (car (last (s-split "/" p))))
+  (let* ((p (car link))
+         (inner (mapcar
+                 (lambda (s) (let ((ss (car s)))
+                               (and (s-contains? (f-base ss) p)
+                                    (cons (f-base ss) ss))))
+                 project--list))
+         (suffix (s-join
+                  " . "
+                  ;; sort by length of path desc, taking the innermost subproj
+                  ;; take first value of first result
+                  (--tb (cl-sort (remove nil inner)
+                                 (lambda (a b) (gt (length a) (length b)))
+                                 :key 'cdr)
+                        (mapcar 'car)
+                        (reverse)))))
+    (format "%s%s"
+            (or (and suffix (format "(%s)" suffix)) "")
+            (car (last (s-split "/" p))))))
+
+;;(car org-stored-links)
+;;(qz/ol-file (car org-stored-links))
+#+end_src
+
+[[file:~/git/ghorg/all-groups/newstore/engineering/libraries/python/events/newstore/shared/events/test.py::def assert_expected_events_were_emitted(self, service_name, test_case):][(ghorg . python . events) test.py::def assert_expected_events_were_emitted(self, service_name, test_case):]]
+#+RESULTS: def-ol-file
+: qz/ol-file
+
+#+name: org-alias-angle-brackets
+#+begin_src emacs-lisp :noweb-ref org
+(defalias '--tb '->>)
+(defalias '--tf '->)
+(defalias 'gt '>)
+(defalias 'lt '>)
+#+end_src
+
+#+RESULTS: org-alias-angle-brackets
+: lt
+
+
+[[file:~/git/ghorg/all-groups/newstore/engineering/libraries/python/events/newstore/shared/events/test.py::def assert_expected_events_were_emitted(self, service_name, test_case):][(ghorg . python . events) test.py::def assert_expected_events_were_emitted(self, service_name, test_case):]]
+
+[[file:~/git/ghorg/all-groups/newstore/engineering/libraries/python/events/newstore/shared/events/test.py::def assert_expected_events_were_emitted(self, service_name, test_case):][(nil) test.py::def assert_expected_events_were_emitted(self, service_name, test_case):]]
+
+
+[[file:~/git/ghorg/all-groups/newstore/engineering/libraries/python/events/newstore/shared/events/test.py::def assert_expected_events_were_emitted(self, service_name, test_case):][(nil) test.py::def assert_expected_events_were_emitted(self, service_name, test_case):]]
+
+[[file:~/git/ns/routing/logistic_order/services/logistic_order/test/component_tests/sales_order_open/__init__.py::class SalesOrderOpenComponentTestBase(EventPumpingTestBase):][(rde . ~/git/sys/rde/)/__init__.py::class SalesOrderOpenComponentTestBase(EventPumpingTestBase):]]
 *** hooks
 :PROPERTIES:
 :ID:       5ff7526d-f62c-49fd-8752-07d829fce0d8
@@ -5550,11 +5610,11 @@ these settings end up looking like this:
     val))
 #+end_src
 
-***** lazy reading mode
+***** lazy readUging mode
 :PROPERTIES:
 :ID:       9a6b201c-5074-4bcc-adea-252dfe608127
 :CREATED:  [2022-05-23 Mon 11:01]
-:UPDATED:  [2022-05-23 Mon 11:08]
+:UPDATED:  [2022-09-23 Fri 14:52]
 :ROAM_EXCLUDE: t
 :END:
 
