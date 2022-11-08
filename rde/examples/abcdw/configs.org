@@ -826,7 +826,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
 :PROPERTIES:
 :ID:       b78b2899-e41b-448b-a3f8-696c19b4fe76
 :CREATED:  [2022-08-01 Mon 17:35]
-:UPDATED:  [2022-08-01 Mon 17:35]
+:UPDATED:  [2022-10-05 Wed 11:50]
 :ROAM_EXCLUDE: t
 :END:
 ***** debug: print features
@@ -862,10 +862,10 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
 :PROPERTIES:
 :ID:       5508a976-f9ad-457c-b4bb-46dbf3b73fb0
 :CREATED:  [2022-07-29 Fri 17:36]
-:UPDATED:  [2022-09-28 Wed 16:40]
+:UPDATED:  [2022-10-13 Thu 13:23]
 :END:
 
-**** pkgs, pkgs-vanilla                                                                                                 :func:
+**** pkgs, pkgs-vanilla                                                        :func:
 :PROPERTIES:
 :ID:       5fb5abba-de52-453a-8cfb-875f6d6897ba
 :CREATED:  [2022-08-08 Mon 11:41]
