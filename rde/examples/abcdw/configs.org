@@ -1129,6 +1129,54 @@ JIRA issues.")
    (license license:gpl3+)))
 #+end_src
 
+***** emacs-kubernetes
+:PROPERTIES:
+:ID:       584e9a93-0058-4bf5-8573-69b35b93e8c0
+:CREATED:  [2022-10-12 Wed 13:27]
+:UPDATED:  [2022-10-12 Wed 13:39]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+
+(define-public emacs-kubernetes
+  (package
+   (name "emacs-kubernetes")
+   (version "20220715.1717")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/kubernetes-el/kubernetes-el.git")
+                  (commit "8163fd38015cbde0485f6eaab41450132bf6e19d")))
+            (sha256
+             (base32
+              "06p5qz4h5ar86vv4nzpw08x18fjvs2zg5brx55h80hjdgr89b771"))))
+   (build-system emacs-build-system)
+   (inputs (list emacs-magit
+                 emacs-magit-popup
+                 emacs-dash
+                 emacs-with-editor
+                 emacs-request
+                 emacs-s
+                 emacs-transient))
+   (arguments
+    '(#:include '("^[^/]+.el$" "^[^/]+.el.in$"
+                  "^dir$"
+                  "^[^/]+.info$"
+                  "^[^/]+.texi$"
+                  "^[^/]+.texinfo$"
+                  "^doc/dir$"
+                  "^doc/[^/]+.info$"
+                  "^doc/[^/]+.texi$"
+                  "^doc/[^/]+.texinfo$")
+                #:exclude '("^.dir-locals.el$" "^test.el$" "^tests.el$" "^[^/]+-test.el$"
+                            "^[^/]+-tests.el$" "^kubernetes-evil.el$")))
+   (home-page "https://github.com/kubernetes-el/kubernetes-el")
+   (synopsis "Magit-like porcelain for Kubernetes")
+   (description
+    "kubernetes-el is a text-based, interactive management interface for managing
+Kubernetes clusters within Emacs.")
+   (license license:gpl3+)))
+#+end_src
 *** imports
 :PROPERTIES:
 :ID:       065c4d90-4d84-4969-8221-44f5008a9502
