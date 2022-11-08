@@ -798,6 +798,9 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
      ;;;;; emacs
       ;;(mail-lst 'emacs-org-mode "emacs-orgmode@gnu.org"
       ;;          '("https://yhetil.org/orgmode"))
+      ;;(mail-lst 'emacs-bugs "bug-gnu-emacs@gnu.org"
+      ;;          '("https://yhetil.org/emacs-bugs"))
+      ;;
       ;;
       ;;(mail-lst 'emacs-hyperbole "bug-hyperbole@gnu.org"
       ;;          '("https://lists.gnu.org/archive/mbox/bug-hyperbole"
