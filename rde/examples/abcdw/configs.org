@@ -966,6 +966,52 @@ statements, see `sqlind-align-rules'.")
    (license license:gpl3+)))
 #+end_src
 
+***** emacs-org-ml
+:PROPERTIES:
+:ID:       91194ee1-6cf0-46ff-8685-efc0a076697a
+:CREATED:  [2022-10-04 Tue 15:52]
+:UPDATED:  [2022-10-04 Tue 15:52]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(define-public emacs-org-ml
+  (package
+   (name "emacs-org-ml")
+   (version "20220711.1528")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/ndwarshuis/org-ml.git")
+                  (commit "385e3bee497f858705144d7ab5e6570d31d3ffe8")))
+            (sha256
+             (base32
+              "0j506lp3lgf9iz94ag041bpdcr837j5lmbazq7v3brblm43dvh9p"))))
+   (build-system emacs-build-system)
+   (propagated-inputs (list emacs-org emacs-dash emacs-s))
+   (home-page "https://github.com/ndwarshuis/org-ml")
+   (synopsis "Functional Org Mode API")
+   (description
+    "This is a functional API for org-mode primarily using the `org-element' library.
+`org-element.el' provides the means for converting an org buffer to a parse-tree
+data structure.  This library contains functions to modify this parse-tree in a
+more-or-less 'purely' functional manner (with the exception of parsing from the
+buffer and writing back to the buffer).  For the purpose of this package, the
+resulting parse tree is composed of 'nodes'.
+
+This library exposes the following types of functions: - builder: build new
+nodes to be inserted into a parse tree - property functions: return either
+property values (get) or nodes with   modified properties (set and map) -
+children functions: return either children of nodes (get) or return a node
+with modified children (set and map) - node predicates: return t if node meets a
+condition - pattern matching: return nodes based on a pattern that matches the
+parse   tree (and perform operations on those nodes depending on the function) -
+parsers: parse a buffer (optionally at current point) and return a parse   tree
+- writers: insert/update the contents of a buffer given a parse tree
+
+For examples please see full documentation at:
+https://github.com/ndwarshuis/org-ml")
+   (license license:gpl3+)))
+#+end_src
 ***** emacs-ob-go
 :PROPERTIES:
 :ID:       58790647-3625-4145-87d8-2a5baa335b0f
