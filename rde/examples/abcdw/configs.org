@@ -1217,6 +1217,36 @@ Kubernetes clusters within Emacs.")
    (description "Mypy linter for the Python LSP Server")
    (license license:gpl3+)))
 #+end_src
+
+***** emacs-ox-slack
+:PROPERTIES:
+:ID:       a24f5f97-483b-440b-adb7-a1cd7732a212
+:UPDATED:  [2022-10-31 Mon 15:01]
+:END:
+
+#+begin_src scheme
+(define-public emacs-ox-slack
+  (package
+   (name "emacs-ox-slack")
+   (version "20200108.1546")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/titaniumbones/ox-slack.git")
+                  (commit "bd797dcc58851d5051dc3516c317706967a44721")))
+            (sha256
+             (base32
+              "1kh2v08fqmsmfj44ik8pljs3fz47fg9zf6q4mr99c0m5ccj5ck7w"))))
+   (build-system emacs-build-system)
+   (propagated-inputs (list emacs-org emacs-ox-gfm))
+   (home-page "https://github.com/titaniumbones/ox-slack")
+   (synopsis "Slack Exporter for org-mode")
+   (description
+    "This library implements a Slack backend for the Org exporter, based on the `md
+and `gfm back-ends.")
+   (license license:gpl3+)))
+#+end_src
+
 *** imports
 :PROPERTIES:
 :ID:       065c4d90-4d84-4969-8221-44f5008a9502
