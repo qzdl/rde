@@ -1094,6 +1094,41 @@ declared.")
    (license license:gpl3+)))
 #+end_src
 
+***** emacs-ox-jira
+:PROPERTIES:
+:ID:       f8bac9c3-36b2-4c70-a8e1-3bc6d3c981a4
+:CREATED:  [2022-10-04 Tue 16:09]
+:UPDATED:  [2022-10-04 Tue 16:09]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(define-public emacs-ox-jira
+  (package
+   (name "emacs-ox-jira")
+   (version "20220423.1403")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/stig/ox-jira.el.git")
+                  (commit "00184f8fdef02a3a359a253712e8769cbfbea3ba")))
+            (sha256
+             (base32
+              "1zyq4d0fvyawvb3w6072zl4zgbnrpzmxlz2l731wqrgnwm0l80gy"))))
+   (build-system emacs-build-system)
+   (propagated-inputs (list emacs-org))
+   (home-page "https://github.com/stig/ox-jira.el")
+   (synopsis "JIRA Backend for Org Export Engine")
+   (description
+    "This module plugs into the regular Org Export Engine and transforms Org files to
+JIRA markup for pasting into JIRA tickets & comments.
+
+In an Org buffer, hit `C-c C-e j j' to bring up *Org Export Dispatcher* and
+export it as a JIRA buffer.  I usually use `C-x h' to mark the whole buffer,
+then `M-w' to save it to the kill ring (and global pasteboard) for pasting into
+JIRA issues.")
+   (license license:gpl3+)))
+#+end_src
+
 *** imports
 :PROPERTIES:
 :ID:       065c4d90-4d84-4969-8221-44f5008a9502
