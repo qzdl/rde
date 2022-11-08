@@ -1177,6 +1177,46 @@ JIRA issues.")
 Kubernetes clusters within Emacs.")
    (license license:gpl3+)))
 #+end_src
+
+***** python-pylsp-mypy
+:PROPERTIES:
+:ID:       6c17b978-44b6-412a-bf36-ea7854089c96
+:CREATED:  [2022-10-13 Thu 13:17]
+:UPDATED:  [2022-10-13 Thu 13:23]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+(use-modules (guix build-system python)  ; pypi-uri
+             (gnu packages python-xyz)   ; python-lsp-server
+             (gnu packages python-check) ; python-mypy
+             (gnu packages python-build) ; python-toml
+             (gnu packages check)        ; python coverage
+             )
+
+(define-public python-pylsp-mypy
+  (package
+   (name "python-pylsp-mypy")
+   (version "0.6.3")
+   (source (origin
+            (method url-fetch)
+            (uri (pypi-uri "pylsp-mypy" version))
+            (sha256
+             (base32
+              "1gf865dj9na7jyp1148k27jafwb6bg0rdg9kyv4x4ag8qdlgv9h6"))))
+   (build-system python-build-system)
+   (propagated-inputs (list python-lsp-server
+                            python-mypy
+                            python-toml))
+   (native-inputs (list python-coverage
+                        python-pytest
+                        python-pytest-cov
+                        python-tox))
+   (home-page "https://github.com/python-lsp/pylsp-mypy")
+   (synopsis "Mypy linter for the Python LSP Server")
+   (description "Mypy linter for the Python LSP Server")
+   (license license:gpl3+)))
+#+end_src
 *** imports
 :PROPERTIES:
 :ID:       065c4d90-4d84-4969-8221-44f5008a9502
