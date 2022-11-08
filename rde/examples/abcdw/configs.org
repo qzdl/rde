@@ -1012,6 +1012,51 @@ For examples please see full documentation at:
 https://github.com/ndwarshuis/org-ml")
    (license license:gpl3+)))
 #+end_src
+
+***** emacs-moldable-emacs
+:PROPERTIES:
+:ID:       3c32dec6-4f12-4aa0-ad00-98b433c966e8
+:CREATED:  [2022-10-05 Wed 19:07]
+:UPDATED:  [2022-10-05 Wed 19:19]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+(define-public emacs-moldable-emacs
+  (package
+   (name "emacs-moldable-emacs")
+   (version "20220825.0037")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/ag91/moldable-emacs")
+           (commit "53f8b3af4572ab12be9f1f96da848278507ef350")))
+     (sha256
+      (base32 "1jcac4hiyh98q8cvim6yjaw1xihsy3r5lnjhijr3p89z2bv481xl"))))
+   (build-system emacs-build-system)
+   ;;; propagated (external)
+   ;; (check these via the mold “WhatMoldsCanIUse?”)
+   ;; graph-cli
+   ;; graphviz
+   ;; imgclip
+   (inputs (list emacs-dash
+                 emacs-s
+                 emacs-async
+                 ;; emacs-thunk builtin
+                 emacs-esxml
+                 emacs-org-ql
+                 ;; emacs-tree-sitter
+                 ;; emacs-code-compass
+                 ))
+   (home-page "https://github.com/ag91/moldable-emacs")
+   (synopsis "TODO")
+   (description
+    "TODO")
+   (license license:gpl3+)))
+#+end_src
+
+
 ***** emacs-ob-go
 :PROPERTIES:
 :ID:       58790647-3625-4145-87d8-2a5baa335b0f
