@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-09-29 Thu 14:07]
+:UPDATED:  [2022-11-08 Tue 12:22]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :CREATED:  [2022-08-30 Tue 11:12]
 :END:
@@ -84,14 +84,14 @@ make: *** [Makefile:14: %-home-reconfigure] Error 1
 :ROAM_EXCLUDE: t
 :END:
 
-** concerns :task:
+** concerns                                                                    :task:
 :PROPERTIES:
 :ID:       b5ed68eb-64ff-4878-9f79-9baddfd6e45c
 :CREATED:  [2022-09-28 Wed 16:40]
 :UPDATED:  [2022-09-28 Wed 16:40]
 :ROAM_EXCLUDE: t
 :END:
-*** emacs :emacs:
+*** emacs                                                                     :emacs:
 :PROPERTIES:
 :ID:       15c5b396-318c-4de7-ba73-0cb446b4b40a
 :CREATED:  [2022-09-28 Wed 16:40]
@@ -149,7 +149,7 @@ Debugger entered--Lisp error: (file-missing "Cannot open load file" "No such fil
 :PROPERTIES:
 :ID:       5262d510-7a89-4a2c-bf78-143c11404444
 :CREATED:  [2022-09-28 Wed 16:48]
-:UPDATED:  [2022-09-28 Wed 16:49]
+:UPDATED:  [2022-10-05 Wed 19:29]
 :ROAM_EXCLUDE: t
 :END:
 ****** attribute created from headline, using [[id:5367ec4f-24d6-4416-a8d9-18df8cb1c0c2][created && updated]]
@@ -207,6 +207,8 @@ CLOSED: [2022-09-28 Wed 15:28]
 CLOCK: [2022-09-28 Wed 14:39]--[2022-09-28 Wed 14:45] =>  0:06
 :END:
 
+hello
+
 ******** DONE fix (unrelated errors) elisp config
 CLOSED: [2022-09-28 Wed 15:28]
 :PROPERTIES:
@@ -220,9 +222,9 @@ CLOSED: [2022-09-28 Wed 15:28]
   :PROPERTIES:
   :UPDATED:  [2022-09-28 Wed 15:29]
 :END:
-  
+
 tangle -> validate -> continue
-  
+
 extra paren check needed for all tangled files
 CLOCK: [2022-09-28 Wed 14:45]--[2022-09-28 Wed 15:28] =>  0:43
 :END:
@@ -249,17 +251,10 @@ CLOCK: [2022-09-28 Wed 15:28]--[2022-09-28 Wed 17:29] =>  2:01
 :PROPERTIES:
 :ID:       e3a0accc-135d-43dd-81be-e6e3e3aeb5db
 :CREATED:  [2022-09-28 Wed 14:12]
-:UPDATED:  [2022-09-28 Wed 14:13]
+:UPDATED:  [2022-11-08 Tue 12:22]
 :ROAM_EXCLUDE: t
 :END:
 
-******** 
-:PROPERTIES:
-:ID:       7a2eed65-254b-4b2f-a01d-05ce646cff5b
-:CREATED:  [2022-09-28 Wed 15:30]
-:UPDATED:  [2022-09-28 Wed 15:30]
-:ROAM_EXCLUDE: t
-:END:
 ***** TODO fix org stuff
 :PROPERTIES:
 :ID:       7f5afdfa-fc3b-47ae-a804-f2c01f215fc0
@@ -281,7 +276,7 @@ CLOCK: [2022-09-28 Wed 15:28]--[2022-09-28 Wed 17:29] =>  2:01
 :UPDATED:  [2022-09-28 Wed 14:13]
 :ROAM_EXCLUDE: t
 :END:
-*** guix :guix:
+*** guix                                                                       :guix:
 :PROPERTIES:
 :ID:       2d285252-67e4-4455-a4bc-5a486ebc7718
 :CREATED:  [2022-09-28 Wed 16:40]
@@ -302,7 +297,7 @@ CLOCK: [2022-09-28 Wed 15:28]--[2022-09-28 Wed 17:29] =>  2:01
 :UPDATED:  [2022-09-28 Wed 16:41]
 :ROAM_EXCLUDE: t
 :END:
-*** rde :rde:
+*** rde                                                                         :rde:
 :PROPERTIES:
 :ID:       31909571-94cc-4718-a971-558ac7074120
 :CREATED:  [2022-08-15 Mon 12:01]
@@ -419,7 +414,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
 :PROPERTIES:
 :ID:       7c9c9408-15b7-4d3e-be98-9b2bda19e7d5
 :CREATED:  [2022-09-28 Wed 16:24]
-:UPDATED:  [2022-09-28 Wed 16:24]
+:UPDATED:  [2022-10-05 Wed 15:59]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -748,7 +743,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
 :PROPERTIES:
 :ID:       1532c6ba-0d0c-499e-bddd-ae1caa1dc778
 :CREATED:  [2022-07-29 Fri 17:48]
-:UPDATED:  [2022-09-29 Thu 11:32]
+:UPDATED:  [2022-10-28 Fri 16:42]
 :ROAM_EXCLUDE: t
 :END:
 
