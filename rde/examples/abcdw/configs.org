@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-11-08 Tue 12:22]
+:UPDATED:  [2022-11-09 Wed 10:19]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :CREATED:  [2022-08-30 Tue 11:12]
 :END:
@@ -430,7 +430,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
 :PROPERTIES:
 :ID:       98f42608-b5c0-455d-bb02-9a326af8bc42
 :CREATED:  [2022-08-01 Mon 09:49]
-:UPDATED:  [2022-09-29 Thu 11:11]
+:UPDATED:  [2022-11-09 Wed 10:19]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -1059,7 +1059,6 @@ https://github.com/ndwarshuis/org-ml")
    (license license:gpl3+)))
 #+end_src
 
-
 ***** emacs-ob-go
 :PROPERTIES:
 :ID:       58790647-3625-4145-87d8-2a5baa335b0f
@@ -1224,7 +1223,7 @@ Kubernetes clusters within Emacs.")
 ***** emacs-ox-slack
 :PROPERTIES:
 :ID:       a24f5f97-483b-440b-adb7-a1cd7732a212
-:UPDATED:  [2022-10-31 Mon 15:01]
+:UPDATED:  [2022-11-08 Tue 12:36]
 :END:
 
 #+begin_src scheme
@@ -1346,7 +1345,7 @@ and `gfm back-ends.")
 :PROPERTIES:
 :ID:       5b5d963a-b70c-4867-87b8-8beb1633fa02
 :CREATED:  [2022-09-28 Wed 15:47]
-:UPDATED:  [2022-09-28 Wed 15:47]
+:UPDATED:  [2022-10-04 Tue 16:12]
 :ROAM_EXCLUDE: t
 :END:
 #+name: guile-service-envars
@@ -1438,7 +1437,7 @@ and `gfm back-ends.")
                                 "${XDG_CACHE_HOME}/npm/bin")
                           ":"))))
 #+end_src
-  
+
 ******* zsh : profile, *rc
 :PROPERTIES:
 :ID:       533771da-9686-48f0-85ed-e24da7b726d6
@@ -1465,7 +1464,7 @@ and `gfm back-ends.")
 ;;      #$(file-append (@ (gnu packages base) coreutils) "/bin/ls"))))
 #+end_src
 
-******* mcron                                                                                                           :jobs:
+******* mcron                                                                  :jobs:
 :PROPERTIES:
 :ID:       c3c092d2-4cee-48eb-abc8-e76e393b5967
 :CREATED:  [2022-09-28 Wed 15:42]
@@ -1487,8 +1486,8 @@ and `gfm back-ends.")
   )
  )
 #+end_src
-   
-******** notes-commit                                                                                                   :1min:
+
+******** notes-commit                                                          :1min:
 :PROPERTIES:
 :ID:       c8903598-d72e-4539-884b-a60096be7fbe
 :CREATED:  [2022-09-28 Wed 15:42]
@@ -1518,8 +1517,8 @@ and `gfm back-ends.")
        "notes-commit"
        #:user "samuel")
 #+end_src
-   
-******** fulltext index (recoll)                                                                                        :1h:
+
+******** fulltext index (recoll)                                                 :1h:
 :PROPERTIES:
 :ID:       ccd773a9-5a5e-41da-b050-6fa461c9a427
 :CREATED:  [2022-09-28 Wed 15:42]
@@ -1538,7 +1537,7 @@ and `gfm back-ends.")
        #:user "samuel")
 #+end_src
 
-******** generate source tags                                                                                           :12h:
+******** generate source tags                                                   :12h:
 :PROPERTIES:
 :ID:       0681c613-5415-46d7-a079-e940c503941c
 :CREATED:  [2022-09-28 Wed 15:43]
@@ -1579,7 +1578,7 @@ and `gfm back-ends.")
 
 #+end_src
 
-******* mcron                                                                                                           :jobs:
+******* mcron                                                                  :jobs:
 :PROPERTIES:
 :ID:       b83cdd83-78d4-464f-bb8f-74a481713984
 :CREATED:  [2022-09-28 Wed 15:47]
@@ -1588,7 +1587,7 @@ and `gfm back-ends.")
 :END:
 
 - ::  https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
-  
+
 #+begin_src scheme :noweb-ref services-sys
 (simple-service
  'system-jobs (@ (gnu services mcron) mcron-service-type)
@@ -1605,6 +1604,7 @@ and `gfm back-ends.")
 :UPDATED:  [2022-09-28 Wed 15:51]
 :ROAM_EXCLUDE: t
 :END:
+
 #+name: guile-job-locate
 #+begin_src scheme :noweb-ref jobs-sys
 ;; update locate database
@@ -1617,7 +1617,7 @@ and `gfm back-ends.")
        "updatedb")
 #+end_src
 
-******* udev-nvidia                                                                                                     :inactive:
+******* udev-nvidia                                                        :inactive:
 :PROPERTIES:
 :ID:       e005dec1-7261-4fcd-84b6-49209ea7d7b0
 :CREATED:  [2022-09-28 Wed 15:52]
@@ -5053,7 +5053,7 @@ processing a lot"
 | qz/advice-enable--org-clock-resolve--qz/agenda-files-update-clock | qz/advice-disable--org-clock-resolve--qz/agenda-files-update-clock |
 | qz/advice-enable--org-clock-resolve--qz/agenda-files-update       | qz/advice-disable--org-clock-resolve--qz/agenda-files-update       |
 
-******* [[id:9b0676a9-93d3-4449-ac82-721d4e20d4d6][daily-files]]                                                  :func:var:
+******* [[id:9b0676a9-93d3-4449-ac82-721d4e20d4d6][daily-files]]                                                        :func:var:
 :PROPERTIES:
 :ID:       f6bedbac-927c-46aa-bd67-e241af09bd76
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -5091,7 +5091,7 @@ qz/agenda-daily-files-f
 #+RESULTS:
 : qz/clock-files
 
-******* files-agenda                                                                                              :func:
+******* files-agenda                                                           :func:
 :PROPERTIES:
 :ID:       53b918cd-26d6-4d02-9e6d-b0a4bffc9c3e
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -5102,7 +5102,7 @@ qz/agenda-daily-files-f
   (seq-uniq (append qz/org-agenda-files (qz/project-files))))
 #+end_src
 
-******* [[id:cb81cfd7-fb16-4965-af20-69129cf4fd97][project-files]]                                                :func:
+******* [[id:cb81cfd7-fb16-4965-af20-69129cf4fd97][project-files]]                                                          :func:
 :PROPERTIES:
 :ID:       8279b4e0-f23a-44f9-a1af-07a44b5de957
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -5123,7 +5123,7 @@ qz/agenda-daily-files-f
 
 #+RESULTS:
 : qz/project-files
-******* private-files                                                                                             :func:
+******* private-files                                                          :func:
 :PROPERTIES:
 :ID:       2c1e97dd-8d37-4ff8-b6cd-9440553adea1
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -5236,11 +5236,12 @@ qz/agenda-daily-files-f
 :ROAM_EXCLUDE: t
 :END:
 
-******* daily TODOs
+******* {C-c n t } daily TODOs
 :PROPERTIES:
 :ID:       7e41b5a2-8678-4921-aebd-dcffecb0bbe5
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-10-06 Thu 12:24]
 :END:
 #+begin_src emacs-lisp :noweb-ref agenda
 ;; current (default) sorting strat
@@ -5276,6 +5277,7 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
 :ROAM_EXCLUDE: t
 :UPDATED:  [2022-08-17 Wed 16:21]
 :END:
+
 #+begin_src emacs-lisp :noweb-ref agenda
 (defun qz/org-agenda-gtd ()
   (interactive)
@@ -5516,11 +5518,12 @@ could do with some love; dates above are a bit redundant maybe
 
 #+end_src
 
-****** settings                                                                                                    :var:
+****** settings                                                                 :var:
 :PROPERTIES:
 :ID:       359219d7-3d55-44aa-b8f2-c5046125bb29
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-10-06 Thu 12:26]
 :END:
 ******* org-agenda-files
 :PROPERTIES:
@@ -5569,7 +5572,7 @@ because a mechanism for the discovery of =TODO= entries is
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-******* category :: agenda format refinement                                                                      :org:
+******* category :: agenda format refinement                                    :org:
 :PROPERTIES:
 :ID:       428c5706-9498-44e8-8960-2e893347d737
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -5690,7 +5693,7 @@ Refer to `org-agenda-prefix-format' for more information."
 
 - :: https://orgmode.org/worg/org-hacks.html#org92f0a44
 
-******** org-lunar-phases                                                                                        :func:
+******** org-lunar-phases                                                      :func:
 :PROPERTIES:
 :ID:       84219025-9fc0-41c0-b43b-70c5d61aed77
 :CREATED:  [2022-04-14 Thu 15:55]
@@ -5777,7 +5780,20 @@ The diary entry can contain `%s' which will be replaced with
 
 #+RESULTS:
 : qz/diary-sunset
-
+***** jira
+:PROPERTIES:
+:ID:       5fd74f4a-26f8-40d8-9947-01927e0f06ed
+:CREATED:  [2022-10-11 Tue 17:40]
+:UPDATED:  [2022-10-11 Tue 17:40]
+:ROAM_EXCLUDE: t
+:END:
+******
+:PROPERTIES:
+:ID:       0968480e-2a2e-44bf-9641-e672e440aa3b
+:CREATED:  [2022-10-11 Tue 17:40]
+:UPDATED:  [2022-10-11 Tue 17:40]
+:ROAM_EXCLUDE: t
+:END:
 ***** [[id:0213945d-cba5-4dd0-812c-9c01d6f51148][babel]]
 :PROPERTIES:
 :ID:       5bfb32fe-c5fb-46cb-a5ed-fe819d17949e
@@ -5865,12 +5881,12 @@ fuck the speed my man; {M-x load-library RET ob-} is so annoying
 :END:
 CREATED: <2021-11-29 Mon
 >
-******* lob-ingest-files                                                                                          :var:func:
+******* lob-ingest-files                                                   :var:func:
 :PROPERTIES:
 :ID:       05415208-95bf-4153-b65c-32e10112c582
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-07-08 Fri 12:08]
+:UPDATED:  [2022-10-24 Mon 14:25]
 :END:
 CREATED: <2021-11-29 Mon>
 
@@ -5908,15 +5924,16 @@ CREATED: <2021-11-29 Mon>
 #+RESULTS:
 | count | file                                                   |
 |-------+--------------------------------------------------------|
-|    71 | /home/samuel/life/roam/20210420T114708Z-newstore.org   |
+|    75 | /home/samuel/life/roam/20210420T114708Z-newstore.org   |
 |    11 | /home/samuel/life/roam/20210813T161035Z-kubernetes.org |
-|    18 | /home/samuel/life/roam/20200515T151822Z-postgresql.org |
+|    26 | /home/samuel/life/roam/20200515T151822Z-postgresql.org |
 |     4 | /home/samuel/life/roam/20210813T161035Z-es_mode.org    |
 |     2 | /home/samuel/life/roam/20200415T145703Z-emacs_lisp.org |
 |     1 | /home/samuel/life/roam/20210505T135556Z-plantuml.org   |
 |     1 | /home/samuel/life/roam/20200919T152005Z-gnu_guix.org   |
+|     1 | /home/samuel/life/roam/20200511T150956Z-git.org        |
 
-******* choose babel block                                                                                        :func:
+******* choose babel block                                                     :func:
 :PROPERTIES:
 :ID:       d8ebb517-f247-48a2-af5f-08a3d6c6c3ae
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -6105,7 +6122,7 @@ CREATED: <2021-11-29 Mon>
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-******* make-table-constants                                                                                      :func:kbd:
+******* make-table-constants                                               :func:kbd:
 :PROPERTIES:
 :ID:       3c5750a5-620d-4b44-9a38-fd0fb218b584
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -6149,7 +6166,7 @@ CREATED: <2021-11-29 Mon>
 
 #+RESULTS:
 : qz/org-babel-make-table-constants
-******* {C-c C-v C-RET} ob-shell->terminal                                                                        :func:kbd:
+******* {C-c C-v C-RET} ob-shell->terminal                                 :func:kbd:
 :PROPERTIES:
 :ID:       3ed48629-8f96-4dfe-9cc8-894cfb2920c0
 :CREATED:  [2022-06-21 Tue 23:58]
@@ -6186,7 +6203,7 @@ CREATED: <2021-11-29 Mon>
 
 (define-key org-babel-map (kbd "C-<return>") 'qz/shell-current-src-block)
 #+end_src
-******* {C-c C-v M-w} org-kill-expanded-src-block                                                                 :func:kbd:
+******* {C-c C-v M-w} org-kill-expanded-src-block                          :func:kbd:
 :PROPERTIES:
 :ID:       b156336c-2c1e-4ec6-9944-076c6566933f
 :CREATED:  [2022-08-16 Tue 18:21]
@@ -6206,7 +6223,7 @@ CREATED: <2021-11-29 Mon>
 #+RESULTS:
 : qz/org-kill-expanded-src-block
 
-******* list->rows                                                                                                :func:
+******* list->rows                                                             :func:
 :PROPERTIES:
 :ID:       5e08ae52-4e0f-40b7-9595-f3c325390959
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -6345,7 +6362,7 @@ the major mode specifies support for Font Lock."
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-******* helpers                                                                                                   :func:
+******* helpers                                                                :func:
 :PROPERTIES:
 :ID:       cbb71c7a-93f0-48b9-b262-781128398302
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -6389,7 +6406,7 @@ the major mode specifies support for Font Lock."
   (format-time-string "%Y%m%dT%H%M%SZ" (current-time) t))
 #+end_src
 
-******* templates                                                                                                 :var:
+******* templates                                                               :var:
 :PROPERTIES:
 :ID:       5a0c855e-f0ed-4dee-bf03-b7dfec2f023b
 :CREATED:  <2022-02-22 Tue 15:27>
