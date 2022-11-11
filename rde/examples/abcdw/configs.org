@@ -4736,6 +4736,44 @@ is already narrowed."
 #+RESULTS:
 : qz/yq-interactively
 
+**** insert-gpl
+:PROPERTIES:
+:ID:       12f23b79-b0b4-49a7-afd3-1ea730673140
+:CREATED:  [2022-10-25 Tue 15:55]
+:UPDATED:  [2022-10-25 Tue 16:02]
+:ROAM_EXCLUDE: t
+:END:
+
+- inspired by https://efxa.org/2013/05/01/lisp-function-gnu-gpl-emacs
+
+#+begin_src emacs-lisp
+(defun qz/insert-gpl ()
+  "Insert the short brief of GNU GPL v3."
+  (interactive)
+  (save-mark-and-excursion
+    (push-mark)
+    (insert "
+<one line to give the program's name and a brief idea of what it does.>
+Copyright (C) <year>  <name of author>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.")
+    (comment-region (mark) (point))))
+#+end_src
+
+#+RESULTS:
+: insert-gpl
+
 *** programming
 :PROPERTIES:
 :ID:       5fe66077-8fc2-4d04-905d-d0b5ef925a6d
