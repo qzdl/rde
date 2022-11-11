@@ -9351,7 +9351,7 @@ check with (org-redisplay-inline-images)
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :noweb-ref org
 (defun qz/org-sort-subtree ()
   (interactive)
   (save-mark-and-excursion
