@@ -5524,6 +5524,31 @@ consuming
 (with-eval-after-load 'pdf-view
   (add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode))
 #+end_src
+**** HACK nov-el
+:PROPERTIES:
+:ID:       628a3caa-7fbd-4c56-bc5e-221cfdb2a5da
+:CREATED:  [2022-10-04 Tue 18:12]
+:UPDATED:  [2022-10-04 Tue 18:13]
+:ROAM_EXCLUDE: t
+:END:
+
+it's [2022-10-04 Tue]; I have just retrieved the dirtiest hack in a
+while from the archive; but I mean... [[id:0f7be177-127d-4476-9a0f-a1ed3a570400][look at it]][fn:3]
+
+#+begin_src emacs-lisp
+(defun pj-line-width () 650)
+#+end_src
+
+***** screenshot
+:PROPERTIES:
+:ID:       0f7be177-127d-4476-9a0f-a1ed3a570400
+:CREATED:  [2022-10-04 Tue 18:13]
+:UPDATED:  [2022-10-04 Tue 18:13]
+:END:
+
+#+DOWNLOADED: screenshot @ 2022-10-04 18:13:11
+[[file:configs/2022-10-04_18-13-11_screenshot.png]]
+
 **** hyperbole
 :PROPERTIES:
 :ID:       530fac5a-4f90-489a-83d8-69b1b75ab249
