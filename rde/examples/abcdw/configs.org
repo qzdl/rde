@@ -2588,6 +2588,7 @@ host	all	all	0.0.0.0/0       md5
 (feature-emacs-org
  #:org-directory my-org-directory
  #:org-indent? #f
+ #:org-modern? #f
  ;;#:org-agenda-directory my-notes-directory ;; TODO qzdl
  )
 #+end_src
