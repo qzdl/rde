@@ -4305,6 +4305,151 @@ or
 (add-to-list 'display-buffer-alist '("*kubectl*" display-buffer-no-window))
 #+end_src
 
+**** read-tab
+:PROPERTIES:
+:ID:       c053accd-329e-440d-be77-735ecea9f0b3
+:CREATED:  [2022-10-31 Mon 13:16]
+:UPDATED:  [2022-10-31 Mon 13:17]
+:ROAM_EXCLUDE: t
+:END:
+
+#+name: elisp-read-tab
+#+begin_src emacs-lisp
+(defun qz/read-tab ()
+  (interactive)
+  (let* ((file (s-trim (shell-command-to-string "python3 $HOME/life/scratch/tabs.py")))
+         (jd   (mapcar (lambda (o) (cons (gethash "title" o) o))
+                       (cl-sort ;; accessed ASC
+                        (with-temp-buffer
+                          (insert-file-contents file)
+                          (json-parse-buffer))
+                        'lt :key (lambda (o)
+                                   (gethash "accessed" o)))))
+         (choice (cdr (assoc
+                       (consult--read
+                        (mapcar 'car jd)
+                        :prompt "choose tab: "
+                        :default (car (seq-take jd 1))
+                        :sort nil)
+                       jd))))
+    (insert
+     (cl-destructuring-bind (title url)
+         (list (gethash "title" choice)
+               (gethash "url" choice))
+       (cl-case major-mode
+         (org-mode (org-make-link-string url title))
+         (t (format "%s :: %s" title url)))))))
+
+(define-key global-map (kbd "C-c C-s-l") 'qz/read-tab)
+#+end_src
+
+***** tabs.py
+:PROPERTIES:
+:ID:       5af6010e-4010-4c80-80c7-4050a689eeab
+:CREATED:  [2022-10-31 Mon 13:22]
+:UPDATED:  [2022-10-31 Mon 13:30]
+:ROAM_EXCLUDE: t
+:END:
+
+#+name: python-read-tab
+#+begin_src python :tangle ~/life/scratch/tabs.py :noweb yes
+# tabs.py -- a script to rip condensed tabs from firefox as json
+#
+# Copyright (C) 2022  Samuel Culpepper <samuel@samuelculpepper.com>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# See footer for elisp companion, to `completing-read' inside emacs
+
+import json
+import lz4.block
+import pathlib
+from time import time
+
+debug = False
+output = "/tmp/tabs-out.json"
+
+# Set up path and regex for files
+path = pathlib.Path.home().joinpath(".mozilla/firefox")
+files = list(path.glob("*default*/sessionstore-backups/recovery.jsonlz4"))
+# files = path.glob("oxd0gsnm.default-release-1/sessionstore-backups/recovery" + ".jsonlz4")
+
+debug and print(files)
+
+ID = lambda t: (t.get("ID"))
+CHILD = lambda t: (t.get("children", []))
+
+tabs = []
+
+# ID =   [(ID(t), ID(c)) for tt in t.get('entries') for c in tt.get('children')]
+
+
+def go():
+    for f in files:
+        # decompress if necessary
+        b = f.read_bytes()
+        if b[:8] == b"mozLz40\0":
+            b = lz4.block.decompress(b[8:])
+
+        j = json.loads(b)
+        with open("/tmp/tabs-in.json", "w+") as f:
+            json.dump(j, f, indent=2)
+
+        if "windows" not in j.keys():
+            break
+        for w in j["windows"]:
+            most_recent_tab_index = ""
+            min_time = 1000
+
+            debug and print("w.tabs len", len(w["tabs"]))
+            for t in w["tabs"]:
+                i = t["index"] - 1  # Firefox does not 0-index
+                debug and print(
+                    "(ID . (length t/entries/[i]/children))",
+                    t["entries"][i]["ID"],
+                    [
+                        [ID(c), [ID(cc) for cc in CHILD(c)]]
+                        for c in CHILD(t["entries"][i])
+                    ],
+                )
+                # time -> seconds elapsed
+                access_time = int((int(time() * 1000) - t["lastAccessed"]) / 600)
+                if access_time < min_time:
+                    most_recent_tab_index = t["entries"][i]["url"]
+                # [(ID(t), ID(c)) for tt in t.get('entries') for c in tt.get('children')]
+
+                hi = t["entries"][i]
+                tabs.append(
+                    {
+                        "id": hi.get("ID"),
+                        "url": hi.get("url"),
+                        "title": hi.get("title"),
+                        "accessed": access_time,
+                    }
+                )
+                debug and print("MOST RECENT TAB: ", most_recent_tab_index)
+
+        with open(output, "w") as f:
+            json.dump(tabs, f, indent=2)
+        print(output)
+
+
+go()
+
+# <<elisp-read-tab>>
+#+end_src
+
 *** general
 :PROPERTIES:
 :ID:       8f3dada6-e104-4726-aaa2-25c1475c534e
