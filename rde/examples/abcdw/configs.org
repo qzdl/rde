@@ -7225,10 +7225,10 @@ the major mode specifies support for Font Lock."
          ,(s-join "\n" '("* [%<%H:%M>] %?"
                          ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
                          "- from :: %a"
-                         "- from (point) :: %f"
-                         "- clocking :: %K"
+                         ;;"- from (point) :: %f"
+                         "- clocking :: %K" ; REVIEW does this solve tangents?
                          ;; the region one is a bit tricky
-                         "- region ::\n  #+begin_quote\n%(\"%i\")\n#+end_quote" 
+                         ;;"- region ::\n  #+begin_quote\n%(\"%i\")\n#+end_quote"
                          ))
          :if-new (file+head+olp
                   ,qz/org-roam-dailies-filespec
