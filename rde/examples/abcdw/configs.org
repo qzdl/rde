@@ -2129,7 +2129,8 @@ host	all	all	0.0.0.0/0       md5
     (waybar-idle-inhibitor)
     ;; (waybar-temperature)
     ;; (waybar-sway-language)
-    (waybar-volume) ;; TODO qzdl
+    (waybar-microphone)
+    (waybar-volume #:scroll-step 10)
     (waybar-battery #:intense? #f)
     (waybar-clock))))
 #+end_src
