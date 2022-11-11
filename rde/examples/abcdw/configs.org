@@ -2422,6 +2422,9 @@ host	all	all	0.0.0.0/0       md5
 "emacs-terraform-mode"
 "emacs-yaml-mode"
 "emacs-ytdl"
+"emacs-org-jira"
+"emacs-org-ql"
+"emacs-orgit"        ;; TODO feature-version-control
 ;; TODO feature-emacs-lsp
 ;;"emacs-artbollocks"
 ;;"emacs-vlf" ;; TODO guix: package emacs-vlf
