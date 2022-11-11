@@ -1,1 +1,4 @@
 stale/**
+doc/**/*.png
+patches/
+\#*\#

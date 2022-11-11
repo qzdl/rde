@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-11-09 Wed 10:19]
+:UPDATED:  [2022-11-09 Wed 12:33]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :CREATED:  [2022-08-30 Tue 11:12]
 :END:
@@ -1624,7 +1624,8 @@ and `gfm back-ends.")
 :UPDATED:  [2022-09-28 Wed 15:52]
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src scheme :noweb-ref jobs-sys
+
+#+begin_src scheme :noweb-ref services-sys
         ;;; udev: nvidia
 (when gaming?
   (simple-service
@@ -1632,14 +1633,14 @@ and `gfm back-ends.")
    (list nvidia-driver)))
 #+end_src
 
-******* X11 gdm with nvidia                                                                                             :inactive:
+******* X11 gdm with nvidia                                                :inactive:
 :PROPERTIES:
 :ID:       a91bb43f-465e-4a4a-99fa-a8b4a5ba03e6
 :CREATED:  [2022-09-28 Wed 15:52]
 :UPDATED:  [2022-09-28 Wed 15:53]
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src scheme :noweb-ref jobs-sys 
+#+begin_src scheme :noweb-ref services-sys
         ;;; desktop manager: X11 gdm + nvidia
 (when #f
   (simple-service
@@ -1661,7 +1662,7 @@ and `gfm back-ends.")
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src scheme :noweb-ref jobs-sys 
+#+begin_src scheme :noweb-ref services-sys
         ;;; postgres: don't include if gaming
 (unless gaming?
   (service postgresql-service-type
@@ -1679,14 +1680,14 @@ host	all	all	0.0.0.0/0       md5
             (postgresql (@ (gnu packages databases) postgresql-10)))))
 #+end_src
 
-******* postgresql: timescaledb                                                                                         :inactive:
+******* postgresql: timescaledb                                            :inactive:
 :PROPERTIES:
 :ID:       54345225-6b45-4465-9646-6bdc81ac41a1
 :CREATED:  [2022-09-28 Wed 15:54]
 :UPDATED:  [2022-09-28 Wed 15:54]
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src scheme :noweb-ref jobs-sys 
+#+begin_src scheme :noweb-ref services-sys
 ;; analytics ; timescaledb
 ;; (unless gaming?
 ;;   (service postgresql-service-type
@@ -1707,7 +1708,7 @@ host	all	all	0.0.0.0/0       md5
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src scheme :noweb-ref jobs-sys 
+#+begin_src scheme :noweb-ref services-sys
 (unless gaming?
   (service postgresql-role-service-type
            (postgresql-role-configuration
@@ -1729,11 +1730,11 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       1cda9c5a-ef77-4735-aac7-b732054413c3
 :CREATED:  [2022-09-28 Wed 15:54]
-:UPDATED:  [2022-09-28 Wed 15:54]
+:UPDATED:  [2022-10-27 Thu 10:51]
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src scheme :noweb-ref jobs-sys 
+#+begin_src scheme :noweb-ref services-sys
 ;;; ssh
 ;; TODO key up, remove password method
 (service openssh-service-type
@@ -1884,6 +1885,7 @@ host	all	all	0.0.0.0/0       md5
 :UPDATED:  [2022-08-31 Wed 14:25]
 :ROAM_EXCLUDE: t
 :END:
+
 #+begin_src scheme :noweb-ref main
 (feature-ssh
  #:ssh-configuration
@@ -2012,7 +2014,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       05be317e-8f65-4a14-a83f-db104b19788f
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-09-23 Fri 14:50]
+:UPDATED:  [2022-10-28 Fri 13:37]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2106,7 +2108,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       ddc53ffa-d988-47ee-b8cf-0ced515be0a8
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-08-05 Fri 12:12]
+:UPDATED:  [2022-11-08 Tue 12:10]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2222,7 +2224,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       d2fc9152-8683-46c1-9ef2-4ca84510bb49
 :CREATED:  [2022-09-28 Wed 16:14]
-:UPDATED:  [2022-09-29 Thu 12:08]
+:UPDATED:  [2022-11-03 Thu 15:09]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2258,11 +2260,11 @@ host	all	all	0.0.0.0/0       md5
  )
 #+end_src
 
-******** emacs-pkgs                                                                                                     :pkg:
+******** emacs-pkgs                                                             :pkg:
 :PROPERTIES:
 :ID:       5f892275-23ad-429c-9651-f48f5e8576ec
 :CREATED:  [2022-09-28 Wed 16:14]
-:UPDATED:  [2022-09-29 Thu 11:23]
+:UPDATED:  [2022-10-26 Wed 11:45]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2356,7 +2358,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       480434ca-5147-45f6-9b00-e47b87345dc2
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-09-28 Wed 15:35]
+:UPDATED:  [2022-11-03 Thu 15:10]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2663,11 +2665,11 @@ host	all	all	0.0.0.0/0       md5
 :UPDATED:  [2022-09-28 Wed 15:41]
 :ROAM_EXCLUDE: t
 :END:
-****** TODO isync :broken:                                                                                              :mail:
+****** TODO isync :broken:                                                     :mail:
 :PROPERTIES:
 :ID:       5f12520a-369e-43bf-ab36-64a44c5bfb98
 :CREATED:  [2022-08-01 Mon 10:55]
-:UPDATED:  [2022-08-29 Mon 17:49]
+:UPDATED:  [2022-10-28 Fri 12:24]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2679,7 +2681,7 @@ host	all	all	0.0.0.0/0       md5
          `((bravehost . ,bravehost-isync-settings))))
 #+end_src
 
-****** l2md                                                                                                             :mail:
+****** l2md                                                                    :mail:
 :PROPERTIES:
 :ID:       bd9b236d-db39-449b-8314-77a79ce89fe1
 :CREATED:  [2022-08-01 Mon 10:55]
@@ -2691,7 +2693,7 @@ host	all	all	0.0.0.0/0       md5
 (feature-l2md)
 #+end_src
 
-****** msmtp                                                                                                            :mail:
+****** msmtp                                                                   :mail:
 :PROPERTIES:
 :ID:       c5548269-6010-4a9c-b92f-83b27a722b76
 :CREATED:  [2022-08-01 Mon 10:55]
@@ -2708,11 +2710,11 @@ host	all	all	0.0.0.0/0       md5
                   (port . 587))))))
 #+end_src
 
-****** notmuch                                                                                                          :mail:
+****** notmuch                                                                 :mail:
 :PROPERTIES:
 :ID:       3b57f1e4-e156-4505-8d82-085ef082408c
 :CREATED:  [2022-08-01 Mon 10:55]
-:UPDATED:  [2022-09-28 Wed 15:59]
+:UPDATED:  [2022-10-28 Fri 12:25]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2753,11 +2755,11 @@ host	all	all	0.0.0.0/0       md5
   (templates "$HOME")))
 #+end_src
 
-***** base packages                                                                                                     :pkg:
+***** base packages                                                             :pkg:
 :PROPERTIES:
 :ID:       9490f8c2-7074-4a89-a62e-f82b6bfc2f2b
 :CREATED:  [2022-08-01 Mon 10:55]
-:UPDATED:  [2022-09-28 Wed 15:58]
+:UPDATED:  [2022-11-08 Tue 14:58]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2849,7 +2851,7 @@ host	all	all	0.0.0.0/0       md5
 :ROAM_EXCLUDE: t
 :END:
 
-**** ixy                                                                                                                :host:ixy:
+**** ixy                                                                   :host:ixy:
 :PROPERTIES:
 :ID:       ffec3337-a453-4b25-8919-bdacb6c93562
 :CREATED:  [2022-07-29 Fri 17:53]
@@ -2939,7 +2941,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       3e09d87e-4895-4ab0-9109-4693e44ecb2d
 :CREATED:  [2022-07-29 Fri 17:53]
-:UPDATED:  [2022-07-29 Fri 17:53]
+:UPDATED:  [2022-11-01 Tue 11:35]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -3065,7 +3067,7 @@ host	all	all	0.0.0.0/0       md5
 (pretty-print "post-ixy-he")
 #+end_src
 
-**** live                                                                                                               :host:live:
+**** live                                                                 :host:live:
 :PROPERTIES:
 :ID:       f0223612-a7d9-4a9e-a6c9-993ac3cadcb2
 :CREATED:  [2022-07-29 Fri 18:19]
@@ -3274,7 +3276,6 @@ host	all	all	0.0.0.0/0       md5
   (url "https://gitlab.com/nonguix/nonguix")))
 #+end_src
 
-
 ** emacs config
 :PROPERTIES:
 :ID:       0b25418b-3898-42da-81f2-cfc93aa51017
@@ -3290,7 +3291,7 @@ host	all	all	0.0.0.0/0       md5
 :ROAM_EXCLUDE: t
 :UPDATED:  [2022-09-28 Wed 16:37]
 :END:
-**** ensure headings are sorted alphabetically                                                                          :demo:
+**** ensure headings are sorted alphabetically                                 :demo:
 :PROPERTIES:
 :ID:       0b7994f5-f5b8-4f02-b54d-995f7119a67a
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -3307,7 +3308,7 @@ host	all	all	0.0.0.0/0       md5
      (org-sort-entries t ?a))))
 #+end_src
 
-**** noweb tangler ; root                                                                                               :meta:
+**** noweb tangler ; root                                                      :meta:
 :PROPERTIES:
 :ID:       1b524325-ce8c-4d9a-8496-69a393a036e1
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -3334,7 +3335,7 @@ host	all	all	0.0.0.0/0       md5
      )))
 #+end_src
 
-*** bindings                                                                                                            :kbd:
+*** bindings                                                                    :kbd:
 :PROPERTIES:
 :ID:       a0f75539-b0cc-4906-acb1-705744822bfe
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -3355,7 +3356,7 @@ imenu's leaf-nodes-only display is wack and cba to find out why right now
 #+RESULTS:
 : consult-org-heading
 
-***** consult-org--headings                                                                                             :demo:
+****** consult-org--headings                                                   :demo:
 :PROPERTIES:
 :ID:       29f3b8ca-60ce-42fa-9d5a-fb18752e0ac6
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -3385,7 +3386,7 @@ imenu's leaf-nodes-only display is wack and cba to find out why right now
 (consult-strip t invisible t))
 :end:
 
-****** assoc                                                                                                            :demo:
+******* assoc                                                                  :demo:
 :PROPERTIES:
 :ID:       5827c69b-012f-4394-8973-139c454bd947
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -3404,7 +3405,7 @@ nil
 #+RESULTS:
 : bindings/{C-c C-j} +org-goto+ -> consult-org-heading/outline path ; to assoc
 
-******* org-babel-indent-block ; indent babel
+******** org-babel-indent-block ; indent babel
 :PROPERTIES:
 :ID:       a2e3f5db-5cc5-4531-9c9d-470183f5e8aa
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -3450,7 +3451,7 @@ nil
 #+RESULTS:
 | qz/advice-enable--org-babel-execute-src-block--qz/org-babel-indent-block | qz/advice-disable--org-babel-execute-src-block--qz/org-babel-indent-block |
 
-******* org-babel-refresh-graphics
+******** org-babel-refresh-graphics
 :PROPERTIES:
 :ID:       4d9573c9-c758-40a1-9af3-8d61f65e97bd
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -3468,7 +3469,7 @@ nil
 #+RESULTS:
 | qz/advice-enable--org-babel-execute-src-block--qz/org-refresh-inline-images | qz/advice-disable--org-babel-execute-src-block--qz/org-refresh-inline-images |
 
-******* re-sorting to emulate initial position                                                                          :demo:
+******** re-sorting to emulate initial position                                :demo:
 :PROPERTIES:
 :ID:       c26dda0d-fbd1-4c47-8763-6852e710aacc
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -3508,7 +3509,7 @@ nil
 "bindings/{C-c C-j} +org-goto+ -> consult-org-heading/consult-org-heading ; redef􁒉"
 "system commands􁴲")
 
-***** consult-org-heading ; redef                                                                                       :demo:
+****** consult-org-heading ; redef                                             :demo:
 :PROPERTIES:
 :ID:       4c4443b8-861c-4002-9e71-495dad5df214
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -3632,14 +3633,19 @@ buffer are offered."
 (define-key global-map (kbd "C-x C-M-f") 'consult-recent-file)
 #+end_src
 
-**** {C-x} <-> {C-u}
+**** {C-x} <-> {C-u}   :: translation
 :PROPERTIES:
 :ID:       c8b38800-ee6c-499e-adba-359d0bd1afe5
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-10-21 Fri 12:03]
 :END:
 
-**** {C-z} newline-above
+This is so core and unchanging that I put it in the RDE emacs config
+elisp, so even if my user config is fucked, I am not a helpless deer
+getting C-u and C-x mixed up; see [[id:d2fc9152-8683-46c1-9ef2-4ca84510bb49][(rde . config) emacs]]
+
+**** {C-z}             :: newline-above
 :PROPERTIES:
 :ID:       e24287bd-30ba-448b-8fec-202fc913c71d
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -3824,19 +3830,19 @@ hmm, doesn't allow further input
 :ROAM_EXCLUDE: t
 :UPDATED:  [2022-09-28 Wed 14:31]
 :END:
-**** noweb tangler                                                                                                      :meta:
+**** noweb tangler                                                             :meta:
 :PROPERTIES:
 :ID:       9756d355-cbde-4d15-b83b-4f54d31b8e05
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp  
+#+begin_src emacs-lisp
 ;; NOWEB CUSTOM START
 <<custom>>
 ;; NOWEB CUSTOM END
 #+end_src
 
-**** org-imenu-depth                                                                                                    :var:
+**** org-imenu-depth                                                            :var:
 :PROPERTIES:
 :ID:       284a5e13-b1b2-4848-ac51-db4b94fa591b
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -3872,7 +3878,8 @@ hmm, doesn't allow further input
 **** aws
 :PROPERTIES:
 :ID:       11aa93f5-5d65-4d2e-a3cd-6c5455bfb255
-:CREATED:  <2022-02-22 Tue 15:27>
+:CREATED:  [2022-02-22 Tue 15:27]
+:UPDATED:  [2022-10-12 Wed 13:42]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -3884,7 +3891,7 @@ hmm, doesn't allow further input
 :UPDATED:  [2022-09-28 Wed 16:37]
 :END:
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (defvar qz/aws-env nil
   "the aws login configuration, managed through saml2aws
 
@@ -3896,13 +3903,18 @@ files of note
 `$HOME/.saml2aws'")
 #+end_src
 
+#+RESULTS:
+: qz/aws-env
+
 ***** choose
 :PROPERTIES:
 :ID:       6663fecd-c4a2-4218-aa18-4bc4bb3e922f
-:CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:CREATED:  [2022-02-22 Tue 15:27]
+:UPDATED:  [2022-10-12 Wed 13:49]
 :END:
-#+begin_src emacs-lisp 
+
+#+begin_src emacs-lisp
 (defun qz/choose-aws-env (&optional env)
   (interactive)
   (setq qz/aws-env
@@ -3917,20 +3929,19 @@ files of note
                        "*aws*"))
 #+end_src
 
-***
 **** kubernetes
 :PROPERTIES:
 :ID:       299fa738-35c3-45f6-83fb-e26db3a40ce5
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-***** kubectl-context                                                                                                   :var:
+***** kubectl-context                                                           :var:
 :PROPERTIES:
 :ID:       48fa15cd-93c1-49e6-9e4b-c610959c4b11
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (defvar qz/kubectl-context nil
   "the operating kubernetes context.
 
@@ -3939,13 +3950,13 @@ to check, at a shell, run:
 or
 `$ kubectl config current-context")
 #+end_src
-***** choose                                                                                                            :func:
+***** choose                                                                   :func:
 :PROPERTIES:
 :ID:       48e170f6-acf1-48d3-af8d-bb06069db027
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (defun qz/choose-kubectl-context (ctx)
   (interactive)
   (setq qz/kubectl-context
@@ -3967,7 +3978,7 @@ or
 :ROAM_EXCLUDE: t
 :UPDATED:  [2022-09-28 Wed 16:36]
 :END:
-**** advice                                                                                                             :func:macro:
+**** advice                                                              :func:macro:
 :PROPERTIES:
 :ID:       f061bce6-701f-4f81-b0e2-dc97554b58c2
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -4160,7 +4171,7 @@ to populate, just fill a `pass' entry like so echo mypass | pass
 #+RESULTS:
 : qz/newstore-quick-auth
 
-**** shell-command-to-list-of-strings                                                                                   :func:
+**** shell-command-to-list-of-strings                                          :func:
 :PROPERTIES:
 :ID:       0fbf9125-f032-4c1b-ac6b-af600057cc66
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -4174,7 +4185,7 @@ to populate, just fill a `pass' entry like so echo mypass | pass
 #+RESULTS:
 : qz/shell-command-to-list-of-strings
 
-**** revert-buffer-no-confirm                                                                                           :func:
+**** revert-buffer-no-confirm                                                  :func:
 :PROPERTIES:
 :ID:       0105c4f8-016b-47a8-a425-e18911027d11
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -4199,7 +4210,7 @@ to populate, just fill a `pass' entry like so echo mypass | pass
 - :: [[id:23f2a12f-8537-4eb7-a150-adb82ba182d6][ergonomics: emacs: dwim narrowing]]
   - :: https://writequit.org/articles/working-with-logs-in-emacs.html
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (defun eos/narrow-or-widen-dwim (p)
   "Widen if buffer is narrowed, narrow-dwim otherwise.
 Dwim means: region, org-src-block, org-subtree, or
@@ -4235,7 +4246,7 @@ is already narrowed."
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (defun qz/yq-interactively ()
   "haha yaml loophole"
   (interactive)
@@ -4279,7 +4290,7 @@ CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 
 #+end_src
 
@@ -4423,7 +4434,7 @@ CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
 :UPDATED:  [2022-03-30 Wed 11:59]
 :ROAM_EXCLUDE: t
 :END:
-***** add-py-debug                                                                                                      :func:
+***** add-py-debug                                                             :func:
 :PROPERTIES:
 :ID:       a8049444-d35b-4b3c-a3eb-54678a3a17aa
 :CREATED:  [2022-03-24 Thu 10:24]
@@ -4431,7 +4442,7 @@ CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (defun qz/add-pdb-py-debug ()
   "add debug code and move line down"
   (interactive)
@@ -4496,7 +4507,7 @@ CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src emacs-lisp  
+#+begin_src emacs-lisp
 ;; NOWEB GOLANG START
 (with-eval-after-load 'go-mode
   <<golang>>
@@ -4629,7 +4640,7 @@ it's nice to get a consistent wrap of the result
 :ROAM_EXCLUDE: t
 :UPDATED:  [2022-05-25 Wed 12:35]
 :END:
-#+begin_src emacs-lisp  
+#+begin_src emacs-lisp
 ;; NOWEB ES START
 (with-eval-after-load 'restclient
   <<es>>
@@ -4731,7 +4742,7 @@ it's nice to get a consistent wrap of the result
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src emacs-lisp  
+#+begin_src emacs-lisp
 ;; NOWEB RESTCLIENT START
 (with-eval-after-load 'restclient
   <<restclient>>
@@ -4791,7 +4802,7 @@ it's nice to get a consistent wrap of the result
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp  
+#+begin_src emacs-lisp
 ;; NOWEB EMBARK START
 <<embark-hoist>>
 (with-eval-after-load 'embark
@@ -4800,7 +4811,7 @@ it's nice to get a consistent wrap of the result
 ;; NOWEB EMBARK END
 #+end_src
 
-***** {C-.} -> embark-act                                                                                               :kbd:
+***** {C-.} -> embark-act                                                       :kbd:
 :PROPERTIES:
 :ID:       8234c6dc-773a-4da2-8e8a-e96970f8c47f
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -4834,7 +4845,7 @@ it's nice to get a consistent wrap of the result
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp  
+#+begin_src emacs-lisp
 ;; NOWEB CONSULT START
 (with-eval-after-load 'consult
   <<consult>>
@@ -4842,7 +4853,7 @@ it's nice to get a consistent wrap of the result
 ;; NOWEB CONSULT END
 #+end_src
 
-***** consult-ripgrep-files                                                                                             :func:
+***** consult-ripgrep-files                                                    :func:
 :PROPERTIES:
 :ID:       d047d7c0-1031-42b8-b86a-0bcfbb30901a
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -4871,7 +4882,7 @@ not elegant AT ALL, but the API to ripgrep from consult uses
 #+RESULTS:
 : qz/consult-ripgrep-files
 
-***** {C-c b s} consult-ripgrep-bookmark                                                                                :func:kbd:
+***** {C-c b s} consult-ripgrep-bookmark                                   :func:kbd:
 :PROPERTIES:
 :ID:       1ec5c6fe-e672-457a-ab67-82e358244df3
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -4925,14 +4936,14 @@ consuming
 :ROAM_EXCLUDE: t
 :UPDATED:  [2022-09-28 Wed 16:36]
 :END:
-***** midnight-minor-mode ; dark-mode filter on pdfs                                                                    :visual:
+***** midnight-minor-mode ; dark-mode filter on pdfs                         :visual:
 :PROPERTIES:
 :ID:       539f2eb0-e47d-4976-8c96-6c5a7705835a
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :UPDATED:  [2022-04-25 Mon 10:10]
 :END:
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (with-eval-after-load 'pdf-view
   (add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode))
 #+end_src
@@ -4949,7 +4960,7 @@ consuming
 :ROAM_EXCLUDE: t
 :UPDATED:  [2022-08-03 Wed 13:16]
 :END:
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 ;;(require 'hyperbole) ;; TODO klink
 #+end_src
 
@@ -4959,7 +4970,7 @@ consuming
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (define-key global-map (kbd "C-<down-mouse-2>") 'hkey-either)
 (define-key global-map (kbd "M-<return>") 'hkey-either)
 #+end_src
@@ -4998,7 +5009,7 @@ consuming
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-******** [[id:ec8b00b4-3bd3-458c-9777-d2581c0f6fd5][agenda-files-update]]                                        :func:var:
+******** [[id:ec8b00b4-3bd3-458c-9777-d2581c0f6fd5][agenda-files-update]]                                               :func:var:
 :PROPERTIES:
 :ID:       30c87ac3-057a-46c0-a969-456eee6d2de9
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -5014,7 +5025,7 @@ consuming
 
 #+RESULTS:
 : qz/agenda-files-update
-******** agenda-files-update-clock                                                                               :func:var:
+******** agenda-files-update-clock                                         :func:var:
 :PROPERTIES:
 :ID:       5eb48172-a3c0-40d0-a8f3-bd2ae916b116
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -5816,7 +5827,7 @@ The diary entry can contain `%s' which will be replaced with
 #+RESULTS:
 : ob-async
 
-****** src options                                                                                                 :var:
+****** src options                                                              :var:
 :PROPERTIES:
 :ID:       1ea03a77-5511-41cd-bd74-6ff19e750f4b
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -5914,7 +5925,7 @@ CREATED: <2021-11-29 Mon>
   (interactive)
   (let ((r (mapcar (lambda (f) (cons (org-babel-lob-ingest f) f))
                    (append qz/org-babel-lob-ingest-files files))))
-    (message "%s" (pp r))
+    ;;(message "%s" (pp r))
     r))
 
 (cons->table
@@ -6080,7 +6091,7 @@ to improve:
 #+RESULTS:
 : qz/lob-restclient-copy-curl-command
 
-******* {M-l} bind lob-choose-babel-block to insert convention                                                    :kbd:
+******* {M-l} bind lob-choose-babel-block to insert convention                  :kbd:
 :PROPERTIES:
 :ID:       7f29a561-60a0-4c5e-9004-ba32910ab0ef
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -6095,7 +6106,7 @@ CREATED: <2021-11-29 Mon>
 #+RESULTS:
 : qz/org-babel-choose-block
 
-******* {M-g} bind lob-goto-named-src-block to insert convention                                                  :kbd:
+******* {M-g} bind lob-goto-named-src-block to insert convention                :kbd:
 :PROPERTIES:
 :ID:       fb0c5f97-b758-43fe-85a0-a2fb2514df84
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -6433,7 +6444,7 @@ the major mode specifies support for Font Lock."
 #+RESULTS:
 | d | default | plain | %? | :if-new | (file+head %(qz/utc-timestamp)-${slug}.org #+title: ${title} |
 
-****** core bindings                                                                                               :kbd:
+****** core bindings                                                            :kbd:
 :PROPERTIES:
 :ID:       9ba6a0a6-fd3e-406f-8ac9-8b63216a469a
 :CREATED:  [2022-08-15 Mon 15:37]
@@ -6469,7 +6480,7 @@ the major mode specifies support for Font Lock."
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-******* capture                                                                                                   :var:
+******* capture                                                                 :var:
 :PROPERTIES:
 :ID:       6a756610-847e-410f-a79b-baa70b74e029
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -6480,7 +6491,7 @@ the major mode specifies support for Font Lock."
 :ID:       46fed150-b670-4899-aaa2-b029262db572
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-09-28 Wed 17:39]
+:UPDATED:  [2022-09-30 Fri 13:36]
 :END:
 
 - see also :: about capture templates
@@ -6528,7 +6539,7 @@ the major mode specifies support for Font Lock."
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-********* today's date reference as roam links                                                                  :project:func:
+********* today's date reference as roam links                         :project:func:
 :PROPERTIES:
 :ID:       24cca9c1-2a89-4de2-b840-5d2adb9180931
 :END:
@@ -6542,7 +6553,7 @@ small list than to hit the cache (=>2k=) or hit the database a bunch.
 are less discrete; I haven't made all possible years, and it's infrequent to
 make a new year in this case.
 
-********** day-lookup                                                                                          :var:
+********** day-lookup                                                           :var:
 :PROPERTIES:
 :ID:       cc4d4945-4083-40d4-9b62-8c337112be2e
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -6564,7 +6575,7 @@ make a new year in this case.
 #+RESULTS:
 : qz/day-lookup
 
-********** month-lookup                                                                                        :var:
+********** month-lookup                                                         :var:
 :PROPERTIES:
 :ID:       c9f144b9-f170-4193-898f-a7d73c514ee3
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -6590,7 +6601,7 @@ make a new year in this case.
 #+RESULTS:
 : qz/month-lookup
 
-********** today-dateref                                                                                       :func:
+********** today-dateref                                                       :func:
 :PROPERTIES:
 :ID:       6b0faf7e-37a2-4112-b02f-1c5f74ae48de
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -6611,7 +6622,7 @@ make a new year in this case.
                      (org-roam-node-title node)))
                 year))))
 #+end_src
-********* daily-tangent-capture[fn:1]                                                                              :func:
+********* daily-tangent-capture[fn:1]                                          :func:
 :PROPERTIES:
 :ID:       8d1c9152-3401-4414-a446-b8389523e5d4
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -6638,7 +6649,7 @@ so we can use it as a COMMAND. better traceability than a lambda
   (format-time-string "private-%Y-%m-%d.org"))
 #+end_src
 
-******* dailies-filespec                                                                                          :var:
+******* dailies-filespec                                                        :var:
 :PROPERTIES:
 :ID:       b1f6f66c-c613-4c68-8c0d-4bc95da8d1cd
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -6683,7 +6694,7 @@ so we can use it as a COMMAND. better traceability than a lambda
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-******* node-tags                                                                                                 :func:
+******* node-tags                                                              :func:
 :PROPERTIES:
 :ID:       9c5dcf12-9eec-4900-af35-f9302cd86975
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -6772,7 +6783,7 @@ so we can use it as a COMMAND. better traceability than a lambda
 #+RESULTS:
 : qz/ensure-alias
 
-****** TODO noweb tangler                                                                                          :meta:
+****** TODO noweb tangler                                                      :meta:
 :PROPERTIES:
 :ID:       2bb19766-f330-4c47-9a61-93445e72ef38
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -7618,7 +7629,7 @@ cat /tmp/oo | awk -F, '{print $2,$3}' | sort | uniq -c | sort -rgk1 | head
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-******* capture                                                                                                   :var:
+******* capture                                                                 :var:
 :PROPERTIES:
 :ID:       8c40e382-4b74-461c-a1fb-e64d108a89c5
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -7657,7 +7668,7 @@ ${body}
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-******* =*org-roam*= (backlinks) buffer                                                                           :var:func:
+******* =*org-roam*= (backlinks) buffer                                      :var:func:
 :PROPERTIES:
 :ID:       fca1f0cb-46ad-4064-ad9d-925dc56b4ebb
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -7699,7 +7710,7 @@ https://github.com/org-roam/org-roam/issues/991#issuecomment-882010053
 | org-roam-node-section | hide |
 | stashes               | hide |
 
-***** download                                                                                                      :var:
+***** download                                                                  :var:
 :PROPERTIES:
 :ID:       b32477c3-9346-4c88-8710-043b6eb9824f
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -7714,7 +7725,7 @@ https://github.com/org-roam/org-roam/issues/991#issuecomment-882010053
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-***** helpers                                                                                                           :func:
+***** helpers                                                                  :func:
 :PROPERTIES:
 :ID:       d5f2db01-4894-4e0b-90d2-e9123b87f5de
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -7816,7 +7827,7 @@ org-roam loading, as we use it's variables.
 :PROPERTIES:
 :ID:       160e965f-6df4-4db7-8f59-83347f56f499
 :CREATED:  [2022-09-28 Wed 17:24]
-:UPDATED:  [2022-09-28 Wed 17:24]
+:UPDATED:  [2022-10-27 Thu 10:44]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -7859,7 +7870,7 @@ C-M-S
 :PROPERTIES:
 :ID:       ed581dc6-ce42-430a-921c-c07ac5c12698
 :CREATED:  [2022-09-28 Wed 16:36]
-:UPDATED:  [2022-09-28 Wed 17:14]
+:UPDATED:  [2022-10-26 Wed 11:57]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -8029,7 +8040,7 @@ also accessible from the agenda with the ‘e’ key.
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-***** org-confirm-babel-evaluate; don't ask                                                                             :var:
+***** org-confirm-babel-evaluate; don't ask                                     :var:
 :PROPERTIES:
 :ID:       57ced9da-b883-47ea-9a88-00579d24dbf9
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -8120,7 +8131,7 @@ once we find out about sequences and repeats
 #+RESULTS:
 : note
 
-****** org-log-done                                                                                                     :var:
+****** org-log-done                                                             :var:
 :PROPERTIES:
 :ID:       1728a0dc-4e3f-4317-8d3d-4ebb3dbc0375
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -8131,23 +8142,23 @@ once we find out about sequences and repeats
 (setq org-log-done 'note)
 #+end_src
 
-***** org-startup-folded                                                                                                :var:
+***** org-startup-folded                                                        :var:
 :PROPERTIES:
 :ID:       948baebf-3fae-499d-8036-6e454de83417
 :CREATED:  <2022-02-27 Sun 15:04>
-:UPDATED:  [2022-05-30 Mon 18:15]
+:UPDATED:  [2022-09-30 Fri 13:54]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src emacs-lisp :noweb-ref org
-(setq org-startup-folded 'content)
+;;(setq org-startup-folded 'content)
 #+end_src
 
 ***** org-enforce
 :PROPERTIES:
 :ID:       ee742dd8-192d-4901-a5f8-342a403b6094
 :CREATED:  [2022-04-06 Wed 11:39]
-:UPDATED:  [2022-04-06 Wed 11:39]
+:UPDATED:  [2022-10-04 Tue 18:00]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -8225,7 +8236,7 @@ a most controversial decision
 | talk      | 116 |
 | film      | 102 |
 
-***** org-enforce-todo-dependencies                                                                                     :var:
+***** org-enforce-todo-dependencies                                             :var:
 :PROPERTIES:
 :ID:       51ff922b-e6d5-4437-9fdc-d6208de9b959
 :CREATED:  [2022-04-06 Wed 11:29]
@@ -8338,7 +8349,6 @@ prepend or to append."
 
 #+name: def-ol-file
 #+begin_src emacs-lisp :noweb-ref org
-
 (defun qz/ol-file (link)
   "transform file path into pretty ol-output
             - respect projects; truncate prior path, keeping only basename
@@ -8455,7 +8465,7 @@ I'm using tags and auto-tags rather sporadically
 :ROAM_EXCLUDE: t
 :END:
 
-***** org-tag-alist                                                                                                     :var:
+***** org-tag-alist                                                             :var:
 :PROPERTIES:
 :ID:       21abbf73-43fb-4bc4-a5fb-53e7dc0e6345
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -8499,6 +8509,7 @@ CREATED: <2021-12-07 Tue 14:13>
 :ID:       bebc4bc6-3ed0-49a1-b76a-ffe7ee11dd33
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-09-30 Fri 13:31]
 :END:
 640px is a good size, at approximately 64 columns
 
@@ -8520,13 +8531,13 @@ check with (org-redisplay-inline-images)
 :PROPERTIES:
 :ID:       b531b1b9-17ef-406c-9650-a04f7c669e5e
 :CREATED:  [2022-09-29 Thu 13:14]
-:UPDATED:  [2022-09-29 Thu 13:14]
+:UPDATED:  [2022-10-05 Wed 12:13]
 :ROAM_EXCLUDE: t
 :END:
 
 - :: https://stackoverflow.com/questions/17478260/completely-hide-the-properties-drawer-in-org-mode
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :noweb-ref null
 (require 'org)
 
 (defun org-cycle-hide-drawers (state)
@@ -8624,7 +8635,7 @@ check with (org-redisplay-inline-images)
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp  
+#+begin_src emacs-lisp
 (defun qz/get-mail ()
   (interactive)
   (async-shell-command "mbsync -Va && notmuch new"))
@@ -8768,7 +8779,7 @@ check with (org-redisplay-inline-images)
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src shell
-  pactl list sources | grep -E 'Name|Desc' -n
+pactl list sources | grep -E 'Name|Desc' -n
 #+end_src
 
 #+RESULTS:
@@ -8853,7 +8864,7 @@ check with (org-redisplay-inline-images)
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-**** [[id:8b0b7251-2404-404b-9b64-53e4d3ce2fe6][olivetti]]                                                                                                           :visual:
+**** [[id:8b0b7251-2404-404b-9b64-53e4d3ce2fe6][olivetti]]                                                                :visual:
 :PROPERTIES:
 :ID:       a10b32b7-6a50-47e8-9fed-0bd985f8b0f2
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -8901,7 +8912,7 @@ check with (org-redisplay-inline-images)
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (custom-set-variables
  '(cursor-type 'hbar))
 #+end_src
@@ -8912,7 +8923,7 @@ check with (org-redisplay-inline-images)
 :UPDATED:  [2022-03-11 Fri 15:25]
 :ROAM_EXCLUDE: t
 :END:
-***** outline-default-state                                                                                             :var:
+***** outline-default-state                                                     :var:
 :PROPERTIES:
 :ID:       2150f716-f377-4d9c-b1ab-f278a0400cfa
 :CREATED:  [2022-03-11 Fri 15:25]
@@ -8922,7 +8933,7 @@ check with (org-redisplay-inline-images)
 
 note, >= emacs 29.1
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (setq outline-default-state 'outline-show-only-headings)
 #+end_src
 **** hi-lock
@@ -8935,7 +8946,7 @@ note, >= emacs 29.1
 I believe that when 'hi-lock-auto-select-face is non-nil, this should
 cycle colors automatically.
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (defun hi-lock-face-symbol-at-point ()
   "Highlight each instance of the symbol at point.
 Uses the next face from `hi-lock-face-defaults' without prompting,
@@ -8983,7 +8994,7 @@ the major mode specifies support for Font Lock."
 :UPDATED:  [2022-09-28 Wed 17:51]
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 
 (with-eval-after-load 'highlight-indent-guides
   <<hl-indent>>
@@ -9082,7 +9093,7 @@ these settings end up looking like this:
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-***** save load-time font size                                                                                          :var:func:
+***** save load-time font size                                             :var:func:
 :PROPERTIES:
 :ID:       9ecb735e-9bda-4cf1-9460-738a543733e3
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -9092,7 +9103,7 @@ these settings end up looking like this:
 this is useful for when we switch to the single-frame font-size, but
 we want to restore after, respecting the initial font-size
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (defvar qz/font-initial-size (face-attribute 'default :height))
 (defvar qz/resize-mini-windows-initial resize-mini-windows)
 (defvar qz/max-mini-window-height-initial max-mini-window-height)
@@ -9107,14 +9118,14 @@ we want to restore after, respecting the initial font-size
 #+RESULTS:
 : qz/reset-visual-initial
 
-***** set font as big enough for comfy casual 80char emacs use                                                          :func:
+***** set font as big enough for comfy casual 80char emacs use                 :func:
 :PROPERTIES:
 :ID:       1758a068-1047-431b-915b-7cbf718d32ba
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (defun qz/font-big-80 ()
   (interactive)
   (set-face-attribute 'default nil :height 300)
@@ -9131,7 +9142,7 @@ we want to restore after, respecting the initial font-size
 :ROAM_EXCLUDE: t
 :UPDATED:  [2022-09-29 Thu 11:22]
 :END:
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 (defvar qz/unsplash-tags nil)
 (defun qz/unsplash ()
   "yet another lazy shell-command wrapper; wallpaper edition"
@@ -9165,7 +9176,7 @@ swaymsg output \"*\" background ~/.cache/wallpaper.png fill" tag))
 :UPDATED:  [2022-07-09 Sat 17:33]
 :END:
 
- #+begin_src emacs-lisp :tangle no :noweb-ref null
+#+begin_src emacs-lisp :tangle no :noweb-ref null
 ;;; col-highlight.el --- Highlight the current column.
 ;;
 ;; Filename: col-highlight.el
@@ -10064,6 +10075,12 @@ if `truncate-lines' is non-nil."
 : vline
 
 **** rde: scheme reader incompatibility: =(defvar vline-line-char ?|)=
+:PROPERTIES:
+:ID:       3193f8ae-2c44-4b87-ab8c-9df0aabf2c7a
+:CREATED:  [2022-09-30 Fri 13:11]
+:UPDATED:  [2022-09-30 Fri 13:11]
+:ROAM_EXCLUDE: t
+:END:
 
 **** ol-man.el
 :PROPERTIES:
