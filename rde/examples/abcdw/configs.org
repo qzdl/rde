@@ -1933,11 +1933,35 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       dcd3cd89-5c4d-41e3-9ed5-324a48dc3546
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-09-29 Thu 12:01]
+:UPDATED:  [2022-11-03 Thu 15:37]
 :ROAM_EXCLUDE: t
 :END:
+
 #+begin_src scheme :noweb-ref main
-(feature-git)
+  (feature-git
+  ;; #:extra-config
+  ;;  (list (slurp-file-like (local-file "./etc/git/work_config")))
+  ;;  '(#~"[includeIf \"gitdir:~/git/ns\"]
+  ;;     [user]
+  ;;         signingkey = \"290D5A69F2021C4E\"
+  ;;         email = \"sculpepper@newstore.com\"
+  ;; ")
+  )
+#+end_src
+
+******* config_work
+:PROPERTIES:
+:ID:       1f073518-b77a-460c-abc8-bc265c4f9e6c
+:CREATED:  [2022-11-03 Thu 15:18]
+:UPDATED:  [2022-11-03 Thu 15:34]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src conf :tangle ./config/git/config_work
+[includeif "gitdir:~/git/ns"]
+    [user]
+        signingkey = "290D5A69F2021C4E"
+        email = "sculpepper@newstore.com"
 #+end_src
 
 ***** network
