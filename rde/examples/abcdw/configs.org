@@ -4984,6 +4984,18 @@ CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
 (setq org-babel-python-command "python3")
 #+end_src
 
+***** python-indent-offset
+:PROPERTIES:
+:ID:       ec1b6b85-1309-4c5c-8dfa-6bae0750eb21
+:CREATED:  [2022-11-08 Tue 13:00]
+:UPDATED:  [2022-11-08 Tue 13:09]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+(custom-set-variables '(python-indent-offset 4))
+#+end_src
+
 **** [[id:0c02b1ad-3964-4b51-ba59-d2de0e05428f][golang]]
 :PROPERTIES:
 :ID:       f38578c6-09c1-4da0-8da0-90e0899a2ab1
