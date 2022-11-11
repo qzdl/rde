@@ -8068,7 +8068,7 @@ also accessible from the agenda with the ‘e’ key.
 #+RESULTS:
 : t
 
-***** org-effort-property (default) :: ="Effort"= 
+***** org-effort-property (default) :: ="Effort"=
 :PROPERTIES:
 :ID:       91b8820b-90e7-4cd0-b676-9276fe2c1f96
 :CREATED:  [2022-09-28 Wed 17:42]
@@ -8076,7 +8076,7 @@ also accessible from the agenda with the ‘e’ key.
 :ROAM_EXCLUDE: t
 :END:
 
-***** org-agenda-default-appointment-duration (unit = minutes) :: 30 mins                                               :var:
+***** org-agenda-default-appointment-duration (unit = minutes) :: 30 mins       :var:
 :PROPERTIES:
 :ID:       cfa2a1c8-b746-4612-88ae-42014e8dd15e
 :CREATED:  [2022-09-28 Wed 16:53]
@@ -8124,19 +8124,19 @@ also accessible from the agenda with the ‘e’ key.
 :END:
 
 #+begin_example
-#+properties: Effort_ALL 
+#+properties: Effort_ALL
 #+end_example
 
 ===
 
-**** noweb tangler                                                                                                      :meta:
+**** noweb tangler                                                             :meta:
 :PROPERTIES:
 :ID:       ded3219a-de09-4bee-a919-bf79debb9022
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :UPDATED:  [2022-09-28 Wed 15:25]
 :END:
-#+begin_src emacs-lisp  
+#+begin_src emacs-lisp
 ;; NOWEB ORG START
 (message "pre org: %s" (shell-command-to-string "date"))
 (with-eval-after-load 'org
@@ -8164,7 +8164,7 @@ also accessible from the agenda with the ‘e’ key.
 (setq org-confirm-babel-evaluate nil)
 #+end_src
 
-***** org-refile-targets                                                                                                :var:
+***** org-refile-targets                                                        :var:
 :PROPERTIES:
 :ID:       e52c338d-9289-4027-9b79-5013a0ef02f1
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -8181,7 +8181,7 @@ also accessible from the agenda with the ‘e’ key.
                            ("wip.org" :level . 0)))
 #+end_src
 
-***** TODO org-log                                                                                                      :var:
+***** TODO org-log                                                              :var:
 CLOSED: [2022-03-10 Thu 19:24]
 :PROPERTIES:
 :ID:       23e1b5e7-acac-4670-b421-4f84904c8b57
