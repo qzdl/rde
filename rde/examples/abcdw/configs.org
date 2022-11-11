@@ -9389,13 +9389,16 @@ check with (org-redisplay-inline-images)
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp  
+#+begin_src emacs-lisp
 (defun qz/rde-sanity ()
   (interactive)
   (async-shell-command
    (concat "cd $HOME/git/sys/rde"
-           "&& guix repl -L . sanity.scm")))
+           "&& guix repl -L . dev/sanity.scm")))
 #+end_src
+
+#+RESULTS:
+: qz/rde-sanity
 
 **** reload-config
 :PROPERTIES:
