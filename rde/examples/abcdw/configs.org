@@ -8896,13 +8896,14 @@ once we find out about sequences and repeats
 :ROAM_EXCLUDE: t
 :END:
 
-a most controversial decision
+any value <0 is a most controversial decision
 
 - see also :: [[id:3db09afc-ea16-4ec4-883c-27ad7589f7f1][align tags]]
 - see also :: [[id:0b88f9d2-f33f-4fbf-88f0-8cde8ccd0e67][org-tags-alist]]
 
 #+begin_src emacs-lisp :noweb-ref org
-(setq org-tags-column 120)
+(setq org-tags-column -85)    ;; auto works better for olivetti
+;; (setq org-tags-column 120) ;; for wide screens & no 80char limiting
 #+end_src
 
 #+RESULTS:
