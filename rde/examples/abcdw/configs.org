@@ -2426,6 +2426,7 @@ host	all	all	0.0.0.0/0       md5
 "emacs-org-ql"
 "emacs-orgit"        ;; TODO feature-version-control
 "emacs-magit-todos"  ;; TODO feature-version-control
+"emacs-adaptive-wrap" ;; TODO feature-olivetti
 ;; TODO feature-emacs-lsp
 ;;"emacs-artbollocks"
 ;;"emacs-vlf" ;; TODO guix: package emacs-vlf
@@ -8560,6 +8561,19 @@ do not already have one."
                       'qz/create-excluded-ids-for-headlines-in-buffer nil 'local)))
 
 (setq org-id-link-to-org-use-id t)
+#+end_src
+
+***** org-mode-hook -> adaptive-wrap-prefix-mode
+:PROPERTIES:
+:ID:       13fb181a-3f55-4b63-b2ff-c23af6b29f8f
+:CREATED:  [2022-10-31 Mon 12:20]
+:UPDATED:  [2022-10-31 Mon 12:20]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb ref org
+(when (fboundp 'adaptive-wrap-prefix-mode)
+  (add-hook 'org-mode-hook 'adaptive-wrap-prefix-mode))
 #+end_src
 
 **** tag
