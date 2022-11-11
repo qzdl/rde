@@ -2348,9 +2348,14 @@ host	all	all	0.0.0.0/0       md5
   (list ;;emacs-consult-dir
 
         ;;; QZDL
-   ;;emacs-sql-indent
-   ;;emacs-ob-go
-
+   emacs-sql-indent
+   emacs-ob-go
+   emacs-org-ml
+   emacs-ox-jira
+   emacs-moldable-emacs
+   emacs-kubernetes
+   python-pylsp-mypy
+   emacs-ox-slack
    ;;
    ;; emacs-consult-recoll ; TODO qzdl pkg
    ;; emacs-code-review    ; TODO qzdl pkg
