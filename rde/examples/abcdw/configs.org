@@ -2425,6 +2425,7 @@ host	all	all	0.0.0.0/0       md5
 "emacs-org-jira"
 "emacs-org-ql"
 "emacs-orgit"        ;; TODO feature-version-control
+"emacs-magit-todos"  ;; TODO feature-version-control
 ;; TODO feature-emacs-lsp
 ;;"emacs-artbollocks"
 ;;"emacs-vlf" ;; TODO guix: package emacs-vlf
