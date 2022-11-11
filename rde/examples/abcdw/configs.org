@@ -6150,6 +6150,88 @@ could do with some love; dates above are a bit redundant maybe
 |  1 | Events   | agenda                                                                                                                                                                                                                                                                                                                                                                             | display deadlines and exclude scheduled | ((org-agenda-span 'month) (org-agenda-time-grid nil) (org-agenda-show-all-dates nil) (org-agenda-entry-types '(:deadline)) (org-deadline-warning-days 0)) |
 |  | Overview | ((agenda  ((org-agenda-time-grid nil) (org-agenda-start-on-weekday nil) (org-agenda-start-day +1d) (org-agenda-span 14) (org-agenda-show-all-dates nil) (org-agenda-time-grid nil) (org-deadline-warning-days 0) (org-agenda-block-separator nil) (org-agenda-entry-types '(:deadline)) (org-agenda-skip-function '(org-agenda-skip-entry-if 'done)) (org-agenda-overriding-header |                                         |                                                                                                                                                           |
 
+******* 0 ; moving
+:PROPERTIES:
+:ID:       d132d405-315d-4801-914f-b18126f2afa5
+:CREATED:  [2022-10-06 Thu 12:00]
+:UPDATED:  [2022-10-06 Thu 12:35]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref agenda
+
+(defun zin/org-agenda-skip-tag (tag &optional others)
+  "Skip all entries that correspond to TAG.
+
+If OTHERS is true, skip all entries that do not correspond to TAG."
+  (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
+        (current-headline (or (and (org-at-heading-p)
+                                   (point))
+                              (save-excursion (org-back-to-heading)))))
+    (if others
+        (if (not (member tag (org-get-tags-at current-headline)))
+            next-headline
+          nil)
+      (if (member tag (org-get-tags-at current-headline))
+          next-headline
+        nil))))
+
+
+(add-to-list
+ 'org-agenda-custom-commands
+ '("0" "moving"
+   ;; TODO: Add A priority to the top.
+   ((agenda
+     ""
+     ((org-agenda-time-grid nil)
+      (org-agenda-start-on-weekday nil)
+      (org-agenda-start-day "+1d")
+      (org-agenda-span 160)
+      (org-agenda-show-all-dates nil)
+      (org-agenda-time-grid nil)
+      (org-agenda-show-future-repeats nil)
+      (org-agenda-block-separator nil)
+      (org-agenda-entry-types '(:deadline))
+      (org-agenda-skip-function
+       '(not
+         (zin/org-agenda-skip-tag "moving" 't)
+         ;; '(org-agenda-skip-entry-if 'notregexp":moving:") ; no love for inherited tags
+         ))
+      (org-agenda-overriding-header "\nUpcoming deadlines (+160d)\n")))
+    (agenda
+     "*"
+     ((org-agenda-block-separator nil)
+      (org-agenda-span 160)
+      (org-agenda-show-future-repeats nil)
+      (org-agenda-skip-deadline-prewarning-if-scheduled t)
+      (org-agenda-skip-function
+       '(org-agenda-skip-entry-if 'notregexp":moving:"))
+      (org-agenda-overriding-header "\nAgenda\n")))
+    (tags-todo "moving"
+               ((org-agenda-block-separator nil)
+                (org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled))))
+                (org-agenda-overriding-header "\nMoving Backlog\n"))))))
+      #+end_src
+
+#+RESULTS:
+| 0 | moving | ((agenda  ((org-agenda-time-grid nil) (org-agenda-start-on-weekday nil) (org-agenda-start-day +1d) (org-agenda-span 160) (org-agenda-show-all-dates nil) (org-agenda-time-grid nil) (org-agenda-show-future-repeats nil) (org-agenda-block-separator nil) (org-agenda-entry-types '(:deadline)) (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp :moving:)) (org-agenda-overriding-header |
+
+******* destroy
+:PROPERTIES:
+:ID:       a1d82c8a-d0ed-4da8-9e9e-9705f76cb824
+:CREATED:  [2022-10-06 Thu 12:35]
+:UPDATED:  [2022-10-06 Thu 12:35]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb-ref null
+(when-let ((cmd (assoc "0" org-agenda-custom-commands)))
+  (setq org-agenda-custom-commands
+        (remove cmd org-agenda-custom-commands)))
+#+end_src
+
+#+RESULTS:
+| 0 | moving | ((agenda  ((org-agenda-time-grid nil) (org-agenda-start-on-weekday nil) (org-agenda-start-day +1d) (org-agenda-span 14) (org-agenda-show-all-dates nil) (org-agenda-time-grid nil) (org-agenda-show-future-repeats nil) (org-agenda-block-separator nil) (org-agenda-entry-types '(:deadline)) (org-agenda-skip-function '(org-agenda-skip-entry-if 'done)) (org-agenda-overriding-header |
+
 ****** noweb tangler
 :PROPERTIES:
 :ID:       3719c9a6-45ea-497e-a3ee-bc4c64a566e3
