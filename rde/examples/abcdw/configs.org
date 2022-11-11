@@ -8365,7 +8365,7 @@ a most controversial decision
 #+RESULTS:
 : t
 
-***** org-enforce-todo-checkbox-dependencies                                                                            :var:
+***** org-enforce-todo-checkbox-dependencies                                    :var:
 :PROPERTIES:
 :ID:       496407f8-71cf-4745-a5de-d0f1817ce600
 :CREATED:  [2022-04-06 Wed 11:29]
@@ -8418,7 +8418,7 @@ a most controversial decision
 :PROPERTIES:
 :ID:       220874c8-4330-4440-a616-31b2e0a47ef2
 :CREATED:  [2022-05-23 Mon 10:46]
-:UPDATED:  [2022-09-23 Fri 13:28]
+:UPDATED:  [2022-11-09 Wed 12:33]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -8661,14 +8661,14 @@ check with (org-redisplay-inline-images)
     (save-excursion
       (let* ((globalp (memq state '(contents all)))
              (beg (if globalp
-                    (point-min)
+                      (point-min)
                     (point)))
              (end (if globalp
-                    (point-max)
+                      (point-max)
                     (if (eq state 'children)
-                      (save-excursion
-                        (outline-next-heading)
-                        (point))
+                        (save-excursion
+                          (outline-next-heading)
+                          (point))
                       (org-end-of-subtree t)))))
         (goto-char beg)
         (while (re-search-forward org-drawer-regexp end t)
@@ -8677,19 +8677,23 @@ check with (org-redisplay-inline-images)
             (when (looking-at org-drawer-regexp)
               (let* ((start (- 1 (match-beginning 0)))
                      (limit
-                       (save-excursion
-                         (outline-next-heading)
-                           (point)))
+                      (save-excursion
+                        (outline-next-heading)
+                        (point)))
                      (msg (format
-                            (concat
-                              "org-cycle-hide-drawers:  "
-                              "`:END:`"
-                              " line missing at position %s")
-                            (+ 1 start))))
+                           (concat
+                            "org-cycle-hide-drawers:  "
+                            "`:END:`"
+                            " line missing at position %s")
+                           (+ 1 start))))
                 (if (re-search-forward "^[ \t]*:END:" limit t)
-                  (outline-flag-region start (point-at-eol) t)
+                    (outline-flag-region start (point-at-eol) t)
                   (user-error msg))))))))))
 #+end_src
+
+#+RESULTS:
+: org-cycle-hide-drawers
+
 ***** {M-x align tags}
 :PROPERTIES:
 :ID:       3db09afc-ea16-4ec4-883c-27ad7589f7f1
@@ -8849,29 +8853,29 @@ check with (org-redisplay-inline-images)
 :PROPERTIES:
 :ID:       8fbfdfd8-edfb-4f7d-a6ed-a1927aa1885a
 :CREATED:  [2022-04-22 Fri 11:56]
-:UPDATED:  [2022-04-22 Fri 12:03]
+:UPDATED:  [2022-11-08 Tue 12:16]
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src emacs-lisp 
-  (defun qz/sway-choose-output-res (&optional display res)
-    (interactive)
-    (let* ((cur (s-trim (shell-command-to-string
-                         "swaymsg -t get_outputs | jq -r 'map( . | select(.focused == true) | .name) | first'")))
-           (cmd (format "swaymsg 'output %s enable res %s'"
-                        (or display
-                            (completing-read "display: "
-                                             '("DP-1" "DP-2"
-                                               "eDP-1"
-                                               "HDMI-1" "HDMI-2")
-                                             nil t cur))
-                        (or res
-                            (completing-read "resolution: "
-                                             '("1920x1080"
-                                               "5120x1440")
-                                             nil t)))))
-      (when (y-or-n-p (format "exec ~%s~?" cmd))
-        (shell-command cmd))))
+#+begin_src emacs-lisp
+(defun qz/sway-choose-output-res (&optional display res)
+  (interactive)
+  (let* ((cur (s-trim (shell-command-to-string
+                       "swaymsg -t get_outputs | jq -r 'map( . | select(.focused == true) | .name) | first'")))
+         (cmd (format "swaymsg 'output %s enable res %s'"
+                      (or display
+                          (completing-read "display: "
+                                           '("DP-1" "DP-2"
+                                             "eDP-1"
+                                             "HDMI-1" "HDMI-2")
+                                           nil t cur))
+                      (or res
+                          (completing-read "resolution: "
+                                           '("1920x1080"
+                                             "5120x1440")
+                                           nil t)))))
+    (when (y-or-n-p (format "exec ~%s~?" cmd))
+      (shell-command cmd))))
 #+end_src
 
 #+RESULTS:
@@ -8951,22 +8955,22 @@ pactl list sources | grep -E 'Name|Desc' -n
 
 #+begin_src emacs-lisp
 
-  (defun qz/bt-connect (mac)
-    (interactive "saddress: ")
-    (async-shell-command
-     (format "bluetoothctl connect %s" mac)
-     "*bluetoothctl*"))
+(defun qz/bt-connect (mac)
+  (interactive "saddress: ")
+  (async-shell-command
+   (format "bluetoothctl connect %s" mac)
+   "*bluetoothctl*"))
 
-  (defun qz/bt-airpods ()
-    (interactive)
-    (qz/bt-connect "44:F0:9E:51:52:7B"))
+(defun qz/bt-airpods ()
+  (interactive)
+  (qz/bt-connect "44:F0:9E:51:52:7B"))
 
-  (defun qz/bt-aiaiai ()
-    (interactive)
-    (qz/bt-connect "44:F0:9E:51:52:7B")
+(defun qz/bt-aiaiai ()
+  (interactive)
+  (qz/bt-connect "44:F0:9E:51:52:7B")
 
 
-    )
+  )
 #+end_src
 
 #+RESULTS:
@@ -8991,15 +8995,15 @@ pactl list sources | grep -E 'Name|Desc' -n
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
 
-  ;; (setq minibuffer-mode-hook nil)
-  ;; (add-hook 'minibuffer-mode-hook 'olivetti-mode)
+;; (setq minibuffer-mode-hook nil)
+;; (add-hook 'minibuffer-mode-hook 'olivetti-mode)
 
-  (add-hook 'minibuffer-mode-hook
-            (lambda ()
-              (setq-local olivetti-body-width 200)
-              (olivetti-mode)))
+(add-hook 'minibuffer-mode-hook
+          (lambda ()
+            (setq-local olivetti-body-width 200)
+            (olivetti-mode)))
 
 #+end_src
 
@@ -9014,11 +9018,11 @@ pactl list sources | grep -E 'Name|Desc' -n
 :UPDATED:  [2022-09-29 Thu 11:21]
 :END:
 #+begin_src emacs-lisp
-  ;; (require 'perfect-margin)
+;; (require 'perfect-margin)
 
-  ;; (perfect-margin-mode 1)
-  ;; (setq perfect-margin-ignore-regexps nil
-  ;;       perfect-margin-ignore-filters nil)
+;; (perfect-margin-mode 1)
+;; (setq perfect-margin-ignore-regexps nil
+;;       perfect-margin-ignore-filters nil)
 #+end_src
 **** cursor
 :PROPERTIES:
