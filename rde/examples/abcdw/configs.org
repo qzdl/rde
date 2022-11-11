@@ -2671,6 +2671,18 @@ host	all	all	0.0.0.0/0       md5
 ;;     ;;  #:package-ob emacs-ob-restclient-latest)
 #+end_src
 
+****** clojure
+:PROPERTIES:
+:ID:       d2a0b255-bfd5-44d4-8a22-817ec9d19769
+:CREATED:  [2022-10-28 Fri 12:16]
+:UPDATED:  [2022-10-28 Fri 13:25]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+;;(feature-clojure)
+#+end_src
+
 ***** mpv
 :PROPERTIES:
 :ID:       dc8200af-d1cd-4911-8c42-0b01e9361da2
