@@ -1028,7 +1028,11 @@ declared.")
     #:timezone  "Europe/Berlin")
    ;;; Allows to declare specific bootloader configuration,
    ;;; grub-efi-bootloader used by default
-   ;; (feature-bootloader)
+   (feature-bootloader
+    #:bootloader-configuration
+    (bootloader-configuration
+     (bootloader grub-efi-removable-bootloader)
+     (targets '("/boot/efi"))))
    ;; os
    (feature-kernel
     ;;#:kernel nongnu:linux-lts ;; nvidia
