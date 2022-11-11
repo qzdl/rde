@@ -2051,6 +2051,11 @@ host	all	all	0.0.0.0/0       md5
      (bindsym $mod+x exec $menu)
      (bindsym $mod+Period exec "tessen -a copy")
 
+     (input type:touchpad
+            ;; TODO: Move it to feature-sway or feature-mouse?
+            (;; (natural_scroll enabled)
+             (tap enabled)))
+
      (bindsym $mod+bracketright exec "pactl set-sink-volume @DEFAULT_SINK@ +5%")
      (bindsym $mod+bracketleft exec "pactl set-sink-volume @DEFAULT_SINK@ -5%")
      (bindsym $mod+Ctrl+bracketright exec "pactl set-sink-mute @DEFAULT_SINK@ toggle")
