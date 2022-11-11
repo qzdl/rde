@@ -10274,13 +10274,80 @@ PATH should be a topic that can be thrown at the man command."
 
 #+RESULTS:
 : ol-man
+
+** TODO scripts
+:PROPERTIES:
+:ID:       02cdcb21-e16b-44ac-a536-1fa1e05cd2b7
+:CREATED:  [2022-11-08 Tue 12:06]
+:UPDATED:  [2022-11-08 Tue 12:06]
+:ROAM_EXCLUDE: t
+:END:
+
+*** TODO reload
+:PROPERTIES:
+:ID:       ad6bd24a-ee5a-4ff1-a982-fe59aa1cd78e
+:CREATED:  [2022-11-08 Tue 12:06]
+:UPDATED:  [2022-11-08 Tue 12:07]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref reload :var file="/home/samuel/git/sys/rde/rde/examples/abcdw/configs.org"
+(require 'org)
+(org-babel-tangle-file file)
+#+end_src
+
+*** on/off
+:PROPERTIES:
+:ID:       47e85da5-f5ea-4f5c-b26a-a10c0b8fdd3c
+:CREATED:  [2022-11-09 Wed 10:14]
+:UPDATED:  [2022-11-09 Wed 10:14]
+:ROAM_EXCLUDE: t
+:END:
+
+*** hi
+:PROPERTIES:
+:ID:       2f5b0dd4-5f68-4efa-aadc-853c6d2fdb11
+:CREATED:  [2022-11-09 Wed 10:14]
+:UPDATED:  [2022-11-09 Wed 10:14]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src shell
+#+end_src
+*** TODO bye
+:PROPERTIES:
+:ID:       08229c7a-ffa3-4b09-8bfd-f8fa85300131
+:CREATED:  [2022-11-09 Wed 10:14]
+:UPDATED:  [2022-11-09 Wed 10:14]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src elisp :noweb-ref null
+(let ((mode :i))
+  (cl-loop
+   for command in '((herd (:i start :o stop) pipewire)
+                    (sudo rfkill (:i block :o unblock) wifi))
+   collect (cl-loop
+            for term in command
+            collect (if (eq 'cons (type-of term))
+                        (progn (message "%s" term)
+                               (plist-get term mode))
+                      term))))
+#+end_src
+
+#+RESULTS:
+| herd | start  | pipewire |      |
+| sudo | rfkill | block    | wifi |
+
 * Footnotes
 :PROPERTIES:
 :ID:       476ef762-1350-4afa-a8ad-2cd3e42eb730
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  <2022-03-11 Fri 14:43>
+:UPDATED:  [2022-10-05 Wed 15:45]
 :END:
+
+[fn:4] as of [2022-10-05 Wed], [[id:93ad19fa-a4fe-48c8-81ac-42bd5e138af9][swaywm]]
+[fn:3] using olivetti, nov-el, and rde@77bf57ba
 
 [fn:2] example for how =:var= header args are dealt with in an
 =org-babel-execute:backend= situation
