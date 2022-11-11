@@ -3494,15 +3494,30 @@ subject:/home:/) and tag:new}\"'")
 :ID:       a0f75539-b0cc-4906-acb1-705744822bfe
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-09-30 Fri 14:11]
 :END:
 
-**** {C-c C-j} +org-goto+ -> consult-org-heading
+
+**** {C-c C-j}         :: imenu overrides
+:PROPERTIES:
+:ID:       1c984cd6-ef53-4c6d-a8c5-03cd3f475859
+:CREATED:  [2022-10-13 Thu 10:27]
+:UPDATED:  [2022-10-13 Thu 10:27]
+:ROAM_EXCLUDE: t
+:END:
+***** {C-c C-j} consult-org-heading (replaces org-got))
 :PROPERTIES:
 :ID:       4ab6afa3-817d-4039-82e0-27340483d081
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-imenu's leaf-nodes-only display is wack and cba to find out why right now
+
+imenu's leaf-nodes-only display is wack and cba to find out why right
+now.
+
+If I could add something to this package, it would be to normalize the
+padding of each headline level with a prefix arg supplied.
+
 #+begin_src emacs-lisp :noweb-ref org
 (define-key org-mode-map (kbd "C-c C-j") 'consult-org-heading)
 #+end_src
@@ -3741,7 +3756,107 @@ buffer are offered."
 
 #+RESULTS:
 | qz/vertico-set-initial-position |
-**** {C-M-y} consult-yank
+***** {C-c C-j} consult-imenu (global)
+:PROPERTIES:
+:ID:       fa04c049-503f-4f43-ada2-9d2101473db6
+:CREATED:  [2022-10-13 Thu 10:27]
+:UPDATED:  [2022-10-13 Thu 10:27]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref null
+(with-eval-after-load 'consult
+  (define-key global-map (kbd "C-c C-j") 'consult-imenu)
+  (define-key python-mode-map (kbd "C-c C-j") 'consult-imenu)
+
+  )
+#+end_src
+
+**** {C-c C-M-i}       :: org-global-cycle
+:PROPERTIES:
+:ID:       9a8fc009-7e01-46ab-a467-4d639723a060
+:CREATED:  <2022-02-28 Mon 09:42>
+:UPDATED:  [2022-10-05 Wed 15:42]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref org
+;; (define-key org-mode-map (kbd "C-c C-M-i")
+;;             (lambda ()
+;;               "go to default opening mode -- see `org-startup-folded'"
+;;               (interactive)
+;;               (let ((org-startup-folded (if current-prefix-arg
+;;                                             t
+;;                                           org-startup-folded)))
+;;                 (funcall-interactively 'org-global-cycle '(4)))))
+
+(defun qz/org-fold ()
+  "go to default opening mode -- see `org-startup-folded'"
+  (interactive)
+  (let ((prefix-arg current-prefix-arg))
+    (funcall-interactively 'org-content (or current-prefix-arg 9999))))
+
+
+;; current subtree
+;; given some tree
+
+"
+a
+aa
+ aa
+  ab
+ab
+ac
+aca
+ cb
+  ba
+ cd
+ad
+"
+
+(define-key org-mode-map (kbd "C-c C-M-i") 'qz/org-fold)
+#+end_src
+
+#+RESULTS:
+: qz/org-fold
+
+**** {C-c C-x C-j}     :: (global) org-goto
+:PROPERTIES:
+:ID:       3a0acecd-46ff-4132-b009-5bb4964eb288
+:CREATED:  [2022-10-21 Fri 12:02]
+:UPDATED:  [2022-10-21 Fri 12:02]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref kbd
+(define-key global-map (kbd "C-c C-x C-j") 'org-clock-goto)
+#+end_src
+
+**** {C-c !}           :: (global) org-time-stamp-inactive
+:PROPERTIES:
+:ID:       2af330e9-98b1-4192-acd2-6b80b39cca0f
+:CREATED:  [2022-10-21 Fri 12:00]
+:UPDATED:  [2022-10-21 Fri 12:00]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref kbd
+(define-key global-map (kbd "C-c !") 'org-time-stamp-inactive)
+#+end_src
+
+**** {C-M-j}           :: delete-indentation
+:PROPERTIES:
+:ID:       ce4366f0-6d05-4e8b-b0f8-93dc87e8bf5b
+:CREATED:  <2022-02-22 Tue 15:27>
+:ROAM_EXCLUDE: t
+:END:
+maximum [[id:6eb04531-fbcc-45da-86e9-499b48caeb8a][ergonomics]]
+
+#+begin_src emacs-lisp  :noweb-ref kbd
+(define-key global-map (kbd "C-M-j") 'delete-indentation)
+#+end_src
+
+**** {C-M-y}           :: consult-yank
 :PROPERTIES:
 :ID:       bad4e8e6-d723-4422-8053-9ed48d6196b1
 :CREATED:  [2022-04-08 Fri 10:29]
@@ -3753,29 +3868,7 @@ buffer are offered."
 (define-key global-map (kbd "C-M-y") 'consult-yank-from-kill-ring)
 #+end_src
 
-**** {C-c C-M-i} org-global-cycle
-:PROPERTIES:
-:ID:       9a8fc009-7e01-46ab-a467-4d639723a060
-:CREATED:  <2022-02-28 Mon 09:42>
-:UPDATED:  [2022-08-15 Mon 12:40]
-:ROAM_EXCLUDE: t
-:END:
-
-#+begin_src emacs-lisp :noweb-ref org
-(define-key org-mode-map (kbd "C-c C-M-i")
-            (lambda ()
-              "go to default opening mode -- see `org-startup-folded'"
-              (interactive)
-              (let ((org-startup-folded (if current-prefix-arg
-                                            t
-                                          org-startup-folded)))
-                (funcall-interactively 'org-global-cycle '(4)))))
-#+end_src
-
-#+RESULTS:
-| lambda | nil | go to default opening mode -- see `org-startup-folded' | (interactive) | (let ((org-startup-folded (if current-prefix-arg t org-startup-folded))) (funcall-interactively 'org-global-cycle '(4))) |
-
-**** {C-x C-M-f} consult-recent-file
+**** {C-x C-M-f}       :: consult-recent-file
 :PROPERTIES:
 :ID:       b3499da4-4d04-4186-9183-f205befcc5b4
 :CREATED:  <2022-02-24 Thu 16:13>
@@ -3827,19 +3920,7 @@ getting C-u and C-x mixed up; see [[id:d2fc9152-8683-46c1-9ef2-4ca84510bb49][(rd
 #+RESULTS:
 : qz/newline-above
 
-**** {C-M-j} delete-indentation
-:PROPERTIES:
-:ID:       ce4366f0-6d05-4e8b-b0f8-93dc87e8bf5b
-:CREATED:  <2022-02-22 Tue 15:27>
-:ROAM_EXCLUDE: t
-:END:
-maximum [[id:6eb04531-fbcc-45da-86e9-499b48caeb8a][ergonomics]]
-
-#+begin_src emacs-lisp  :noweb-ref kbd
-(define-key global-map (kbd "C-M-j") 'delete-indentation)
-#+end_src
-
-**** {H-M-s-h}jkl windmove swap
+**** {H-M-s-h}jkl      :: windmove swap
 :PROPERTIES:
 :ID:       e12feea7-bf2a-44b8-acfe-95e2af12357e
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -3863,20 +3944,7 @@ I don't use this very much, as it curls my whole left hand up (qwerty troubles)
 #+RESULTS:
 : windmove-swap-states-right
 
-**** noweb-tangler
-:PROPERTIES:
-:ID:       92b9eb8a-c76c-4284-8dfe-74870f4dcab9
-:CREATED:  <2022-02-22 Tue 15:27>
-:ROAM_EXCLUDE: t
-:UPDATED:  [2022-09-29 Thu 11:11]
-:END:
-
-#+begin_src emacs-lisp 
-;; NOWEB KBD START
-<<kbd>>
-;; NOWEB KBD END
-#+end_src
-**** {H-s-h}jkl windmove
+**** {H-s-h}jkl        :: windmove
 :PROPERTIES:
 :ID:       e3015f6e-f7ca-4e31-aa05-290a438862da
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -3898,24 +3966,12 @@ I don't use this very much, as it curls my whole left hand up (qwerty troubles)
 #+RESULTS:
 : windmove-right
 
-**** {s-\} org-store-link
-:PROPERTIES:
-:ID:       344c5143-a1c9-4a3e-9ff1-3be2d104f974
-:CREATED:  <2022-02-22 Tue 15:27>
-:ROAM_EXCLUDE: t
-:END:
-#+begin_src emacs-lisp  :noweb-ref kbd
-(define-key global-map (kbd "s-\\") 'org-store-link)
-#+end_src
-
-#+RESULTS:
-: org-store-link
-
-**** isearch
+**** isearch ... {C-o} :: pop occur from isearch
 :PROPERTIES:
 :ID:       7a81203e-e7c0-474a-941b-b6c8a2e51a8d
 :CREATED:  <2022-02-25 Fri 10:11>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2022-10-21 Fri 12:05]
 :END:
 
 ***** isearch-local occur
@@ -3976,6 +4032,130 @@ hmm, doesn't allow further input
 
 #+RESULTS:
 : isearch-backward
+
+**** noweb-tangler
+:PROPERTIES:
+:ID:       92b9eb8a-c76c-4284-8dfe-74870f4dcab9
+:CREATED:  <2022-02-22 Tue 15:27>
+:ROAM_EXCLUDE: t
+:UPDATED:  [2022-09-29 Thu 11:11]
+:END:
+
+#+begin_src emacs-lisp
+;; NOWEB KBD START
+<<kbd>>
+;; NOWEB KBD END
+#+end_src
+**** {s-\}             :: org-store-link
+:PROPERTIES:
+:ID:       344c5143-a1c9-4a3e-9ff1-3be2d104f974
+:CREATED:  <2022-02-22 Tue 15:27>
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp  :noweb-ref kbd
+(define-key global-map (kbd "s-\\") 'org-store-link)
+#+end_src
+
+#+RESULTS:
+: org-store-link
+
+**** {s-TAB} | {s-C-i} :: dwim-fold
+:PROPERTIES:
+:ID:       0c29ea9e-6cd2-43a5-8062-a8b8f557906a
+:CREATED:  [2022-10-05 Wed 15:41]
+:UPDATED:  [2022-10-05 Wed 18:47]
+:ROAM_EXCLUDE: t
+:END:
+
+- see also :: [[id:9a8fc009-7e01-46ab-a467-4d639723a060][{C-c C-M-i} org-global-cycle]]
+
+yes, my WM[fn:4] uses {s-TAB} to switch workspaces, but emacs only
+dispatches on /received/ inputs; it won't capture 'horizontally' from
+
+- {s-TAB} is equivalent to {s-C-i}
+  - because
+    - {C-i} is equivalent to {TAB}
+
+#+begin_src emacs-lisp
+(defun qz/dwim-fold ()
+  (interactive)
+  (let ((fold-fn
+         (cl-case major-mode
+           ('org-mode 'qz/org-fold)
+           ('magit-status-mode 'magit-section-cycle-diffs)
+
+           ('magit-diff-mode 'magit-section-cycle-diffs)
+           (t (message "no dwim path configured, honey")))))
+    (when (symbolp fold-fn)
+      (call-interactively fold-fn))))
+
+(define-key global-map (kbd "s-TAB") 'qz/dwim-fold)
+#+end_src
+
+#+RESULTS:
+: qz/dwim-fold
+
+the next development from here would be some dwim-next, dwim-previous;
+e.g. in org-mode, navigating via visible elements;
+
+if beginner movement is
+| C-n   | C-p   |
+| C-M-n | C-M-p |
+| M-f   | M-b   |
+| C-M-f | C-M-b |
+
+intermediate movement is
+| M-a   | backward-sentence  |
+| M-e   | forward-sentence   |
+| C-M-e | end-of-defun       |
+| C-M-a | beginning-of-defun |
+| C-M-u | backward-up-list   |
+| C-M-d | down-list          |
+
+seems like lots of ways to move
+
+**** toggle
+:PROPERTIES:
+:ID:       c724ddea-fffe-4fba-a908-a6cb1b8fed3b
+:CREATED:  [2022-10-04 Tue 18:12]
+:UPDATED:  [2022-10-04 Tue 18:12]
+:ROAM_EXCLUDE: t
+:END:
+
+***** debug
+:PROPERTIES:
+:ID:       18fff442-12e3-4268-a1f3-13eb23826ceb
+:CREATED:  [2022-10-04 Tue 18:12]
+:UPDATED:  [2022-10-04 Tue 18:12]
+:ROAM_EXCLUDE: t
+:END:
+
+****** -on-error
+:PROPERTIES:
+:ID:       4ac601d5-4d2b-4377-a29c-1118a0f24707
+:CREATED:  [2022-10-04 Tue 18:12]
+:UPDATED:  [2022-10-26 Wed 11:56]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb-ref kbd
+(define-key rde-toggle-map (kbd "d")   'toggle-debug-on-error)
+
+(define-key rde-toggle-map (kbd "h c") 'highlight-changes-mode)
+(define-key rde-toggle-map (kbd "h C") 'global-highlight-changes-mode)
+
+(define-key rde-toggle-map (kbd "h i") 'highlight-indent-guides-mode)
+
+;; a bit sus, but maybe equivalent to toggling off hi-lock-mode
+(define-key rde-toggle-map (kbd "h p") 'unhighlight-regexp)
+(define-key rde-toggle-map (kbd "h P") 'global-hi-lock-mode)
+
+;; for the incessant observers demanding more than {M-g M-g}
+(define-key rde-toggle-map (kbd "l")   'linum-mode)
+(define-key rde-toggle-map (kbd "L")   'global-linum-mode)
+#+end_src
+
+#+RESULTS:
+: toggle-debug-on-error
 
 *** home-grown
 :PROPERTIES:
