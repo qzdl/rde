@@ -2193,6 +2193,23 @@ host	all	all	0.0.0.0/0       md5
 :ROAM_EXCLUDE: t
 :END:
 
+****** kanshi
+:PROPERTIES:
+:ID:       e9a4d259-45cc-43e9-89e5-69319a169928
+:CREATED:  [2022-10-28 Fri 12:09]
+:UPDATED:  [2022-11-01 Tue 18:52]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref null
+;; TODO understand why kanshi freezes my kernel (1200 seconds of cup sleep!! hard poweroff only)
+(feature-kanshi
+  #:extra-config
+  `((profile laptop ((output eDP-1 enable)))
+    (profile docked ((output eDP-1 disable)
+                     (output DP-2 enable)))))
+#+end_src
+
 ****** i3
 :PROPERTIES:
 :ID:       4a57548b-2784-4807-befb-a02d27a02012
