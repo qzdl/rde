@@ -9113,7 +9113,7 @@ prepend or to append."
 (defalias '--tb '->>)
 (defalias '--tf '->)
 (defalias 'gt '>)
-(defalias 'lt '>)
+(defalias 'lt '<)
 #+end_src
 
 #+RESULTS: org-alias-angle-brackets
