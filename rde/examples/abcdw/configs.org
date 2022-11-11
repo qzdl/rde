@@ -5580,6 +5580,14 @@ while from the archive; but I mean... [[id:0f7be177-127d-4476-9a0f-a1ed3a570400]
 
 #+RESULTS:
 : hkey-either
+
+**** kubernetes
+:PROPERTIES:
+:ID:       97ae5500-35f5-43c9-b2cb-088159ae2f2b
+:CREATED:  [2022-10-12 Wed 13:43]
+:UPDATED:  [2022-10-12 Wed 13:43]
+:ROAM_EXCLUDE: t
+:END:
 *** [[id:6baf4bff-d5fe-4ce0-a130-0464e49de67d][org]]
 :PROPERTIES:
 :ID:       71e29a1b-5349-4d90-965f-b628210f1fdb
