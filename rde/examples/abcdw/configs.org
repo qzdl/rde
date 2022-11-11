@@ -4258,9 +4258,10 @@ files of note
                        "cat ~/.saml2aws | grep '^name' | cut -d'=' -f2")
                       (s-split "\n")
                       (remove "")))))
-  (async-shell-command (format "saml2aws login -a %s"
-                               qz/aws-env)
-                       "*aws*"))
+  (async-shell-command
+   (format "saml2aws login -a %s && echo all good yo || echo uh-oh" qz/aws-env)
+   "*aws*"
+   "*error - aws*"))
 #+end_src
 
 **** kubernetes
