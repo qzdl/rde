@@ -9405,50 +9405,43 @@ check with (org-redisplay-inline-images)
 :ID:       21946f30-986f-49fe-a51d-38c78f315543
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-09-29 Thu 12:27]
+:UPDATED:  [2022-11-09 Wed 10:14]
 :END:
 
-#+begin_src emacs-lisp  
+#+begin_src emacs-lisp
+(setq qz/emacs/config "~/git/sys/rde/rde/examples/abcdw/configs.org"
+      qz/sh/tangle "make -C $HOME/git/sys/rde/rde/examples/abcdw tangle ")
+
 (defun qz/tangle ()
-  (mapcar
-   'org-babel-tangle-file
-   '("~/git/sys/rde/rde/examples/abcdw/configs.org"
-     ;;"~/git/sys/rde/rde/examples/abcdw/emacs.org"
-     ))
-  (sleep-for .5))
+  (interactive)
+  (async-shell-command
+   (concat
+    "make -C $HOME/git/sys/rde/rde/examples/abcdw tangle"
+    " && echo 'tangle--ehg--di' | espeak --stdin")))
 
 (defun qz/reload-config-home ()
   (interactive)
-  (unless current-prefix-arg
-    (qz/tangle))
   (async-shell-command
    (concat
-    "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
-    "&& make ixy-home-reconfigure"
-    "&& echo 'bal-eggd-e' "
-    "| espeak --stdin ")))
+    "make -C $HOME/git/sys/rde/rde/examples/abcdw home"
+    "&& echo 'home--bal-ehg--di' | espeak --stdin ")))
 
 (defun qz/reload-config-system ()
   (interactive)
-  (qz/tangle)
   (async-shell-command
    (concat
-    "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
-    "&& sudo -E make ixy-system-reconfigure"
-    "&& echo 'system bal-eggd-e complete' | espeak --stdin")))
+    "sudo -E make -C $HOME/git/sys/rde/rde/examples/abcdw system"
+    "&& echo 'system--bal-ehg--di' | espeak --stdin")))
 
 (defun qz/reload-config-all ()
   (interactive)
-  (qz/tangle)
   (async-shell-command
    (concat
-    "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
-    "&& ( cd ../../.. "
-    "     && make rde/channels/update-locked"
-    "     && make rde/channels/pull-locked ) "
-    "&& make ixy-home-reconfigure "
-    "&& sudo -E make ixy-system-reconfigure "
-    "&& echo 'pull & home & system bal-eggd-e complete' | espeak --stdin")))
+    "   make -C $HOME/git/sys/rde rde/channels/update-locked"
+    "&& make -C $HOME/git/sys/rde rde/channels/pull-locked"
+    "&& make -C $HOME/git/sys/rde/rde/examples/abcdw all"
+    "&& echo 'do the do, like ooo; pull & home & system bal-ehg--di'"
+    "   | espeak --stdin")))
 
 (defun qz/reload-config-emacs ()
   (interactive)
