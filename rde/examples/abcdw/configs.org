@@ -6637,6 +6637,7 @@ CREATED: <2021-11-29 Mon>
                     "elisp"
                     "plantuml"
                     "GNU Guix"
+                    "git"
                     ))
           ;; .. other files
           nil
