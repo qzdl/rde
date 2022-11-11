@@ -5588,6 +5588,36 @@ while from the archive; but I mean... [[id:0f7be177-127d-4476-9a0f-a1ed3a570400]
 :UPDATED:  [2022-10-12 Wed 13:43]
 :ROAM_EXCLUDE: t
 :END:
+**** hl-todo                                                            :mode:global:
+:PROPERTIES:
+:ID:       edde55d4-808b-49e3-8e9f-67c7b55ec0a3
+:CREATED:  [2022-10-21 Fri 12:27]
+:UPDATED:  [2022-10-26 Wed 11:51]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+(global-hl-todo-mode 1)
+#+end_src
+
+#+RESULTS:
+: t
+
+**** hl-phrase                                                          :mode:global:
+:PROPERTIES:
+:ID:       ad0691da-c0b2-464b-a031-021d50f6b258
+:CREATED:  [2022-10-26 Wed 11:50]
+:UPDATED:  [2022-10-26 Wed 11:51]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+(global-hi-lock-mode 1)
+#+end_src
+
+#+RESULTS:
+: t
+
 *** [[id:6baf4bff-d5fe-4ce0-a130-0464e49de67d][org]]
 :PROPERTIES:
 :ID:       71e29a1b-5349-4d90-965f-b628210f1fdb
