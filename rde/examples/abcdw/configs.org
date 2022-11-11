@@ -2927,6 +2927,26 @@ subject:/home:/) and tag:new}\"'")
 
    "ripgrep" "curl" "make"
    "sqlite"
+
+   ;;; PYTHON
+   "python"
+   "python-black"
+   "python-flake8"
+   "python-isort"
+   "python-lsp-server"
+   "python-lz4"
+   "python-numpy"
+   "python-pandas"
+   "python-pip"
+   "python-psycopg"
+   "python-pyan3"
+   "python-pytest-black"
+   "python-pytest-isort"
+   "python-pywal"
+   "python-pyzstd"
+   "python-scipy"
+   "python-virtualenv"
+   "python-yq"
    ))
  )
 
