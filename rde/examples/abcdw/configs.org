@@ -2846,14 +2846,20 @@ host	all	all	0.0.0.0/0       md5
 (feature-notmuch
  #:extra-tag-updates-post
  '("notmuch tag +guix-home -- 'thread:\"\
-{((subject:guix and subject:home) or subject:/home:/) and tag:new}\"'"
-   "notmuch tag +guix -- \"{to:guix or subject:guix}\"")
+{((subject:guix and subject:home) or (subject:service and subject:home) or \
+subject:/home:/) and tag:new}\"'")
  #:notmuch-saved-searches
  (cons*
-  '(:name "Personal Inbox"  :key "P" :query "tag:personal and tag:inbox")
-  '(:name "Work Inbox"      :key "W" :query "tag:work and tag:inbox")
-  '(:name "Guix Home Inbox" :key "H" :query "tag:guix-home and tag:unread")
-  '(:name "RDE Inbox"       :key "R" :query "((to:/rde/ or cc:/rde/) or subject:/rde/) and tag:unread")
+  '(:name "Inbox :: Personal"  :key "P"
+          :query "tag:unread and tag:inbox and tag:personal")
+  '(:name "Inbox :: Work"      :key "W"
+          :query "tag:unread and tag:inbox and tag:work")
+  '(:name "Inbox :: Guix Home" :key "H"
+          :query "tag:unread and tag:guix-home")
+  '(:name "Inbox :: RDE"       :key "R"
+          :query "tag:unread and (to:/rde/ or cc:/rde/)")
+  '(:name "Watching"           :key "tw"
+          :query "thread:{tag:watch}")
   %rde-notmuch-saved-searches))
 #+end_src
 
