@@ -2474,11 +2474,11 @@ host	all	all	0.0.0.0/0       md5
 (feature-emacs-which-key)
 (feature-emacs-keycast)
 
-;; (feature-emacs-perfect-margin ;; TODO qzdl
+;; (feature-emacs-perfect-margin ;; TODO QZDL
 ;;  #:visible-width 150)
 
 (feature-emacs-dired)
-;;(feature-emacs-vterm) ;; TODO merge with feature-vterm
+;;(feature-emacs-vterm) ;; TODO QZDL merge with feature-vterm
 (feature-emacs-monocle)
 (feature-emacs-message)
 #+end_src
@@ -2901,7 +2901,7 @@ host	all	all	0.0.0.0/0       md5
    "ispell"
    "nyxt"
    ;;
-   "hicolor-icon-theme" "adwaita-icon-theme" "gnome-themes-standard"
+   "hicolor-icon-theme" "adwaita-icon-theme" "gnome-themes-extra"
    "papirus-icon-theme" "arc-theme"
    "thunar"
    ;; "glib:bin"
