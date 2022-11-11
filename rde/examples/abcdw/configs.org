@@ -1557,6 +1557,57 @@ and `gfm back-ends.")
        #:user "samuel")
 #+end_src
 
+******** external data; updates
+:PROPERTIES:
+:ID:       17e87570-2fa4-4f2e-95df-ef229c8ec1aa
+:CREATED:  [2022-10-04 Tue 16:19]
+:UPDATED:  [2022-10-04 Tue 16:19]
+:ROAM_EXCLUDE: t
+:END:
+
+********* forge-pull
+:PROPERTIES:
+:ID:       454cd7fc-d86d-4f4c-a685-6f9d13963db7
+:CREATED:  [2022-10-04 Tue 16:19]
+:UPDATED:  [2022-10-04 Tue 16:34]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb-ref null
+
+(defun qz/job/forge-pull ()
+  (interactive)
+  (require 'forge)
+  (project-forget-zombie-projects)
+  (let* (y n)
+    (mapcar
+     (lambda (proj)
+       (let ((project (car proj)))
+         (with-current-buffer (dired project)
+           (if (forge-get-repository 'full)
+               (progn (message "qz: job: forge: pulling project '%s'" project)
+                      (push project y)
+                      (forge-pull))
+             (progn (message "qz: job: forge: project '%s' has no forge" project)
+                    (push project n))))))
+     project--list)
+
+    (message "qz: job: forge: pulled %s, skipped %s"
+             (length y) (length n))))
+
+(qz/job/forge-pull)
+#+end_src
+
+#+RESULTS:
+: qz/job/forge-pull
+
+********* TODO jira-pull
+:PROPERTIES:
+:ID:       e1bfd63f-ae9c-4043-a2e2-629ffdfa23d5
+:CREATED:  [2022-10-04 Tue 16:19]
+:UPDATED:  [2022-10-04 Tue 16:19]
+:ROAM_EXCLUDE: t
+:END:
+
 ****** services-sys
 :PROPERTIES:
 :ID:       c2ee7fa1-59a9-4aa5-9049-28949a17c807
