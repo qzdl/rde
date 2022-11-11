@@ -5314,6 +5314,52 @@ it's nice to get a consistent wrap of the result
 
 #+RESULTS:
 : restclient-hooks
+
+**** magit
+:PROPERTIES:
+:ID:       797bc5e1-ca1f-4e1b-abc3-e7bbef7423b8
+:CREATED:  [2022-11-01 Tue 18:51]
+:UPDATED:  [2022-11-01 Tue 18:51]
+:ROAM_EXCLUDE: t
+:END:
+
+***** magit-project-status
+:PROPERTIES:
+:ID:       818d180a-ff9f-4012-bf2c-3e7acca048b7
+:CREATED:  [2022-11-01 Tue 18:51]
+:UPDATED:  [2022-11-08 Tue 13:43]
+:ROAM_EXCLUDE: t
+:END:
+
+this gets clobbered from RDE
+
+#+begin_src emacs-lisp
+(setq magit-bind-magit-project-status t)
+(with-eval-after-load 'project
+  (with-eval-after-load 'magit
+    ;; Only more recent versions of project.el have `project-prefix-map' and
+    ;; `project-switch-commands', though project.el is available in Emacs 25.
+    (when (and magit-bind-magit-project-status
+               (boundp 'project-prefix-map))
+      (unless ;; Only modify if it hasn't already been modified.
+          (equal project-switch-commands
+                 (eval (car (get 'project-switch-commands 'standard-value))
+                       t))
+        (message "qz: setting magit-project-status, but project-switch-commands has been changed already"))
+      (progn
+        (define-key project-prefix-map "m" 'magit-project-status)
+        (add-to-list 'project-switch-commands '(magit-project-status "Magit") t)))))
+#+end_src
+
+#+RESULTS:
+| project-find-file    | Find file      |
+| project-find-regexp  | Find regexp    |
+| project-find-dir     | Find directory |
+| project-vc-dir       | VC-Dir         |
+| project-eshell       | Eshell         |
+| project-compile      | Compile        |
+| magit-project-status | Magit          |
+
 *** package config
 :PROPERTIES:
 :ID:       2fa9d7ef-cfd9-4d3c-aca8-09e1d6243705
