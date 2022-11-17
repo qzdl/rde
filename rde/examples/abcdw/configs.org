@@ -5509,6 +5509,30 @@ consuming
 #+RESULTS:
 : consult-line-multi
 
+***** project-commands
+:PROPERTIES:
+:ID:       16928472-fd8f-4fe9-9c12-6144d5c05998
+:CREATED:  [2022-11-14 Mon 12:27]
+:UPDATED:  [2022-11-14 Mon 12:29]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref consult
+(with-eval-after-load 'project
+  (define-key project-prefix-map (kbd "M-g") 'consult-ripgrep)
+  (add-to-list 'project-switch-commands '(consult-ripgrep "ripgrep") t))
+#+end_src
+
+#+RESULTS:
+| project-find-file    | Find file      |
+| project-find-regexp  | Find regexp    |
+| project-find-dir     | Find directory |
+| project-vc-dir       | VC-Dir         |
+| project-eshell       | Eshell         |
+| project-compile      | Compile        |
+| magit-project-status | Magit          |
+| consult-ripgrep      | ripgrep        |
+
 ***** basic remaps
 :PROPERTIES:
 :ID:       0209d41e-b385-4428-a6c5-a95929250975
