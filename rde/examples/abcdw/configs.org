@@ -5493,6 +5493,22 @@ consuming
 #+begin_src emacs-lisp :noweb-ref consult
 (define-key global-map (kbd "C-x C-M-SPC") 'consult-global-mark)
 #+end_src
+
+***** {M-s L}  :: consult-line-multi
+:PROPERTIES:
+:ID:       5778ec90-f568-48d3-87cb-9dae958ceeb9
+:CREATED:  [2022-11-17 Thu 13:09]
+:UPDATED:  [2022-11-17 Thu 13:09]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref kbd
+(define-key global-map (kbd "M-s L") 'consult-line-multi)
+#+end_src
+
+#+RESULTS:
+: consult-line-multi
+
 ***** basic remaps
 :PROPERTIES:
 :ID:       0209d41e-b385-4428-a6c5-a95929250975
