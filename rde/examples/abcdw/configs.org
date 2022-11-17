@@ -762,8 +762,8 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
      #:user-groups '("lp" "wheel")) ;; TODO confluence of features -> groups
 
     (feature-gnupg
-     #:gpg-primary-key "EE20E25391AAB9BB"
-     #:gpg-smart-card? #f)
+     #:gpg-primary-key "EE20E25391AAB9BB")
+
     (feature-password-store)
 
     (feature-mail-settings
