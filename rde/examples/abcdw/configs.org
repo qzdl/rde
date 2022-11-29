@@ -2972,6 +2972,8 @@ subject:/home:/) and tag:new}\"'")
    "python-scipy"
    "python-virtualenv"
    "python-yq"
+
+   "libnotify"
    ))
  )
 
