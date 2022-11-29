@@ -9430,6 +9430,100 @@ check with (org-redisplay-inline-images)
 #+RESULTS:
 : qz/org-sort-subtree
 
+**** export
+:PROPERTIES:
+:ID:       80904e8f-9c5c-4fc0-8f70-14be4044c7cc
+:CREATED:  [2022-11-29 Tue 11:07]
+:UPDATED:  [2022-11-29 Tue 11:07]
+:ROAM_EXCLUDE: t
+:END:
+
+***** (md) without links
+:PROPERTIES:
+:ID:       70498e60-ec27-4ead-904f-c3a8402d7dca
+:CREATED:  [2022-11-29 Tue 11:07]
+:UPDATED:  [2022-11-29 Tue 11:07]
+:ROAM_EXCLUDE: t
+:END:
+
+- ::  [[https://emacs.stackexchange.com/questions/22396/export-without-links][org mode - Export without links - Emacs Stack Exchange]]
+
+#+name: elisp-derived-md-export-without-links
+#+begin_src emacs-lisp :noweb-ref org
+(defun qz/org-md-nolink (link contents info)
+  (format "%s" contents))
+
+(org-export-define-derived-backend 'my-md 'md
+  :menu-entry
+  '(?M "Export to Markdown without links" (lambda (a s v b) (org-md-export-to-markdown a s v)))
+  :translate-alist '((link . qz/org-md-nolink)))
+#+end_src
+
+***** from subtree, including max-level heading from point
+:PROPERTIES:
+:ID:       a066c6c9-a733-4d56-baef-662353c21a82
+:CREATED:  [2022-11-29 Tue 11:08]
+:UPDATED:  [2022-11-29 Tue 11:08]
+:ROAM_EXCLUDE: t
+:END:
+
+- ::  [[https://emacs.stackexchange.com/questions/66851/include-subtree-header-in-filename-when-exporting-subtree-from-org-mode][org export - Include subtree header in filename when exporting subtree from org-mode - Emacs Stack Exchange]]
+
+#+begin_src emacs-lisp :noweb-ref org
+(defun qz/org-export-headline (&optional backend async subtreep visible-only body-only ext-plist)
+  "Export the current Org headline using BACKEND.
+
+The available backends are the ones of `org-export-backends' and
+'pdf.
+
+When optional argument SUBTREEP is non-nil, transcode the
+sub-tree at point, extracting information from the headline
+properties first.
+
+When optional argument VISIBLE-ONLY is non-nil, don't export
+contents of hidden elements.
+
+When optional argument BODY-ONLY is non-nil, only return body
+code, without surrounding template.
+
+Optional argument EXT-PLIST, when provided, is a property list
+with external parameters overriding Org default settings, but
+still inferior to file-local settings."
+  (interactive)
+  (let* ((backend (unless backend
+                    (intern
+                     (completing-read "Available backends: "
+                                      (append org-export-backends '(pdf slack))))))
+         (headline (car (last (org-get-outline-path t))))
+         (headline-alnum (replace-regexp-in-string "[^[:alnum:]-_]" "-" headline))
+         (file-prefix (file-name-sans-extension (buffer-file-name)))
+         (filename (format "%s-%s.%s" file-prefix headline-alnum
+                           (cl-case backend
+                             ('pdf "tex")
+                             ('slack "md")
+                             (t backend)))))
+    (save-restriction
+      (org-narrow-to-subtree)
+      (org-export-to-file
+          (if (eq backend 'pdf) 'latex backend)
+          filename async subtreep visible-only body-only ext-plist
+          (when (eq backend 'pdf)
+            (lambda (file) (org-latex-compile file))))
+      (widen))))
+#+end_src
+
+****** {C-c C-M-e} :: qz/org-export-headline
+:PROPERTIES:
+:ID:       d62c1049-2bce-4b3e-8e4b-7619ebb9e262
+:CREATED:  [2022-11-29 Tue 11:09]
+:UPDATED:  [2022-11-29 Tue 11:09]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref org
+(define-key org-mode-map (kbd "C-c C-M-e") 'qz/org-export-headline)
+#+end_src
+
 *** system commands
 :PROPERTIES:
 :ID:       c519b791-1810-4150-89ec-3408998f71a3
