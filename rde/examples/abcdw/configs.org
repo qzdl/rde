@@ -4088,7 +4088,7 @@ hmm, doesn't allow further input
 :PROPERTIES:
 :ID:       0c29ea9e-6cd2-43a5-8062-a8b8f557906a
 :CREATED:  [2022-10-05 Wed 15:41]
-:UPDATED:  [2022-10-05 Wed 18:47]
+:UPDATED:  [2022-11-18 Fri 19:46]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -4104,13 +4104,13 @@ dispatches on /received/ inputs; it won't capture 'horizontally' from
 #+begin_src emacs-lisp
 (defun qz/dwim-fold ()
   (interactive)
-  (let ((fold-fn
-         (cl-case major-mode
-           ('org-mode 'qz/org-fold)
-           ('magit-status-mode 'magit-section-cycle-diffs)
-
-           ('magit-diff-mode 'magit-section-cycle-diffs)
-           (t (message "no dwim path configured, honey")))))
+  (let* ((is-or-derives (lambda (mode)
+                          (or (eq major-mode mode)
+                              (derived-mode-p major-mode mode))))
+         (fold-fn
+          (cond ((funcall is-or-derives 'org-mode) 'qz/org-fold)
+                ((funcall is-or-derives 'magit-diff-mode) 'magit-section-cycle-diffs)
+                (t (message "no dwim path configured, honey")))))
     (when (symbolp fold-fn)
       (call-interactively fold-fn))))
 
