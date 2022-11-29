@@ -886,7 +886,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
 :PROPERTIES:
 :ID:       5508a976-f9ad-457c-b4bb-46dbf3b73fb0
 :CREATED:  [2022-07-29 Fri 17:36]
-:UPDATED:  [2022-10-13 Thu 13:23]
+:UPDATED:  [2022-11-22 Tue 11:45]
 :END:
 
 **** pkgs, pkgs-vanilla                                                        :func:
@@ -1267,6 +1267,43 @@ Kubernetes clusters within Emacs.")
    (description
     "This library implements a Slack backend for the Org exporter, based on the `md
 and `gfm back-ends.")
+   (license license:gpl3+)))
+#+end_src
+
+***** emacs-svg-clock
+:PROPERTIES:
+:ID:       9765acda-2dc5-45ea-9196-5abfb1ae29da
+:CREATED:  [2022-11-21 Mon 18:22]
+:UPDATED:  [2022-11-22 Tue 11:45]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme
+(define-public emacs-svg-clock
+  (package
+   (name "emacs-svg-clock")
+   (version "1.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://elpa.gnu.org/packages/svg-clock-"
+                                version ".el"))
+            (sha256
+             (base32
+              "15pmj07wnlcpv78av9qpnbfwdjlkf237vib8smpa7nvyikdfszfr"))))
+   (build-system emacs-build-system)
+   (propagated-inputs (list emacs-svg-lib))
+   (home-page "http://elpa.gnu.org/packages/svg-clock.html")
+   (synopsis "Analog clock using Scalable Vector Graphics")
+   (description
+    "svg-clock provides a scalable analog clock.  Rendering is done by means of svg
+(Scalable Vector Graphics).  In order to use svg-clock you need to build Emacs
+with svg support. (To check whether your Emacs supports svg, do \"M-:
+(image-type-available-p svg) RET\" which must return t).  Call `svg-clock to
+start a clock.  This will open a new buffer \"*clock*\" displaying a clock which
+fills the buffer's window.  Use `svg-clock-insert to insert a clock
+programmatically in any buffer, possibly specifying the clock's size, colours
+and offset to the current-time.  Arbitrary many clocks can be displayed
+independently.  Clock instances ared updated automatically.  Their resources
+(timers etc.) are cleaned up automatically when the clocks are removed.")
    (license license:gpl3+)))
 #+end_src
 
@@ -2344,7 +2381,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       d2fc9152-8683-46c1-9ef2-4ca84510bb49
 :CREATED:  [2022-09-28 Wed 16:14]
-:UPDATED:  [2022-11-03 Thu 15:09]
+:UPDATED:  [2022-11-21 Mon 18:22]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2375,6 +2412,7 @@ host	all	all	0.0.0.0/0       md5
    emacs-kubernetes
    python-pylsp-mypy
    emacs-ox-slack
+   emacs-svg-clock
    ;;
    ;; emacs-consult-recoll ; TODO qzdl pkg
    ;; emacs-code-review    ; TODO qzdl pkg
@@ -2915,7 +2953,7 @@ subject:/home:/) and tag:new}\"'")
 :PROPERTIES:
 :ID:       9490f8c2-7074-4a89-a62e-f82b6bfc2f2b
 :CREATED:  [2022-08-01 Mon 10:55]
-:UPDATED:  [2022-11-08 Tue 14:58]
+:UPDATED:  [2022-11-21 Mon 18:42]
 :ROAM_EXCLUDE: t
 :END:
 
