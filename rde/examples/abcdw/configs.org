@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-11-09 Wed 12:33]
+:UPDATED:  [2022-11-29 Tue 11:09]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :CREATED:  [2022-08-30 Tue 11:12]
 :END:
@@ -560,7 +560,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
             (urls urls)))))
 #+end_src
 
-**** bravehost mail serializer
+**** mail serializer (bravehost | gmail-tls)
 :PROPERTIES:
 :ID:       fb637534-e1ae-493b-bf5e-0cdc5ec1cc2f
 :CREATED:  [2022-08-29 Mon 17:06]
@@ -579,12 +579,31 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
     ("sent"   . "Sent")
     ("drafts" . "Drafts")
     ("trash"  . "Deleted Items")
-    ("spam"   . "Spam")))
+    ("spam"   . "Junk")))
 
 ;; https://wiki.bravenet.com/Using_your_Bravenet_e-mail_account
 (define bravehost-isync-settings
   (generate-isync-serializer "mail.bravehost.com" bravehost-folder-mapping))
+
+(define gmail-tls-folder-mapping
+  '(("inbox"   . "INBOX")
+    ("sent"    . "[Gmail]/Sent Mail")
+    ("drafts"  . "[Gmail]/Drafts")
+    ("archive" . "[Gmail]/All Mail")
+    ("trash"   . "[Gmail]/Trash")
+    ("spam"    . "[Gmail]/Spam")))
+
+(define gmail-tls-isync-settings
+  (generate-isync-serializer "imap.gmail.com" gmail-tls-folder-mapping))
 #+end_src
+
+****
+:PROPERTIES:
+:ID:       1fcfe6cc-78f9-43e5-89a7-3a27d68597f6
+:CREATED:  [2022-11-21 Mon 14:13]
+:UPDATED:  [2022-11-21 Mon 14:13]
+:ROAM_EXCLUDE: t
+:END:
 
 **** keyboard
 :PROPERTIES:
@@ -776,7 +795,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
       (mail-account
        (id   'work)
        (fqda "sculpepper@newstore.com")
-       (type 'gmail)))
+       (type 'gmail-tls)))
      #:mailing-lists
      (list
       ;; https://public-inbox.org/README.html
@@ -2790,7 +2809,7 @@ host	all	all	0.0.0.0/0       md5
 :UPDATED:  [2022-09-28 Wed 15:41]
 :ROAM_EXCLUDE: t
 :END:
-****** TODO isync :broken:                                                     :mail:
+****** TODO isync                                                              :mail:
 :PROPERTIES:
 :ID:       5f12520a-369e-43bf-ab36-64a44c5bfb98
 :CREATED:  [2022-08-01 Mon 10:55]
@@ -2803,7 +2822,8 @@ host	all	all	0.0.0.0/0       md5
  #:isync-verbose #t
  #:isync-serializers
  (append %default-isync-serializers
-         `((bravehost . ,bravehost-isync-settings))))
+         `((bravehost . ,bravehost-isync-settings)
+           (gmail-tls . ,gmail-tls-isync-settings))))
 #+end_src
 
 ****** l2md                                                                    :mail:
@@ -2832,7 +2852,11 @@ host	all	all	0.0.0.0/0       md5
  (append
   %default-msmtp-provider-settings
   `((bravehost . ((host . "mail.bravehost.com")
-                  (port . 587))))))
+                  (port . 465)
+                  (tls_starttls . off)))
+    (gmail-tls . ((host . "smtp.gmail.com")
+                  (port . 465)
+                  (tls_starttls . off))))))
 #+end_src
 
 ****** notmuch                                                                 :mail:
