@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-11-29 Tue 11:09]
+:UPDATED:  [2022-11-29 Tue 11:48]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :CREATED:  [2022-08-30 Tue 11:12]
 :END:
@@ -9530,7 +9530,7 @@ check with (org-redisplay-inline-images)
 :PROPERTIES:
 :ID:       a066c6c9-a733-4d56-baef-662353c21a82
 :CREATED:  [2022-11-29 Tue 11:08]
-:UPDATED:  [2022-11-29 Tue 11:08]
+:UPDATED:  [2022-11-29 Tue 11:46]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -9571,13 +9571,21 @@ still inferior to file-local settings."
                              (t backend)))))
     (save-restriction
       (org-narrow-to-subtree)
+      (kill-new (s-join " -> " (org-get-outline-path t nil)))
       (org-export-to-file
           (if (eq backend 'pdf) 'latex backend)
           filename async subtreep visible-only body-only ext-plist
           (when (eq backend 'pdf)
             (lambda (file) (org-latex-compile file))))
-      (widen))))
+      (widen))
+    (with-temp-buffer
+      (insert-file-contents filename)
+      (kill-new (buffer-string)))))
 #+end_src
+
+
+#+RESULTS:
+: qz/org-export-headline
 
 ****** {C-c C-M-e} :: qz/org-export-headline
 :PROPERTIES:
