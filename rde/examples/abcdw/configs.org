@@ -9591,6 +9591,57 @@ still inferior to file-local settings."
 (define-key org-mode-map (kbd "C-c C-M-e") 'qz/org-export-headline)
 #+end_src
 
+***** slack
+:PROPERTIES:
+:ID:       5d0aec80-160f-46b8-b2ba-a94e11fe417c
+:CREATED:  [2022-11-29 Tue 11:47]
+:UPDATED:  [2022-11-29 Tue 11:48]
+:ROAM_EXCLUDE: t
+:END:
+
+****** redefine :: org-slack-headline ;; use headline + level as bullet
+:PROPERTIES:
+:ID:       321011a5-e5e1-4747-92ce-4b83f5400551
+:CREATED:  [2022-11-29 Tue 11:47]
+:UPDATED:  [2022-11-29 Tue 11:47]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref org
+(defun org-slack-headline (headline contents info)
+  "Transcode HEADLINE element into Markdown format.
+CONTENTS is the headline contents.  INFO is a plist used as
+a communication channel."
+  (unless (org-element-property :footnote-section-p headline)
+    (let* ((level (org-export-get-relative-level headline info))
+           (title (org-export-data (org-element-property :title headline) info))
+           (todo (and (plist-get info :with-todo-keywords)
+                      (let ((todo (org-element-property :todo-keyword
+                                                        headline)))
+                        (and todo (concat (org-export-data todo info) " ")))))
+           (tags (and (plist-get info :with-tags)
+                      (let ((tag-list (org-export-get-tags headline info)))
+                        (and tag-list
+                             (concat "     " (org-make-tag-string tag-list))))))
+           (priority
+            (and (plist-get info :with-priority)
+                 (let ((char (org-element-property :priority headline)))
+                   (and char (format "[#%c] " char)))))
+           ;; Headline text without tags.
+           (heading (concat todo priority title)))
+      (format "%s*%s*\n\n%s"
+              (if (> level 1)
+                  (concat (s-repeat (- level 3) ;; starting flush
+                                    "  ")
+                          "- ")
+                "")
+              title contents)))
+#+end_src
+
+#+RESULTS:
+: org-slack-headline
+
+
 *** system commands
 :PROPERTIES:
 :ID:       c519b791-1810-4150-89ec-3408998f71a3
