@@ -1549,31 +1549,57 @@ independently.  Clock instances ared updated automatically.  Their resources
 :PROPERTIES:
 :ID:       c8903598-d72e-4539-884b-a60096be7fbe
 :CREATED:  [2022-09-28 Wed 15:42]
-:UPDATED:  [2022-09-28 Wed 15:43]
+:UPDATED:  [2022-11-21 Mon 18:23]
 :ROAM_EXCLUDE: t
 :END:
 
 #+name: guile-job-notes
 #+begin_src scheme :noweb-ref jobs
      ;;; job: commit my notes
-#~(job '(next-minute)
-       ;;'(next-minute '(15))
-       (lambda ()
-         (call-with-output-file "/tmp/commit.log"
-           (lambda (port)
-             (chdir "./life")
-             (display
-              (with-exception-handler
-                  (lambda (exn)
-                    (format #f "exception: ~s\n" exn))
-                (system*
-                 (format #f "~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
-                         (file-append #$(@ (gnu packages version-control) git) "/bin/git")
-                         (file-append #$(@ (gnu packages version-control) git) "/bin/git")
-                         (file-append #$(@ (gnu packages base) coreutils) "/bin/date")))
-                port)))))
-       "notes-commit"
-       #:user "samuel")
+;; #~(job '(next-minute)
+;;        ;;'(next-minute '(15))
+;;        ;; (lambda ()
+;;        ;;   (call-with-output-file "/tmp/commit.log"
+;;        ;;     (lambda (port)
+;;        ;;       (chdir "./life")
+;;        ;;       (display
+;;        ;;        (with-exception-handler
+;;        ;;            (lambda (exn)
+;;        ;;              (format #f "exception: ~s\n" exn))
+;;        ;;          (system*
+;;        ;;           (format #f "~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
+;;        ;;                   (file-append #$(@ (gnu packages version-control) git) "/bin/git")
+;;        ;;                   (file-append #$(@ (gnu packages version-control) git) "/bin/git")
+;;        ;;                   (file-append #$(@ (gnu packages base) coreutils) "/bin/date")))
+;;        ;;          port)))))
+;;        "cd life && git add . && git commit -m \"auto-commit | $( ~a -uIs )\""
+;;        "notes-commit"
+;;        #:user "samuel")
+
+;; (use-modules (guix gexp))
+;; (let ((f (lambda ()
+;;          (call-with-output-file "/tmp/commit.log"
+;;            (lambda (port)
+;;              ;; (chdir "./life")
+;;              (display
+;;               (with-exception-handler
+;;                   (lambda (exn)
+;;                     (format #f "exception: ~s\n" exn))
+;;                 (system*
+;;                  (format #f "ls"
+;;                          ;;"~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
+;;                          ;;(file-append #$(@ (gnu packages version-control) git) "/bin/git")
+;;                          ;;(file-append #$(@ (gnu packages version-control) git) "/bin/git")
+;;                          ;;(file-append #$(@ (gnu packages base) coreutils) "/bin/date")
+;;                          ))
+;;                 port)))))))
+;;   (f))
+
+;; (call-with-output-file "/tmp/commit.log"
+;;   (lambda (port)
+;;   (display
+;;    (system "git status")
+;;    port)))
 #+end_src
 
 ******** fulltext index (recoll)                                                 :1h:
