@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2022-11-29 Tue 11:48]
+:UPDATED:  [2023-02-07 Tue 12:33]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :CREATED:  [2022-08-30 Tue 11:12]
 :END:
@@ -3527,7 +3527,7 @@ subject:/home:/) and tag:new}\"'")
 :ID:       0b25418b-3898-42da-81f2-cfc93aa51017
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-09-28 Wed 12:10]
+:UPDATED:  [2023-01-19 Thu 10:59]
 :END:
 
 *** AAA tangle emacs
@@ -4041,7 +4041,7 @@ I don't use this very much, as it curls my whole left hand up (qwerty troubles)
 :ID:       e3015f6e-f7ca-4e31-aa05-290a438862da
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-07-09 Sat 17:26]
+:UPDATED:  [2023-01-12 Thu 20:34]
 :END:
 
 #+begin_src emacs-lisp  :noweb-ref kbd
@@ -4262,6 +4262,7 @@ seems like lots of ways to move
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
+
 #+begin_src emacs-lisp
 ;; NOWEB CUSTOM START
 <<custom>>
@@ -4402,7 +4403,7 @@ or
 :PROPERTIES:
 :ID:       c053accd-329e-440d-be77-735ecea9f0b3
 :CREATED:  [2022-10-31 Mon 13:16]
-:UPDATED:  [2022-10-31 Mon 13:17]
+:UPDATED:  [2023-01-12 Thu 20:25]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -7327,6 +7328,7 @@ the major mode specifies support for Font Lock."
 (define-key global-map (kbd "C-c n s") 'qz/consult-notes)
 #+end_src
 
+
 #+RESULTS:
 : qz/consult-notes
 
@@ -7347,14 +7349,15 @@ the major mode specifies support for Font Lock."
 :ID:       46fed150-b670-4899-aaa2-b029262db572
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-09-30 Fri 13:36]
+:UPDATED:  [2023-02-07 Tue 12:33]
 :END:
 
 - see also :: about capture templates
+
 #+begin_src emacs-lisp :noweb-ref roam
 (setq org-roam-dailies-capture-templates
       `(("d" "default" entry
-         ,(s-join "\n" '("* [%<%H:%M>] %?"
+         ,(s-join "\n" '("* [%<%H:%M:%S>] %?"
                          ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
                          "- from :: %a"
                          ;;"- from (point) :: %f"
@@ -7415,6 +7418,7 @@ make a new year in this case.
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
+
 #+begin_src emacs-lisp :noweb-ref roam
 ;;; day lookup
 (defvar qz/day-lookup
@@ -9530,7 +9534,7 @@ check with (org-redisplay-inline-images)
 :PROPERTIES:
 :ID:       a066c6c9-a733-4d56-baef-662353c21a82
 :CREATED:  [2022-11-29 Tue 11:08]
-:UPDATED:  [2022-11-29 Tue 11:46]
+:UPDATED:  [2022-12-12 Mon 14:51]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -9598,6 +9602,9 @@ still inferior to file-local settings."
 #+begin_src emacs-lisp :noweb-ref org
 (define-key org-mode-map (kbd "C-c C-M-e") 'qz/org-export-headline)
 #+end_src
+
+#+RESULTS:
+: qz/org-export-headline
 
 ***** slack
 :PROPERTIES:
