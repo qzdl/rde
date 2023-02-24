@@ -122,6 +122,9 @@
 
      ;; NOWEB CONF START
      ;; NOWEB KBD START
+     (define-key global-map (kbd "C-c C-x C-j") 'org-clock-goto)
+     (define-key global-map (kbd "C-c !") 'org-time-stamp-inactive)
+     (define-key global-map (kbd "C-M-j") 'delete-indentation)
      (define-key global-map (kbd "C-M-y") 'consult-yank-from-kill-ring)
      (define-key global-map (kbd "C-x C-M-f") 'consult-recent-file)
      ;;(custom-set-variables
@@ -140,7 +143,6 @@
      ;;(org-remap org-mode-map
      ;;           'open-line 'org-open-line)
      
-     (define-key global-map (kbd "C-M-j") 'delete-indentation)
      (define-key global-map (kbd "M-s-h") 'windmove-swap-states-left)
      (define-key global-map (kbd "M-s-j") 'windmove-swap-states-down)
      (define-key global-map (kbd "M-s-k") 'windmove-swap-states-up)
@@ -157,7 +159,6 @@
      (define-key global-map (kbd "s-k")   'windmove-up)
      (define-key global-map (kbd "H-s-l") 'windmove-right)
      (define-key global-map (kbd "s-l")   'windmove-right)
-     (define-key global-map (kbd "s-\\") 'org-store-link)
      ;; Activate occur easily inside isearch
      
      (define-key isearch-mode-map (kbd "C-o")
@@ -176,6 +177,22 @@
      (global-set-key (kbd "C-r") 'isearch-backward-regexp)
      (global-set-key (kbd "C-M-s") 'isearch-forward)
      (global-set-key (kbd "C-M-r") 'isearch-backward)
+     (define-key global-map (kbd "s-\\") 'org-store-link)
+     (define-key rde-toggle-map (kbd "d")   'toggle-debug-on-error)
+     
+     (define-key rde-toggle-map (kbd "h c") 'highlight-changes-mode)
+     (define-key rde-toggle-map (kbd "h C") 'global-highlight-changes-mode)
+     
+     (define-key rde-toggle-map (kbd "h i") 'highlight-indent-guides-mode)
+     
+     ;; a bit sus, but maybe equivalent to toggling off hi-lock-mode
+     (define-key rde-toggle-map (kbd "h p") 'unhighlight-regexp)
+     (define-key rde-toggle-map (kbd "h P") 'global-hi-lock-mode)
+     
+     ;; for the incessant observers demanding more than {M-g M-g}
+     (define-key rde-toggle-map (kbd "l")   'linum-mode)
+     (define-key rde-toggle-map (kbd "L")   'global-linum-mode)
+     (define-key global-map (kbd "M-s L") 'consult-line-multi)
      (define-key global-map (kbd "C-c n j") 'org-roam-dailies-capture-today)
      (define-key global-map (kbd "C-c n J") 'org-roam-dailies-goto-today)
      
@@ -193,6 +210,19 @@
      
      (define-key global-map (kbd "C-c n s") 'qz/consult-notes)
      ;; NOWEB KBD END
+     (defun qz/dwim-fold ()
+       (interactive)
+       (let* ((is-or-derives (lambda (mode)
+                               (or (eq major-mode mode)
+                                   (derived-mode-p major-mode mode))))
+              (fold-fn
+               (cond ((funcall is-or-derives 'org-mode) 'qz/org-fold)
+                     ((funcall is-or-derives 'magit-diff-mode) 'magit-section-cycle-diffs)
+                     (t (message "no dwim path configured, honey")))))
+         (when (symbolp fold-fn)
+           (call-interactively fold-fn))))
+     
+     (define-key global-map (kbd "s-TAB") 'qz/dwim-fold)
      ;; NOWEB CUSTOM START
      (custom-set-variables
       '(org-imenu-depth 99))
@@ -215,9 +245,10 @@
                             "cat ~/.saml2aws | grep '^name' | cut -d'=' -f2")
                            (s-split "\n")
                            (remove "")))))
-       (async-shell-command (format "saml2aws login -a %s"
-                                    qz/aws-env)
-                            "*aws*"))
+       (async-shell-command
+        (format "saml2aws login -a %s && echo all good yo || echo uh-oh" qz/aws-env)
+        "*aws*"
+        "*error - aws*"))
      (defvar qz/kubectl-context nil
        "the operating kubernetes context.
      
@@ -237,6 +268,32 @@
      
      ;; optional; quality of life improvement to bury kubectl buffer
      (add-to-list 'display-buffer-alist '("*kubectl*" display-buffer-no-window))
+     (defun qz/read-tab ()
+       (interactive)
+       (let* ((file (s-trim (shell-command-to-string "python3 $HOME/life/scratch/tabs.py")))
+              (jd   (mapcar (lambda (o) (cons (gethash "title" o) o))
+                            (cl-sort ;; accessed ASC
+                             (with-temp-buffer
+                               (insert-file-contents file)
+                               (json-parse-buffer))
+                             'lt :key (lambda (o)
+                                        (gethash "accessed" o)))))
+              (choice (cdr (assoc
+                            (consult--read
+                             (mapcar 'car jd)
+                             :prompt "choose tab: "
+                             :default (car (seq-take jd 1))
+                             :sort nil)
+                            jd))))
+         (insert
+          (cl-destructuring-bind (title url)
+              (list (gethash "title" choice)
+                    (gethash "url" choice))
+            (cl-case major-mode
+              (org-mode (org-make-link-string url title))
+              (t (format "%s :: %s" title url)))))))
+     
+     (define-key global-map (kbd "C-c C-s-l") 'qz/read-tab)
      (defun eos/narrow-or-widen-dwim (p)
        "Widen if buffer is narrowed, narrow-dwim otherwise.
      Dwim means: region, org-src-block, org-subtree, or
@@ -269,93 +326,118 @@
        (interactive)
        (let ((jq-interactive-command "yq"))
          (call-interactively 'jq-interactively)))
+     (defun qz/insert-gpl ()
+       "Insert the short brief of GNU GPL v3."
+       (interactive)
+       (save-mark-and-excursion
+         (push-mark)
+         (insert "
+     <one line to give the program's name and a brief idea of what it does.>
+     Copyright (C) <year>  <name of author>
+     
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+     
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+     GNU General Public License for more details.
+     
+     You should have received a copy of the GNU General Public License
+     along with this program. If not, see <http://www.gnu.org/licenses/>.")
+         (comment-region (mark) (point))))
      
      (custom-set-variables
       '(sqlind-indentation-offsets-alist
-        ((syntax-error sqlind-report-sytax-error)
-         (in-string sqlind-report-runaway-string)
-         (comment-continuation sqlind-indent-comment-continuation)
-         (comment-start sqlind-indent-comment-start)
-         (toplevel 0)
-         (in-block +)
-         (in-begin-block +)
-         (block-start 0)
-         (block-end 0)
-         (declare-statement +)
-         (package ++)
-         (package-body 0)
-         (create-statement +)
-         (defun-start +)
-         (labeled-statement-start 0)
-         (statement-continuation +)
-         (nested-statement-open sqlind-use-anchor-indentation +)
-         (nested-statement-continuation sqlind-use-previous-line-indentation)
-         (nested-statement-close sqlind-use-anchor-indentation)
-         (with-clause sqlind-use-anchor-indentation)
-         (with-clause-cte +)
-         (with-clause-cte-cont ++)
-         (case-clause 0)
-         (case-clause-item sqlind-use-anchor-indentation +)
-         (case-clause-item-cont sqlind-right-justify-clause)
-         (select-clause sqlind-right-justify-clause)
-         (select-column sqlind-indent-select-column)
-         (select-column-continuation sqlind-indent-select-column +)
-         ;; ((default . ++) (kinda . +) ( . sqlind-use-anchor-indentation))
-         (select-join-condition ++) ; this should wrap
-         (select-table sqlind-indent-select-table)
-         (select-table-continuation sqlind-indent-select-table +)
-         (in-select-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
-         (insert-clause sqlind-right-justify-clause)
-         (in-insert-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
-         (delete-clause sqlind-right-justify-clause)
-         (in-delete-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
-         (update-clause sqlind-right-justify-clause)
-         (in-update-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator))))
+        '((syntax-error sqlind-report-sytax-error)
+          (in-string sqlind-report-runaway-string)
+     
+     
+          (comment-continuation sqlind-indent-comment-continuation)
+          (comment-start sqlind-indent-comment-start)
+          (toplevel 0)
+          (in-block +)
+          (in-begin-block +)
+          (block-start 0)
+          (block-end 0)
+          (declare-statement +)
+          (package ++)
+          (package-body 0)
+          (create-statement +)
+          (defun-start +)
+          (labeled-statement-start 0)
+          (statement-continuation +)
+          (nested-statement-open sqlind-use-anchor-indentation +)
+          (nested-statement-continuation sqlind-use-previous-line-indentation)
+          (nested-statement-close sqlind-use-anchor-indentation)
+          (with-clause sqlind-use-anchor-indentation)
+          (with-clause-cte +)
+          (with-clause-cte-cont ++)
+          (case-clause 0)
+          (case-clause-item sqlind-use-anchor-indentation +)
+          (case-clause-item-cont sqlind-right-justify-clause)
+          (select-clause sqlind-right-justify-clause)
+          (select-column sqlind-indent-select-column)
+          (select-column-continuation sqlind-indent-select-column +)
+          ;; ((default . ++) (kinda . +) ( . sqlind-use-anchor-indentation))
+          (select-join-condition ++) ; this should wrap
+          (select-table sqlind-indent-select-table)
+          (select-table-continuation sqlind-indent-select-table +)
+          (in-select-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+          (insert-clause sqlind-right-justify-clause)
+          (in-insert-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+          (delete-clause sqlind-right-justify-clause)
+          (in-delete-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+          (update-clause sqlind-right-justify-clause)
+          (in-update-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator))))
      (custom-set-variables
       '(sqlind-default-indentation-offsets-alist
-        ((syntax-error sqlind-report-sytax-error)
-         (in-string sqlind-report-runaway-string)
-         (comment-continuation sqlind-indent-comment-continuation)
-         (comment-start sqlind-indent-comment-start)
-         (toplevel 0)
-         (in-block +)
-         (in-begin-block +)
-         (block-start 0)
-         (block-end 0)
-         (declare-statement +)
-         (package ++)
-         (package-body 0)
-         (create-statement +)
-         (defun-start +)
-         (labeled-statement-start 0)
-         (statement-continuation +)
-         (nested-statement-open sqlind-use-anchor-indentation +)
-         (nested-statement-continuation sqlind-use-previous-line-indentation)
-         (nested-statement-close sqlind-use-anchor-indentation)
-         (with-clause sqlind-use-anchor-indentation)
-         (with-clause-cte +)
-         (with-clause-cte-cont ++)
-         (case-clause 0)
-         (case-clause-item sqlind-use-anchor-indentation +)
-         (case-clause-item-cont sqlind-right-justify-clause)
-         (select-clause sqlind-right-justify-clause)
-         (select-column sqlind-indent-select-column)
-         (select-column-continuation sqlind-indent-select-column +)
-         (select-join-condition -- --)
-         (select-table sqlind-indent-select-table)
-         (select-table-continuation sqlind-indent-select-table +)
-         (in-select-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
-         (insert-clause sqlind-right-justify-clause)
-         (in-insert-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
-         (delete-clause sqlind-right-justify-clause)
-         (in-delete-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
-         (update-clause sqlind-right-justify-clause)
-         (in-update-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator))))
+        '((syntax-error sqlind-report-sytax-error)
+          (in-string sqlind-report-runaway-string)
+          (comment-continuation sqlind-indent-comment-continuation)
+          (comment-start sqlind-indent-comment-start)
+          (toplevel 0)
+          (in-block +)
+          (in-begin-block +)
+          (block-start 0)
+          (block-end 0)
+          (declare-statement +)
+          (package ++)
+          (package-body 0)
+          (create-statement +)
+          (defun-start +)
+          (labeled-statement-start 0)
+          (statement-continuation +)
+          (nested-statement-open sqlind-use-anchor-indentation +)
+          (nested-statement-continuation sqlind-use-previous-line-indentation)
+          (nested-statement-close sqlind-use-anchor-indentation)
+          (with-clause sqlind-use-anchor-indentation)
+          (with-clause-cte +)
+          (with-clause-cte-cont ++)
+          (case-clause 0)
+          (case-clause-item sqlind-use-anchor-indentation +)
+          (case-clause-item-cont sqlind-right-justify-clause)
+          (select-clause sqlind-right-justify-clause)
+          (select-column sqlind-indent-select-column)
+          (select-column-continuation sqlind-indent-select-column +)
+          (select-join-condition -- --)
+          (select-table sqlind-indent-select-table)
+          (select-table-continuation sqlind-indent-select-table +)
+          (in-select-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+          (insert-clause sqlind-right-justify-clause)
+          (in-insert-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+          (delete-clause sqlind-right-justify-clause)
+          (in-delete-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator)
+          (update-clause sqlind-right-justify-clause)
+          (in-update-clause sqlind-lineup-to-clause-end sqlind-right-justify-logical-operator))))
      (defun qz/add-pdb-py-debug ()
        "add debug code and move line down"
        (interactive)
        (back-to-indentation)
        (insert "import pdb; pdb.set_trace();\n"))
+     (custom-set-variables '(python-indent-offset 4))
      ;; NOWEB GOLANG START
      (with-eval-after-load 'go-mode
        (setq gofmt-command "golines")
@@ -483,6 +565,21 @@
        (provide 'restclient-hooks)
        )
      ;; NOWEB RESTCLIENT END
+     (setq magit-bind-magit-project-status t)
+     (with-eval-after-load 'project
+       (with-eval-after-load 'magit
+         ;; Only more recent versions of project.el have `project-prefix-map' and
+         ;; `project-switch-commands', though project.el is available in Emacs 25.
+         (when (and magit-bind-magit-project-status
+                    (boundp 'project-prefix-map))
+           (unless ;; Only modify if it hasn't already been modified.
+               (equal project-switch-commands
+                      (eval (car (get 'project-switch-commands 'standard-value))
+                            t))
+             (message "qz: setting magit-project-status, but project-switch-commands has been changed already"))
+           (progn
+             (define-key project-prefix-map "m" 'magit-project-status)
+             (add-to-list 'project-switch-commands '(magit-project-status "Magit") t)))))
      ;; NOWEB EMBARK START
      (define-key global-map (kbd "C-.") 'embark-act)
      (with-eval-after-load 'embark
@@ -512,6 +609,9 @@
        
        (define-key global-map (kbd "C-c b s") 'qz/consult-ripgrep-bookmark)
        (define-key global-map (kbd "C-x C-M-SPC") 'consult-global-mark)
+       (with-eval-after-load 'project
+         (define-key project-prefix-map (kbd "M-g") 'consult-ripgrep)
+         (add-to-list 'project-switch-commands '(consult-ripgrep "ripgrep") t))
        (mapcar (lambda (bind)
                  (define-key global-map (kbd (car bind)) (cadr bind)))
                '(("C-x b" consult-buffer)))
@@ -519,9 +619,12 @@
      ;; NOWEB CONSULT END
      (with-eval-after-load 'pdf-view
        (add-hook 'pdf-view-mode-hook 'pdf-view-midnight-minor-mode))
+     (defun pj-line-width () 650)
      ;;(require 'hyperbole) ;; TODO klink
      (define-key global-map (kbd "C-<down-mouse-2>") 'hkey-either)
      (define-key global-map (kbd "M-<return>") 'hkey-either)
+     (global-hl-todo-mode 1)
+     (global-hi-lock-mode 1)
      (defun qz/ensure-alias (alias &optional node)
        (let ((node (or node  (org-roam-node-at-point 'assert))))
          (save-excursion
@@ -774,14 +877,40 @@
          (org-toggle-inline-images t))
        
        (qz/advice- org-babel-execute-src-block :after qz/org-refresh-inline-images)
-       (define-key org-mode-map (kbd "C-c C-M-i")
-                   (lambda ()
-                     "go to default opening mode -- see `org-startup-folded'"
-                     (interactive)
-                     (let ((org-startup-folded (if current-prefix-arg
-                                                   t
-                                                 org-startup-folded)))
-                       (funcall-interactively 'org-global-cycle '(4)))))
+       ;; (define-key org-mode-map (kbd "C-c C-M-i")
+       ;;             (lambda ()
+       ;;               "go to default opening mode -- see `org-startup-folded'"
+       ;;               (interactive)
+       ;;               (let ((org-startup-folded (if current-prefix-arg
+       ;;                                             t
+       ;;                                           org-startup-folded)))
+       ;;                 (funcall-interactively 'org-global-cycle '(4)))))
+       
+       (defun qz/org-fold ()
+         "go to default opening mode -- see `org-startup-folded'"
+         (interactive)
+         (let ((prefix-arg current-prefix-arg))
+           (funcall-interactively 'org-content (or current-prefix-arg 9999))))
+       
+       
+       ;; current subtree
+       ;; given some tree
+       
+       "
+       a
+       aa
+        aa
+         ab
+       ab
+       ac
+       aca
+        cb
+         ba
+        cd
+       ad
+       "
+       
+       (define-key org-mode-map (kbd "C-c C-M-i") 'qz/org-fold)
        
        (setq org-babel-default-header-args:sql
              '((:engine . "postgres")
@@ -941,6 +1070,58 @@
              (org-agenda-entry-types '(:deadline)) ;; this entry excludes :scheduled
              (org-deadline-warning-days 0) )))
          
+         
+         (defun zin/org-agenda-skip-tag (tag &optional others)
+           "Skip all entries that correspond to TAG.
+         
+         If OTHERS is true, skip all entries that do not correspond to TAG."
+           (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
+                 (current-headline (or (and (org-at-heading-p)
+                                            (point))
+                                       (save-excursion (org-back-to-heading)))))
+             (if others
+                 (if (not (member tag (org-get-tags-at current-headline)))
+                     next-headline
+                   nil)
+               (if (member tag (org-get-tags-at current-headline))
+                   next-headline
+                 nil))))
+         
+         
+         (add-to-list
+          'org-agenda-custom-commands
+          '("0" "moving"
+            ;; TODO: Add A priority to the top.
+            ((agenda
+              ""
+              ((org-agenda-time-grid nil)
+               (org-agenda-start-on-weekday nil)
+               (org-agenda-start-day "+1d")
+               (org-agenda-span 160)
+               (org-agenda-show-all-dates nil)
+               (org-agenda-time-grid nil)
+               (org-agenda-show-future-repeats nil)
+               (org-agenda-block-separator nil)
+               (org-agenda-entry-types '(:deadline))
+               (org-agenda-skip-function
+                '(not
+                  (zin/org-agenda-skip-tag "moving" 't)
+                  ;; '(org-agenda-skip-entry-if 'notregexp":moving:") ; no love for inherited tags
+                  ))
+               (org-agenda-overriding-header "\nUpcoming deadlines (+160d)\n")))
+             (agenda
+              "*"
+              ((org-agenda-block-separator nil)
+               (org-agenda-span 160)
+               (org-agenda-show-future-repeats nil)
+               (org-agenda-skip-deadline-prewarning-if-scheduled t)
+               (org-agenda-skip-function
+                '(org-agenda-skip-entry-if 'notregexp":moving:"))
+               (org-agenda-overriding-header "\nAgenda\n")))
+             (tags-todo "moving"
+                        ((org-agenda-block-separator nil)
+                         (org-agenda-skip-function '(or (org-agenda-skip-if nil '(scheduled))))
+                         (org-agenda-overriding-header "\nMoving Backlog\n"))))))
          (defvar qz/agenda-daily-files nil)
          (setq org-agenda-hide-tags-regexp "project")
          (defun qz/org-category (&optional len)
@@ -1271,6 +1452,7 @@
                              "elisp"
                              "plantuml"
                              "GNU Guix"
+                             "git"
                              ))
                    ;; .. other files
                    nil
@@ -1282,7 +1464,7 @@
            (interactive)
            (let ((r (mapcar (lambda (f) (cons (org-babel-lob-ingest f) f))
                             (append qz/org-babel-lob-ingest-files files))))
-             (message "%s" (pp r))
+             ;;(message "%s" (pp r))
              r))
          
          (cons->table
@@ -1335,13 +1517,13 @@
                  ))
          (setq org-roam-dailies-capture-templates
                `(("d" "default" entry
-                  ,(s-join "\n" '("* [%<%H:%M>] %?"
+                  ,(s-join "\n" '("* [%<%H:%M:%S>] %?"
                                   ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
                                   "- from :: %a"
-                                  "- from (point) :: %f"
-                                  "- clocking :: %K"
+                                  ;;"- from (point) :: %f"
+                                  "- clocking :: %K" ; REVIEW does this solve tangents?
                                   ;; the region one is a bit tricky
-                                  "- region ::\n  #+begin_quote\n%(\"%i\")\n#+end_quote" 
+                                  ;;"- region ::\n  #+begin_quote\n%(\"%i\")\n#+end_quote"
                                   ))
                   :if-new (file+head+olp
                            ,qz/org-roam-dailies-filespec
@@ -1609,10 +1791,10 @@
        (define-key org-mode-map (kbd "C-c C-M->") 'org-do-demote)
        
        (define-key org-mode-map (kbd "C-c C-M-p")
-                   (lambda ()
-                     (interactive)
-                     (make-marker)
-                     (org-up-heading-or-point-min)))
+                    (lambda ()
+                      (interactive)
+                      (make-marker)
+                      (org-up-heading-or-point-min)))
        (setq org-agenda-columns-add-appointments-to-effort-sum t)
        (setq org-agenda-default-appointment-duration 30)
        (add-to-list 'org-global-properties
@@ -1630,8 +1812,9 @@
        (setq org-log-redeadline 'note)
        (setq org-log-reschedule 'note)
        (setq org-log-done 'note)
-       (setq org-startup-folded 'content)
-       (setq org-tags-column 120)
+       ;;(setq org-startup-folded 'content)
+       (setq org-tags-column -85)    ;; auto works better for olivetti
+       ;; (setq org-tags-column 120) ;; for wide screens & no 80char limiting
        (setq org-tag-alist
              '(("@errand" . ?e)
                ("@work" . ?w)
@@ -1710,7 +1893,6 @@
                (insert po)))))
        
        (define-key org-mode-map (kbd "C-c M-l") 'qz/org-insert-last-stored-link)
-       
        (defun qz/ol-file (link)
          "transform file path into pretty ol-output
                    - respect projects; truncate prior path, keeping only basename
@@ -1742,7 +1924,7 @@
        (defalias '--tb '->>)
        (defalias '--tf '->)
        (defalias 'gt '>)
-       (defalias 'lt '>)
+       (defalias 'lt '<)
        (defun qz/create-excluded-ids-for-headlines-in-buffer ()
          "Add ID properties to all headlines in the current file which
        do not already have one."
@@ -1760,12 +1942,139 @@
        
        (setq org-id-link-to-org-use-id t)
        (setq org-image-actual-width 640)
+       ;;(require 'org)
+       
+       (defun org-cycle-hide-drawers (state)
+         "Re-hide all drawers after a visibility state change."
+         (when (and (derived-mode-p 'org-mode)
+                    (not (memq state '(overview folded contents))))
+           (save-excursion
+             (let* ((globalp (memq state '(contents all)))
+                    (beg (if globalp
+                             (point-min)
+                           (point)))
+                    (end (if globalp
+                             (point-max)
+                           (if (eq state 'children)
+                               (save-excursion
+                                 (outline-next-heading)
+                                 (point))
+                             (org-end-of-subtree t)))))
+               (goto-char beg)
+               (while (re-search-forward org-drawer-regexp end t)
+                 (save-excursion
+                   (beginning-of-line 1)
+                   (when (looking-at org-drawer-regexp)
+                     (let* ((start (1- (match-beginning 0)))
+                            (limit
+                             (save-excursion
+                               (outline-next-heading)
+                               (point)))
+                            (msg (format
+                                  (concat
+                                   "org-cycle-hide-drawers:  "
+                                   "`:END:`"
+                                   " line missing at position %s")
+                                  (1+ start))))
+                       (if (re-search-forward "^[ \t]*:END:" limit t)
+                           (outline-flag-region start (point-at-eol) t)
+                         (user-error msg))))))))))
+       
        (defun qz/org-align-tags ()
          (interactive)
          (org-align-tags 'yes-all-the-bloody-tags))
+       (defun qz/org-sort-subtree ()
+         (interactive)
+         (save-mark-and-excursion
+           (org-up-heading-or-point-min)
+           (call-interactively 'org-sort)))
+       
+       (define-key org-mode-map (kbd "C-c C-M-6") 'qz/org-sort-subtree)
+       (defun qz/org-md-nolink (link contents info)
+         (format "%s" contents))
+       
+       (org-export-define-derived-backend 'my-md 'md
+         :menu-entry
+         '(?M "Export to Markdown without links" (lambda (a s v b) (org-md-export-to-markdown a s v)))
+         :translate-alist '((link . qz/org-md-nolink)))
+       (defun qz/org-export-headline (&optional backend async subtreep visible-only body-only ext-plist)
+         "Export the current Org headline using BACKEND.
+       
+       The available backends are the ones of `org-export-backends' and
+       'pdf.
+       
+       When optional argument SUBTREEP is non-nil, transcode the
+       sub-tree at point, extracting information from the headline
+       properties first.
+       
+       When optional argument VISIBLE-ONLY is non-nil, don't export
+       contents of hidden elements.
+       
+       When optional argument BODY-ONLY is non-nil, only return body
+       code, without surrounding template.
+       
+       Optional argument EXT-PLIST, when provided, is a property list
+       with external parameters overriding Org default settings, but
+       still inferior to file-local settings."
+         (interactive)
+         (let* ((backend (unless backend
+                           (intern
+                            (completing-read "Available backends: "
+                                             (append org-export-backends '(pdf slack))))))
+                (headline (car (last (org-get-outline-path t))))
+                (headline-alnum (replace-regexp-in-string "[^[:alnum:]-_]" "-" headline))
+                (file-prefix (file-name-sans-extension (buffer-file-name)))
+                (filename (format "%s-%s.%s" file-prefix headline-alnum
+                                  (cl-case backend
+                                    ('pdf "tex")
+                                    ('slack "md")
+                                    (t backend)))))
+           (save-restriction
+             (org-narrow-to-subtree)
+             (kill-new (s-join " -> " (org-get-outline-path t nil)))
+             (org-export-to-file
+                 (if (eq backend 'pdf) 'latex backend)
+                 filename async subtreep visible-only body-only ext-plist
+                 (when (eq backend 'pdf)
+                   (lambda (file) (org-latex-compile file))))
+             (widen))
+           (with-temp-buffer
+             (insert-file-contents filename)
+             (kill-new (buffer-string)))))
+       (define-key org-mode-map (kbd "C-c C-M-e") 'qz/org-export-headline)
+       (defun org-slack-headline (headline contents info)
+         "Transcode HEADLINE element into Markdown format.
+       CONTENTS is the headline contents.  INFO is a plist used as
+       a communication channel."
+         (unless (org-element-property :footnote-section-p headline)
+           (let* ((level (org-export-get-relative-level headline info))
+                  (title (org-export-data (org-element-property :title headline) info))
+                  (todo (and (plist-get info :with-todo-keywords)
+                             (let ((todo (org-element-property :todo-keyword
+                                                               headline)))
+                               (and todo (concat (org-export-data todo info) " ")))))
+                  (tags (and (plist-get info :with-tags)
+                             (let ((tag-list (org-export-get-tags headline info)))
+                               (and tag-list
+                                    (concat "     " (org-make-tag-string tag-list))))))
+                  (priority
+                   (and (plist-get info :with-priority)
+                        (let ((char (org-element-property :priority headline)))
+                          (and char (format "[#%c] " char)))))
+                  ;; Headline text without tags.
+                  (heading (concat todo priority title)))
+             (format "%s*%s*\n\n%s"
+                     (if (> level 1)
+                         (concat (s-repeat (- level 3) ;; starting flush
+                                           "  ")
+                                 "- ")
+                       "")
+                     title contents)))
        )
      (message "post org: %s" (shell-command-to-string "date"))
      ;; NOWEB ORG END
+     (when (fboundp 'adaptive-wrap-prefix-mode)
+       (add-hook 'org-mode-hook 'adaptive-wrap-prefix-mode))
      (setq org-tag-alist
            '(("@errand" . ?e)
              ("@work" . ?w)
@@ -1784,50 +2093,6 @@
              ("paper" . ?p)
              ("talk" . ?t)
              ("film" . ?f)))
-     (require 'org)
-     
-     (defun org-cycle-hide-drawers (state)
-       "Re-hide all drawers after a visibility state change."
-       (when (and (derived-mode-p 'org-mode)
-                  (not (memq state '(overview folded contents))))
-         (save-excursion
-           (let* ((globalp (memq state '(contents all)))
-                  (beg (if globalp
-                         (point-min)
-                         (point)))
-                  (end (if globalp
-                         (point-max)
-                         (if (eq state 'children)
-                           (save-excursion
-                             (outline-next-heading)
-                             (point))
-                           (org-end-of-subtree t)))))
-             (goto-char beg)
-             (while (re-search-forward org-drawer-regexp end t)
-               (save-excursion
-                 (beginning-of-line 1)
-                 (when (looking-at org-drawer-regexp)
-                   (let* ((start (- 1 (match-beginning 0)))
-                          (limit
-                            (save-excursion
-                              (outline-next-heading)
-                                (point)))
-                          (msg (format
-                                 (concat
-                                   "org-cycle-hide-drawers:  "
-                                   "`:END:`"
-                                   " line missing at position %s")
-                                 (+ 1 start))))
-                     (if (re-search-forward "^[ \t]*:END:" limit t)
-                       (outline-flag-region start (point-at-eol) t)
-                       (user-error msg))))))))))
-     (defun qz/org-sort-subtree ()
-       (interactive)
-       (save-mark-and-excursion
-         (org-up-heading-or-point-min)
-         (call-interactively 'org-sort)))
-     
-     (define-key org-mode-map (kbd "C-c C-M-6") 'qz/org-sort-subtree)
      (defun qz/get-mail ()
        (interactive)
        (async-shell-command "mbsync -Va && notmuch new"))
@@ -1835,47 +2100,40 @@
        (interactive)
        (async-shell-command
         (concat "cd $HOME/git/sys/rde"
-                "&& guix repl -L . sanity.scm")))
+                "&& guix repl -L . dev/sanity.scm")))
+     (setq qz/emacs/config "~/git/sys/rde/rde/examples/abcdw/configs.org"
+           qz/sh/tangle "make -C $HOME/git/sys/rde/rde/examples/abcdw tangle ")
+     
      (defun qz/tangle ()
-       (mapcar
-        'org-babel-tangle-file
-        '("~/git/sys/rde/rde/examples/abcdw/configs.org"
-          ;;"~/git/sys/rde/rde/examples/abcdw/emacs.org"
-          ))
-       (sleep-for .5))
+       (interactive)
+       (async-shell-command
+        (concat
+         "make -C $HOME/git/sys/rde/rde/examples/abcdw tangle"
+         " && echo 'tangle--ehg--di' | espeak --stdin")))
      
      (defun qz/reload-config-home ()
        (interactive)
-       (unless current-prefix-arg
-         (qz/tangle))
        (async-shell-command
         (concat
-         "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
-         "&& make ixy-home-reconfigure"
-         "&& echo 'bal-eggd-e' "
-         "| espeak --stdin ")))
+         "make -C $HOME/git/sys/rde/rde/examples/abcdw home"
+         "&& echo 'home--bal-ehg--di' | espeak --stdin ")))
      
      (defun qz/reload-config-system ()
        (interactive)
-       (qz/tangle)
        (async-shell-command
         (concat
-         "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
-         "&& sudo -E make ixy-system-reconfigure"
-         "&& echo 'system bal-eggd-e complete' | espeak --stdin")))
+         "sudo -E make -C $HOME/git/sys/rde/rde/examples/abcdw system"
+         "&& echo 'system--bal-ehg--di' | espeak --stdin")))
      
      (defun qz/reload-config-all ()
        (interactive)
-       (qz/tangle)
        (async-shell-command
         (concat
-         "cd $HOME/git/sys/rde/rde/examples/abcdw/ "
-         "&& ( cd ../../.. "
-         "     && make rde/channels/update-locked"
-         "     && make rde/channels/pull-locked ) "
-         "&& make ixy-home-reconfigure "
-         "&& sudo -E make ixy-system-reconfigure "
-         "&& echo 'pull & home & system bal-eggd-e complete' | espeak --stdin")))
+         "   make -C $HOME/git/sys/rde rde/channels/update-locked"
+         "&& make -C $HOME/git/sys/rde rde/channels/pull-locked"
+         "&& make -C $HOME/git/sys/rde/rde/examples/abcdw all"
+         "&& echo 'do the do, like ooo; pull & home & system bal-ehg--di'"
+         "   | espeak --stdin")))
      
      (defun qz/reload-config-emacs ()
        (interactive)

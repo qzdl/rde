@@ -1,3 +1,4 @@
+CONFIG_FILE = ./configs.scm
 GUILE_LOAD_PATH=../../..
 
 minimal-emacs:
@@ -26,19 +27,19 @@ tangle:
 
 # https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html#Automatic-Variables
 %-home-build: inputs
-	GUILE_LOAD_PATH=$(GLP) RDE_TARGET=$*-home \
+	GUILE_LOAD_PATH=$(GUILE_LOAD_PATH) RDE_TARGET=$*-home \
 	guix home build $(CONFIG_FILE)
 
 %-home-reconfigure: inputs
-	GUILE_LOAD_PATH=$(GLP) RDE_TARGET=$*-home \
+	GUILE_LOAD_PATH=$(GUILE_LOAD_PATH) RDE_TARGET=$*-home \
 	guix home reconfigure $(CONFIG_FILE)
 
 %-system-build: inputs
-	GUILE_LOAD_PATH=$(GLP) RDE_TARGET=$*-system \
+	GUILE_LOAD_PATH=$(GUILE_LOAD_PATH) RDE_TARGET=$*-system \
 	guix system build $(CONFIG_FILE)
 
 %-system-reconfigure: inputs
-	GUILE_LOAD_PATH=$(GLP) RDE_TARGET=$*-system \
+	GUILE_LOAD_PATH=$(GUILE_LOAD_PATH) RDE_TARGET=$*-system \
 	guix system reconfigure $(CONFIG_FILE)
 
 $(targets-home): %-home-reconfigure

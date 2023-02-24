@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2023-02-07 Tue 12:33]
+:UPDATED:  [2023-02-24 Fri 12:40]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :CREATED:  [2022-08-30 Tue 11:12]
 :END:
@@ -1526,7 +1526,7 @@ independently.  Clock instances ared updated automatically.  Their resources
 :PROPERTIES:
 :ID:       c3c092d2-4cee-48eb-abc8-e76e393b5967
 :CREATED:  [2022-09-28 Wed 15:42]
-:UPDATED:  [2022-09-28 Wed 16:09]
+:UPDATED:  [2023-02-24 Fri 12:38]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -1549,32 +1549,32 @@ independently.  Clock instances ared updated automatically.  Their resources
 :PROPERTIES:
 :ID:       c8903598-d72e-4539-884b-a60096be7fbe
 :CREATED:  [2022-09-28 Wed 15:42]
-:UPDATED:  [2022-11-21 Mon 18:23]
+:UPDATED:  [2023-02-24 Fri 12:40]
 :ROAM_EXCLUDE: t
 :END:
 
 #+name: guile-job-notes
 #+begin_src scheme :noweb-ref jobs
      ;;; job: commit my notes
-;; #~(job '(next-minute)
-;;        ;;'(next-minute '(15))
-;;        ;; (lambda ()
-;;        ;;   (call-with-output-file "/tmp/commit.log"
-;;        ;;     (lambda (port)
-;;        ;;       (chdir "./life")
-;;        ;;       (display
-;;        ;;        (with-exception-handler
-;;        ;;            (lambda (exn)
-;;        ;;              (format #f "exception: ~s\n" exn))
-;;        ;;          (system*
-;;        ;;           (format #f "~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
-;;        ;;                   (file-append #$(@ (gnu packages version-control) git) "/bin/git")
-;;        ;;                   (file-append #$(@ (gnu packages version-control) git) "/bin/git")
-;;        ;;                   (file-append #$(@ (gnu packages base) coreutils) "/bin/date")))
-;;        ;;          port)))))
-;;        "cd life && git add . && git commit -m \"auto-commit | $( ~a -uIs )\""
-;;        "notes-commit"
-;;        #:user "samuel")
+#~(job
+   '(next-minute '(15))
+   (lambda ()
+     (call-with-output-file "/tmp/commit.log"
+       (lambda (port)
+         (chdir "./life")
+         (display
+          (with-exception-handler
+              (lambda (exn)
+                (format #f "exception: ~s\n" exn))
+            (system*
+             (format #f "~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
+                     #$(file-append (@ (gnu packages version-control) git) "/bin/git")
+                     #$(file-append (@ (gnu packages version-control) git) "/bin/git")
+                     #$(file-append (@ (gnu packages base) coreutils) "/bin/date")))
+            port)))))
+   ;;"cd life && git add . && git commit -m \"auto-commit | $( ~a -uIs )\""
+   "notes-commit"
+   #:user "samuel")
 
 ;; (use-modules (guix gexp))
 ;; (let ((f (lambda ()
@@ -1606,7 +1606,7 @@ independently.  Clock instances ared updated automatically.  Their resources
 :PROPERTIES:
 :ID:       ccd773a9-5a5e-41da-b050-6fa461c9a427
 :CREATED:  [2022-09-28 Wed 15:42]
-:UPDATED:  [2022-09-28 Wed 15:42]
+:UPDATED:  [2023-02-24 Fri 12:33]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -1616,7 +1616,7 @@ independently.  Clock instances ared updated automatically.  Their resources
 #~(job '(next-hour)
        (lambda ()
          (system*
-          (file-append #$(@ (gnu packages search) recoll) "/bin/recollindex")))
+          #$(file-append (@ (gnu packages search) recoll) "/bin/recollindex")))
        "index: recollindex"
        #:user "samuel")
 #+end_src
@@ -1625,16 +1625,17 @@ independently.  Clock instances ared updated automatically.  Their resources
 :PROPERTIES:
 :ID:       0681c613-5415-46d7-a079-e940c503941c
 :CREATED:  [2022-09-28 Wed 15:43]
-:UPDATED:  [2022-09-28 Wed 15:55]
+:UPDATED:  [2023-02-24 Fri 12:33]
 :ROAM_EXCLUDE: t
 :END:
+
 #+begin_src scheme :noweb-ref jobs
          ;;; job: generate tags
 ;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
 #~(job '(next-hour '(12 0)) ;; every 12 hours
        (lambda ()
          (system*
-          (file-append #$(@ (gnu packages idutils) idutils) "/bin/mkid") "git"))
+          #$(file-append (@ (gnu packages idutils) idutils) "/bin/mkid") "git"))
        "index: idutils"
        #:user "samuel")
 #+end_src
@@ -4834,7 +4835,7 @@ is already narrowed."
 :PROPERTIES:
 :ID:       12f23b79-b0b4-49a7-afd3-1ea730673140
 :CREATED:  [2022-10-25 Tue 15:55]
-:UPDATED:  [2022-10-25 Tue 16:02]
+:UPDATED:  [2023-02-19 Sun 18:09]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -7349,7 +7350,7 @@ the major mode specifies support for Font Lock."
 :ID:       46fed150-b670-4899-aaa2-b029262db572
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2023-02-07 Tue 12:33]
+:UPDATED:  [2023-02-08 Wed 10:55]
 :END:
 
 - see also :: about capture templates
@@ -9406,14 +9407,14 @@ check with (org-redisplay-inline-images)
 :PROPERTIES:
 :ID:       b531b1b9-17ef-406c-9650-a04f7c669e5e
 :CREATED:  [2022-09-29 Thu 13:14]
-:UPDATED:  [2022-10-05 Wed 12:13]
+:UPDATED:  [2023-02-19 Sun 16:31]
 :ROAM_EXCLUDE: t
 :END:
 
 - :: https://stackoverflow.com/questions/17478260/completely-hide-the-properties-drawer-in-org-mode
 
-#+begin_src emacs-lisp :noweb-ref null
-(require 'org)
+#+begin_src emacs-lisp :noweb-ref org
+;;(require 'org)
 
 (defun org-cycle-hide-drawers (state)
   "Re-hide all drawers after a visibility state change."
@@ -9436,7 +9437,7 @@ check with (org-redisplay-inline-images)
           (save-excursion
             (beginning-of-line 1)
             (when (looking-at org-drawer-regexp)
-              (let* ((start (- 1 (match-beginning 0)))
+              (let* ((start (1- (match-beginning 0)))
                      (limit
                       (save-excursion
                         (outline-next-heading)
@@ -9446,10 +9447,16 @@ check with (org-redisplay-inline-images)
                             "org-cycle-hide-drawers:  "
                             "`:END:`"
                             " line missing at position %s")
-                           (+ 1 start))))
+                           (1+ start))))
                 (if (re-search-forward "^[ \t]*:END:" limit t)
                     (outline-flag-region start (point-at-eol) t)
                   (user-error msg))))))))))
+
+  #+end_src
+
+  #+RESULTS:
+  : org-cycle-hide-drawers
+
 #+end_src
 
 #+RESULTS:

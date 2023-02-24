@@ -1,70 +1,71 @@
 (define-module (rde examples abcdw configs)
-  #:use-module (rde features)
-  #:use-module (rde features base)
-  ;;#:use-module (rde features bluetooth) ;; TODO qzdl
-  #:use-module (rde features gnupg)
-  #:use-module (rde features keyboard)
-  #:use-module (rde features system)
-  #:use-module (rde features wm)
-  #:use-module (rde features virtualization)
-  #:use-module (rde features xdisorg)
-  #:use-module (rde features xdg)
-  #:use-module (rde features password-utils)
-  #:use-module (rde features version-control)
-  #:use-module (rde features fontutils)
-  #:use-module (rde features terminals)
-  #:use-module (rde features tmux)
-  #:use-module (rde features shells)
-  #:use-module (rde features shellutils)
-  #:use-module (rde features ssh)
-  #:use-module (rde features emacs)
-  #:use-module (rde features emacs-xyz)
-  #:use-module (rde features linux)
-  #:use-module (rde features bittorrent)
-  #:use-module (rde features mail)
-  #:use-module (rde features docker)
-  #:use-module (rde features video)
-  #:use-module (rde features markup)
-  #:use-module (rde features networking)
-
-  #:use-module (rde packages)
-  #:use-module (rde packages emacs)
-  #:use-module (rde packages emacs-xyz)
-
-  #:use-module (rde home services i2p)
-
-  #:use-module (rde examples abcdw emacs)
-
-  #:use-module (gnu system keyboard)
+  #:use-module (gnu bootloader)
+  #:use-module (gnu bootloader grub)
 
   #:use-module (gnu home services) ; nope
-  #:use-module (gnu home-services ssh)
   #:use-module (gnu home-services shells)
-  ;; #:use-module (gnu home-services-utils) ; nope
+  #:use-module (gnu home-services ssh)
 
-  ;;#:use-module (gnu home-services shellutils)
-
-  ;;#:use-module (nongnu packages nvidia)
+  #:use-module (gnu packages emacs-xyz)
+  #:use-module (gnu packages fonts)
+  #:use-module (gnu packages)
 
   #:use-module (gnu services base)
-  #:use-module (gnu services ssh)
   #:use-module (gnu services desktop)
+  #:use-module (gnu services ssh)
   #:use-module (gnu services xorg)
 
   #:use-module (gnu system file-systems)
+  #:use-module (gnu system keyboard)
   #:use-module (gnu system mapped-devices)
 
-  #:use-module (gnu packages)
-  #:use-module (gnu packages fonts)
-  #:use-module (gnu packages emacs-xyz)
-
-  #:use-module (guix gexp)
-  #:use-module (guix utils)
-  #:use-module (guix inferior)
   #:use-module (guix channels)
+  #:use-module (guix gexp)
+  #:use-module (guix inferior)
+  #:use-module (guix utils)
 
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
+
+  #:use-module (rde examples abcdw emacs)
+  #:use-module (rde features base)
+  #:use-module (rde features bittorrent)
+  #:use-module (rde features clojure)
+  #:use-module (rde features docker)
+  #:use-module (rde features emacs)
+  #:use-module (rde features emacs-xyz)
+  #:use-module (rde features fontutils)
+  #:use-module (rde features gnupg)
+  #:use-module (rde features keyboard)
+  #:use-module (rde features linux)
+  #:use-module (rde features mail)
+  #:use-module (rde features markup)
+  #:use-module (rde features networking)
+  #:use-module (rde features password-utils)
+  #:use-module (rde features shells)
+  #:use-module (rde features shellutils)
+  #:use-module (rde features ssh)
+  #:use-module (rde features system)
+  #:use-module (rde features terminals)
+  #:use-module (rde features tmux)
+  #:use-module (rde features version-control)
+  #:use-module (rde features video)
+  #:use-module (rde features virtualization)
+  #:use-module (rde features wm)
+  #:use-module (rde features xdg)
+  #:use-module (rde features xdisorg)
+  #:use-module (rde features)
+
+  #:use-module (rde gexp)
+
+  #:use-module (rde home services i2p)
+  #:use-module (rde packages emacs)
+  #:use-module (rde packages emacs-xyz)
+  #:use-module (rde packages)
+  ;;#:use-module (gnu home-services shellutils)
+  ;;#:use-module (nongnu packages nvidia)
+  ;;#:use-module (rde features bluetooth) ;; TODO qzdl
+
   #:use-module (srfi srfi-1))
 
 ;;; User-specific features
@@ -90,11 +91,22 @@
     ("sent"   . "Sent")
     ("drafts" . "Drafts")
     ("trash"  . "Deleted Items")
-    ("spam"   . "Spam")))
+    ("spam"   . "Junk")))
 
 ;; https://wiki.bravenet.com/Using_your_Bravenet_e-mail_account
 (define bravehost-isync-settings
   (generate-isync-serializer "mail.bravehost.com" bravehost-folder-mapping))
+
+(define gmail-tls-folder-mapping
+  '(("inbox"   . "INBOX")
+    ("sent"    . "[Gmail]/Sent Mail")
+    ("drafts"  . "[Gmail]/Drafts")
+    ("archive" . "[Gmail]/All Mail")
+    ("trash"   . "[Gmail]/Trash")
+    ("spam"    . "[Gmail]/Spam")))
+
+(define gmail-tls-isync-settings
+  (generate-isync-serializer "imap.gmail.com" gmail-tls-folder-mapping))
 (define %thinkpad-layout
   (keyboard-layout
    "us" "altgr-intl"
@@ -176,8 +188,8 @@
      #:user-groups '("lp" "wheel")) ;; TODO confluence of features -> groups
 
     (feature-gnupg
-     #:gpg-primary-key "EE20E25391AAB9BB"
-     #:gpg-smart-card? #f)
+     #:gpg-primary-key "EE20E25391AAB9BB")
+
     (feature-password-store)
 
     (feature-mail-settings
@@ -190,7 +202,7 @@
       (mail-account
        (id   'work)
        (fqda "sculpepper@newstore.com")
-       (type 'gmail)))
+       (type 'gmail-tls)))
      #:mailing-lists
      (list
       ;; https://public-inbox.org/README.html
@@ -214,6 +226,9 @@
      ;;;;; emacs
       ;;(mail-lst 'emacs-org-mode "emacs-orgmode@gnu.org"
       ;;          '("https://yhetil.org/orgmode"))
+      ;;(mail-lst 'emacs-bugs "bug-gnu-emacs@gnu.org"
+      ;;          '("https://yhetil.org/emacs-bugs"))
+      ;;
       ;;
       ;;(mail-lst 'emacs-hyperbole "bug-hyperbole@gnu.org"
       ;;          '("https://lists.gnu.org/archive/mbox/bug-hyperbole"
@@ -302,6 +317,75 @@ the \"sql-indent.org\" file.
 The package also defines align rules so that the `align' function works for SQL
 statements, see `sqlind-align-rules'.")
    (license license:gpl3+)))
+(define-public emacs-org-ml
+  (package
+   (name "emacs-org-ml")
+   (version "20220711.1528")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/ndwarshuis/org-ml.git")
+                  (commit "385e3bee497f858705144d7ab5e6570d31d3ffe8")))
+            (sha256
+             (base32
+              "0j506lp3lgf9iz94ag041bpdcr837j5lmbazq7v3brblm43dvh9p"))))
+   (build-system emacs-build-system)
+   (propagated-inputs (list emacs-org emacs-dash emacs-s))
+   (home-page "https://github.com/ndwarshuis/org-ml")
+   (synopsis "Functional Org Mode API")
+   (description
+    "This is a functional API for org-mode primarily using the `org-element' library.
+`org-element.el' provides the means for converting an org buffer to a parse-tree
+data structure.  This library contains functions to modify this parse-tree in a
+more-or-less 'purely' functional manner (with the exception of parsing from the
+buffer and writing back to the buffer).  For the purpose of this package, the
+resulting parse tree is composed of 'nodes'.
+
+This library exposes the following types of functions: - builder: build new
+nodes to be inserted into a parse tree - property functions: return either
+property values (get) or nodes with   modified properties (set and map) -
+children functions: return either children of nodes (get) or return a node
+with modified children (set and map) - node predicates: return t if node meets a
+condition - pattern matching: return nodes based on a pattern that matches the
+parse   tree (and perform operations on those nodes depending on the function) -
+parsers: parse a buffer (optionally at current point) and return a parse   tree
+- writers: insert/update the contents of a buffer given a parse tree
+
+For examples please see full documentation at:
+https://github.com/ndwarshuis/org-ml")
+   (license license:gpl3+)))
+(define-public emacs-moldable-emacs
+  (package
+   (name "emacs-moldable-emacs")
+   (version "20220825.0037")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/ag91/moldable-emacs")
+           (commit "53f8b3af4572ab12be9f1f96da848278507ef350")))
+     (sha256
+      (base32 "1jcac4hiyh98q8cvim6yjaw1xihsy3r5lnjhijr3p89z2bv481xl"))))
+   (build-system emacs-build-system)
+   ;;; propagated (external)
+   ;; (check these via the mold “WhatMoldsCanIUse?”)
+   ;; graph-cli
+   ;; graphviz
+   ;; imgclip
+   (inputs (list emacs-dash
+                 emacs-s
+                 emacs-async
+                 ;; emacs-thunk builtin
+                 emacs-esxml
+                 emacs-org-ql
+                 ;; emacs-tree-sitter
+                 ;; emacs-code-compass
+                 ))
+   (home-page "https://github.com/ag91/moldable-emacs")
+   (synopsis "TODO")
+   (description
+    "TODO")
+   (license license:gpl3+)))
 
 (define-public emacs-ob-go
   (package
@@ -327,6 +411,146 @@ code is compiled and run via the @code{go run} command. If a
 a simple @{main func}. If @code{:package} option isn’t set, and no
 package is declared in the code, then the @code{main package} is
 declared.")
+   (license license:gpl3+)))
+(define-public emacs-ox-jira
+  (package
+   (name "emacs-ox-jira")
+   (version "20220423.1403")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/stig/ox-jira.el.git")
+                  (commit "00184f8fdef02a3a359a253712e8769cbfbea3ba")))
+            (sha256
+             (base32
+              "1zyq4d0fvyawvb3w6072zl4zgbnrpzmxlz2l731wqrgnwm0l80gy"))))
+   (build-system emacs-build-system)
+   (propagated-inputs (list emacs-org))
+   (home-page "https://github.com/stig/ox-jira.el")
+   (synopsis "JIRA Backend for Org Export Engine")
+   (description
+    "This module plugs into the regular Org Export Engine and transforms Org files to
+JIRA markup for pasting into JIRA tickets & comments.
+
+In an Org buffer, hit `C-c C-e j j' to bring up *Org Export Dispatcher* and
+export it as a JIRA buffer.  I usually use `C-x h' to mark the whole buffer,
+then `M-w' to save it to the kill ring (and global pasteboard) for pasting into
+JIRA issues.")
+   (license license:gpl3+)))
+
+(define-public emacs-kubernetes
+  (package
+   (name "emacs-kubernetes")
+   (version "20220715.1717")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/kubernetes-el/kubernetes-el.git")
+                  (commit "8163fd38015cbde0485f6eaab41450132bf6e19d")))
+            (sha256
+             (base32
+              "06p5qz4h5ar86vv4nzpw08x18fjvs2zg5brx55h80hjdgr89b771"))))
+   (build-system emacs-build-system)
+   (inputs (list emacs-magit
+                 emacs-magit-popup
+                 emacs-dash
+                 emacs-with-editor
+                 emacs-request
+                 emacs-s
+                 emacs-transient))
+   (arguments
+    '(#:include '("^[^/]+.el$" "^[^/]+.el.in$"
+                  "^dir$"
+                  "^[^/]+.info$"
+                  "^[^/]+.texi$"
+                  "^[^/]+.texinfo$"
+                  "^doc/dir$"
+                  "^doc/[^/]+.info$"
+                  "^doc/[^/]+.texi$"
+                  "^doc/[^/]+.texinfo$")
+                #:exclude '("^.dir-locals.el$" "^test.el$" "^tests.el$" "^[^/]+-test.el$"
+                            "^[^/]+-tests.el$" "^kubernetes-evil.el$")))
+   (home-page "https://github.com/kubernetes-el/kubernetes-el")
+   (synopsis "Magit-like porcelain for Kubernetes")
+   (description
+    "kubernetes-el is a text-based, interactive management interface for managing
+Kubernetes clusters within Emacs.")
+   (license license:gpl3+)))
+(use-modules (guix build-system python)  ; pypi-uri
+             (gnu packages python-xyz)   ; python-lsp-server
+             (gnu packages python-check) ; python-mypy
+             (gnu packages python-build) ; python-toml
+             (gnu packages check)        ; python coverage
+             )
+
+(define-public python-pylsp-mypy
+  (package
+   (name "python-pylsp-mypy")
+   (version "0.6.3")
+   (source (origin
+            (method url-fetch)
+            (uri (pypi-uri "pylsp-mypy" version))
+            (sha256
+             (base32
+              "1gf865dj9na7jyp1148k27jafwb6bg0rdg9kyv4x4ag8qdlgv9h6"))))
+   (build-system python-build-system)
+   (propagated-inputs (list python-lsp-server
+                            python-mypy
+                            python-toml))
+   (native-inputs (list python-coverage
+                        python-pytest
+                        python-pytest-cov
+                        python-tox))
+   (home-page "https://github.com/python-lsp/pylsp-mypy")
+   (synopsis "Mypy linter for the Python LSP Server")
+   (description "Mypy linter for the Python LSP Server")
+   (license license:gpl3+)))
+(define-public emacs-ox-slack
+  (package
+   (name "emacs-ox-slack")
+   (version "20200108.1546")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/titaniumbones/ox-slack.git")
+                  (commit "bd797dcc58851d5051dc3516c317706967a44721")))
+            (sha256
+             (base32
+              "1kh2v08fqmsmfj44ik8pljs3fz47fg9zf6q4mr99c0m5ccj5ck7w"))))
+   (build-system emacs-build-system)
+   (propagated-inputs (list emacs-org emacs-ox-gfm))
+   (home-page "https://github.com/titaniumbones/ox-slack")
+   (synopsis "Slack Exporter for org-mode")
+   (description
+    "This library implements a Slack backend for the Org exporter, based on the `md
+and `gfm back-ends.")
+   (license license:gpl3+)))
+(define-public emacs-svg-clock
+  (package
+   (name "emacs-svg-clock")
+   (version "1.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://elpa.gnu.org/packages/svg-clock-"
+                                version ".el"))
+            (sha256
+             (base32
+              "15pmj07wnlcpv78av9qpnbfwdjlkf237vib8smpa7nvyikdfszfr"))))
+   (build-system emacs-build-system)
+   (propagated-inputs (list emacs-svg-lib))
+   (home-page "http://elpa.gnu.org/packages/svg-clock.html")
+   (synopsis "Analog clock using Scalable Vector Graphics")
+   (description
+    "svg-clock provides a scalable analog clock.  Rendering is done by means of svg
+(Scalable Vector Graphics).  In order to use svg-clock you need to build Emacs
+with svg support. (To check whether your Emacs supports svg, do \"M-:
+(image-type-available-p svg) RET\" which must return t).  Call `svg-clock to
+start a clock.  This will open a new buffer \"*clock*\" displaying a clock which
+fills the buffer's window.  Use `svg-clock-insert to insert a clock
+programmatically in any buffer, possibly specifying the clock's size, colours
+and offset to the current-time.  Arbitrary many clocks can be displayed
+independently.  Clock instances ared updated automatically.  Their resources
+(timers etc.) are cleaned up automatically when the clocks are removed.")
    (license license:gpl3+)))
 (use-modules (gnu services)
              (gnu services databases)
@@ -461,29 +685,55 @@ declared.")
        'home-jobs (@ (gnu home services mcron) home-mcron-service-type)
        (list
              ;;; job: commit my notes
-        #~(job '(next-minute)
-               ;;'(next-minute '(15))
-               (lambda ()
-                 (call-with-output-file "/tmp/commit.log"
-                   (lambda (port)
-                     (chdir "./life")
-                     (display
-                      (with-exception-handler
-                          (lambda (exn)
-                            (format #f "exception: ~s\n" exn))
-                        (system*
-                         (format #f "~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
-                                 (file-append #$(@ (gnu packages version-control) git) "/bin/git")
-                                 (file-append #$(@ (gnu packages version-control) git) "/bin/git")
-                                 (file-append #$(@ (gnu packages base) coreutils) "/bin/date")))
-                        port)))))
-               "notes-commit"
-               #:user "samuel")
+        #~(job
+           '(next-minute '(15))
+           (lambda ()
+             (call-with-output-file "/tmp/commit.log"
+               (lambda (port)
+                 (chdir "./life")
+                 (display
+                  (with-exception-handler
+                      (lambda (exn)
+                        (format #f "exception: ~s\n" exn))
+                    (system*
+                     (format #f "~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
+                             #$(file-append (@ (gnu packages version-control) git) "/bin/git")
+                             #$(file-append (@ (gnu packages version-control) git) "/bin/git")
+                             #$(file-append (@ (gnu packages base) coreutils) "/bin/date")))
+                    port)))))
+           ;;"cd life && git add . && git commit -m \"auto-commit | $( ~a -uIs )\""
+           "notes-commit"
+           #:user "samuel")
+        
+        ;; (use-modules (guix gexp))
+        ;; (let ((f (lambda ()
+        ;;          (call-with-output-file "/tmp/commit.log"
+        ;;            (lambda (port)
+        ;;              ;; (chdir "./life")
+        ;;              (display
+        ;;               (with-exception-handler
+        ;;                   (lambda (exn)
+        ;;                     (format #f "exception: ~s\n" exn))
+        ;;                 (system*
+        ;;                  (format #f "ls"
+        ;;                          ;;"~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
+        ;;                          ;;(file-append #$(@ (gnu packages version-control) git) "/bin/git")
+        ;;                          ;;(file-append #$(@ (gnu packages version-control) git) "/bin/git")
+        ;;                          ;;(file-append #$(@ (gnu packages base) coreutils) "/bin/date")
+        ;;                          ))
+        ;;                 port)))))))
+        ;;   (f))
+        
+        ;; (call-with-output-file "/tmp/commit.log"
+        ;;   (lambda (port)
+        ;;   (display
+        ;;    (system "git status")
+        ;;    port)))
                  ;;; job: fulltext index the universe
         #~(job '(next-hour)
                (lambda ()
                  (system*
-                  (file-append #$(@ (gnu packages search) recoll) "/bin/recollindex")))
+                  #$(file-append (@ (gnu packages search) recoll) "/bin/recollindex")))
                "index: recollindex"
                #:user "samuel")
                  ;;; job: generate tags
@@ -491,7 +741,7 @@ declared.")
         #~(job '(next-hour '(12 0)) ;; every 12 hours
                (lambda ()
                  (system*
-                  (file-append #$(@ (gnu packages idutils) idutils) "/bin/mkid") "git"))
+                  #$(file-append (@ (gnu packages idutils) idutils) "/bin/mkid") "git"))
                "index: idutils"
                #:user "samuel")
         )
@@ -518,72 +768,72 @@ declared.")
                                  "updatedb"
                                  "--prunepaths=/tmp /var/tmp /gnu/store"))
                         "updatedb")
-                         ;;; udev: nvidia
-                 (when gaming?
-                   (simple-service
-                    'nvidia-udev-rule udev-service-type
-                    (list nvidia-driver)))
-                         ;;; desktop manager: X11 gdm + nvidia
-                 (when #f
-                   (simple-service
-                    'gdm-xorg-conf gdm-service-type
-                    (gdm-configuration
-                     (xorg-configuration
-                      (xorg-configuration (keyboard-layout %thinkpad-layout)
-                                          (modules (append
-                                                    (list nvidia-driver)
-                                                    %default-xorg-modules))
-                                          (drivers (list "nvidia")))))))
-                         ;;; postgres: don't include if gaming
-                 (unless gaming?
-                   (service postgresql-service-type
-                            (postgresql-configuration
-                             (config-file
-                              (postgresql-config-file
-                               (hba-file
-                                (plain-file "pg_hba.conf"
-                                            "
-                 local	all	all			trust
-                 host	all	all	127.0.0.1/32    md5
-                 host	all	all	0.0.0.0/0       md5
-                 "
-                                            ))))
-                             (postgresql (@ (gnu packages databases) postgresql-10)))))
-                 ;; analytics ; timescaledb
-                 ;; (unless gaming?
-                 ;;   (service postgresql-service-type
-                 ;;            (name "postgres-tsdb-14")
-                 ;;            (postgresql-configuration
-                 ;;             (port 5435)
-                 ;;             (extension-packages
-                 ;;              (list (@ (gnu packages databases) timescaledb)
-                 ;;                    (@ (gnu packages geo) postgis)))
-                 ;;             (postgresql (@ (gnu packages databases) postgresql-14)))))
-                 (unless gaming?
-                   (service postgresql-role-service-type
-                            (postgresql-role-configuration
-                             (roles (list (postgresql-role
-                                           (name "postgres")
-                                           (permissions '(superuser))
-                                           (create-database? #t))
-                                          (postgresql-role
-                                           (name "samuel")
-                                           (permissions '(superuser login))
-                                           (create-database? #t))
-                                          (postgresql-role
-                                           (name "newstore")
-                                           (permissions '(login))
-                                           (create-database? #t)))))))
-                 ;;; ssh
-                 ;; TODO key up, remove password method
-                 (service openssh-service-type
-                          (openssh-configuration
-                           (password-authentication? #t)
-                           ;; (authorised-keys
-                           ;;  `(("hww" ,(local-file "hww.pub"))
-                           ;;    ))
-                           ))
                  ))
+                       ;;; udev: nvidia
+               (when gaming?
+                 (simple-service
+                  'nvidia-udev-rule udev-service-type
+                  (list nvidia-driver)))
+                       ;;; desktop manager: X11 gdm + nvidia
+               (when #f
+                 (simple-service
+                  'gdm-xorg-conf gdm-service-type
+                  (gdm-configuration
+                   (xorg-configuration
+                    (xorg-configuration (keyboard-layout %thinkpad-layout)
+                                        (modules (append
+                                                  (list nvidia-driver)
+                                                  %default-xorg-modules))
+                                        (drivers (list "nvidia")))))))
+                       ;;; postgres: don't include if gaming
+               (unless gaming?
+                 (service postgresql-service-type
+                          (postgresql-configuration
+                           (config-file
+                            (postgresql-config-file
+                             (hba-file
+                              (plain-file "pg_hba.conf"
+                                          "
+               local	all	all			trust
+               host	all	all	127.0.0.1/32    md5
+               host	all	all	0.0.0.0/0       md5
+               "
+                                          ))))
+                           (postgresql (@ (gnu packages databases) postgresql-10)))))
+               ;; analytics ; timescaledb
+               ;; (unless gaming?
+               ;;   (service postgresql-service-type
+               ;;            (name "postgres-tsdb-14")
+               ;;            (postgresql-configuration
+               ;;             (port 5435)
+               ;;             (extension-packages
+               ;;              (list (@ (gnu packages databases) timescaledb)
+               ;;                    (@ (gnu packages geo) postgis)))
+               ;;             (postgresql (@ (gnu packages databases) postgresql-14)))))
+               (unless gaming?
+                 (service postgresql-role-service-type
+                          (postgresql-role-configuration
+                           (roles (list (postgresql-role
+                                         (name "postgres")
+                                         (permissions '(superuser))
+                                         (create-database? #t))
+                                        (postgresql-role
+                                         (name "samuel")
+                                         (permissions '(superuser login))
+                                         (create-database? #t))
+                                        (postgresql-role
+                                         (name "newstore")
+                                         (permissions '(login))
+                                         (create-database? #t)))))))
+               ;;; ssh
+               ;; TODO key up, remove password method
+               (service openssh-service-type
+                        (openssh-configuration
+                         (password-authentication? #t)
+                         ;; (authorised-keys
+                         ;;  `(("hww" ,(local-file "hww.pub"))
+                         ;;    ))
+                         ))
                ))))
     (unless gaming? (feature-base-services))
     (unless gaming? (feature-desktop-services))
@@ -638,7 +888,15 @@ declared.")
                          (hostname . "bastion-production.ssh.newstore.luminatesec.com")
                          (port . 22)
                          (identity-file . "~/.ssh/newstore-luminate.pem"))))))))
-    (feature-git)
+    (feature-git
+    ;; #:extra-config
+    ;;  (list (slurp-file-like (local-file "./etc/git/work_config")))
+    ;;  '(#~"[includeIf \"gitdir:~/git/ns\"]
+    ;;     [user]
+    ;;         signingkey = \"290D5A69F2021C4E\"
+    ;;         email = \"sculpepper@newstore.com\"
+    ;; ")
+    )
     (feature-bluetooth #:auto-enable? #t)
     ;;(feature-ssh-socks-proxy
     ;; #:host "204:cbf:3e07:e67a:424f:93bc:fc5c:b3dc")
@@ -660,7 +918,8 @@ declared.")
        `(;;(include ,(local-file "./config/sway/config"))
          ;; TODO sway: toggle opacity for WINDOW
          (,#~"output eDP-1 bg ~/.cache/wallpaper.png fill")
-         (,#~"output DP-1 enable res 5120x1440 bg ~/.cache/wallpaper.png fill")
+         (,#~"output DP-2 res 3840x1080 bg ~/.cache/wallpaper.png fill")
+         (,#~"output DP-1 res 3840x1080 bg ~/.cache/wallpaper.png fill")
          ;; TODO sway: wacom input rotation matrix
          (,#~"input \"*\" tool_mode \"*\" relative calibration_matrix 0.0 -1.0 1.0 1.0 0.0 0.0")
          ;; danke demis ht - Sharing Indicatortps://github.com/minikN/guix/blob/ca15b5a5954d50fe75e2b03f21afc019e002022b/config.scm#L173
@@ -677,6 +936,11 @@ declared.")
     
          (bindsym $mod+x exec $menu)
          (bindsym $mod+Period exec "tessen -a copy")
+    
+         (input type:touchpad
+                ;; TODO: Move it to feature-sway or feature-mouse?
+                (;; (natural_scroll enabled)
+                 (tap enabled)))
     
          (bindsym $mod+bracketright exec "pactl set-sink-volume @DEFAULT_SINK@ +5%")
          (bindsym $mod+bracketleft exec "pactl set-sink-volume @DEFAULT_SINK@ -5%")
@@ -705,7 +969,8 @@ declared.")
         (waybar-idle-inhibitor)
         ;; (waybar-temperature)
         ;; (waybar-sway-language)
-        (waybar-volume) ;; TODO qzdl
+        (waybar-microphone)
+        (waybar-volume #:scroll-step 10)
         (waybar-battery #:intense? #f)
         (waybar-clock))))
     ;; FIXME swayidle: external monitor resuming bug (probably gpu issue)e
@@ -740,9 +1005,15 @@ declared.")
       (list ;;emacs-consult-dir
     
             ;;; QZDL
-       ;;emacs-sql-indent
-       ;;emacs-ob-go
-    
+       emacs-sql-indent
+       emacs-ob-go
+       emacs-org-ml
+       emacs-ox-jira
+       emacs-moldable-emacs
+       emacs-kubernetes
+       python-pylsp-mypy
+       emacs-ox-slack
+       emacs-svg-clock
        ;;
        ;; emacs-consult-recoll ; TODO qzdl pkg
        ;; emacs-code-review    ; TODO qzdl pkg
@@ -795,6 +1066,13 @@ declared.")
        "emacs-terraform-mode"
        "emacs-yaml-mode"
        "emacs-ytdl"
+       "emacs-org-jira"
+       "emacs-org-ql"
+       "emacs-orgit"        ;; TODO feature-version-control
+       "emacs-magit-todos"  ;; TODO feature-version-control
+       "emacs-adaptive-wrap" ;; TODO feature-olivetti
+       "emacs-org-tree-slide"
+       "emacs-chess"
        ;; TODO feature-emacs-lsp
        ;;"emacs-artbollocks"
        ;;"emacs-vlf" ;; TODO guix: package emacs-vlf
@@ -821,11 +1099,11 @@ declared.")
     (feature-emacs-which-key)
     (feature-emacs-keycast)
     
-    ;; (feature-emacs-perfect-margin ;; TODO qzdl
+    ;; (feature-emacs-perfect-margin ;; TODO QZDL
     ;;  #:visible-width 150)
     
     (feature-emacs-dired)
-    ;;(feature-emacs-vterm) ;; TODO merge with feature-vterm
+    ;;(feature-emacs-vterm) ;; TODO QZDL merge with feature-vterm
     (feature-emacs-monocle)
     (feature-emacs-message)
     (feature-emacs-smartparens
@@ -876,6 +1154,7 @@ declared.")
     (feature-emacs-org
      #:org-directory my-org-directory
      #:org-indent? #f
+     #:org-modern? #f
      ;;#:org-agenda-directory my-notes-directory ;; TODO qzdl
      )
     (feature-emacs-org-agenda
@@ -901,30 +1180,42 @@ declared.")
     ;;     ;;  #:package emacs-es-mode-latest)
     ;;     ;; (feature-emacs-restclient
     ;;     ;;  #:package-ob emacs-ob-restclient-latest)
+    ;;(feature-clojure)
     (feature-mpv)
     (feature-isync
      #:isync-verbose #t
      #:isync-serializers
      (append %default-isync-serializers
-             `((bravehost . ,bravehost-isync-settings))))
+             `((bravehost . ,bravehost-isync-settings)
+               (gmail-tls . ,gmail-tls-isync-settings))))
     (feature-l2md)
     (feature-msmtp
      #:msmtp-provider-settings
      (append
       %default-msmtp-provider-settings
       `((bravehost . ((host . "mail.bravehost.com")
-                      (port . 587))))))
+                      (port . 465)
+                      (tls_starttls . off)))
+        (gmail-tls . ((host . "smtp.gmail.com")
+                      (port . 465)
+                      (tls_starttls . off))))))
     (feature-notmuch
      #:extra-tag-updates-post
      '("notmuch tag +guix-home -- 'thread:\"\
-    {((subject:guix and subject:home) or subject:/home:/) and tag:new}\"'"
-       "notmuch tag +guix -- \"{to:guix or subject:guix}\"")
+    {((subject:guix and subject:home) or (subject:service and subject:home) or \
+    subject:/home:/) and tag:new}\"'")
      #:notmuch-saved-searches
      (cons*
-      '(:name "Personal Inbox"  :key "P" :query "tag:personal and tag:inbox")
-      '(:name "Work Inbox"      :key "W" :query "tag:work and tag:inbox")
-      '(:name "Guix Home Inbox" :key "H" :query "tag:guix-home and tag:unread")
-      '(:name "RDE Inbox"       :key "R" :query "((to:/rde/ or cc:/rde/) or subject:/rde/) and tag:unread")
+      '(:name "Inbox :: Personal"  :key "P"
+              :query "tag:unread and tag:inbox and tag:personal")
+      '(:name "Inbox :: Work"      :key "W"
+              :query "tag:unread and tag:inbox and tag:work")
+      '(:name "Inbox :: Guix Home" :key "H"
+              :query "tag:unread and tag:guix-home")
+      '(:name "Inbox :: RDE"       :key "R"
+              :query "tag:unread and (to:/rde/ or cc:/rde/)")
+      '(:name "Watching"           :key "tw"
+              :query "thread:{tag:watch}")
       %rde-notmuch-saved-searches))
     (feature-xdg
      #:xdg-user-directories-configuration
@@ -960,7 +1251,7 @@ declared.")
        "ispell"
        "nyxt"
        ;;
-       "hicolor-icon-theme" "adwaita-icon-theme" "gnome-themes-standard"
+       "hicolor-icon-theme" "adwaita-icon-theme" "gnome-themes-extra"
        "papirus-icon-theme" "arc-theme"
        "thunar"
        ;; "glib:bin"
@@ -970,6 +1261,28 @@ declared.")
     
        "ripgrep" "curl" "make"
        "sqlite"
+    
+       ;;; PYTHON
+       "python"
+       "python-black"
+       "python-flake8"
+       "python-isort"
+       "python-lsp-server"
+       "python-lz4"
+       "python-numpy"
+       "python-pandas"
+       "python-pip"
+       "python-psycopg"
+       "python-pyan3"
+       "python-pytest-black"
+       "python-pytest-isort"
+       "python-pywal"
+       "python-pyzstd"
+       "python-scipy"
+       "python-virtualenv"
+       "python-yq"
+    
+       "libnotify"
        ))
      )
     
