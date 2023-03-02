@@ -1,0 +1,4 @@
+[includeif "gitdir:~/git/ns"]
+    [user]
+        signingkey = "290D5A69F2021C4E"
+        email = "sculpepper@newstore.com"

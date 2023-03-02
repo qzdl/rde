@@ -6,8 +6,15 @@ include profiles.mk
 GUIX_PROFILE=target/profiles/guix
 GUIX=./pre-inst-env ${GUIX_PROFILE}/bin/guix
 
+RDE_LOCAL ?= qzdl
 SRC_DIR=./src
-CONFIGS=${SRC_DIR}/abcdw/configs.scm
+_CONFIG_DIR=${SRC_DIR}/${RDE_LOCAL}
+_CONFIG=${_CONFIG_DIR}/configs
+
+CONFIGO=${_CONFIG}.org
+CONFIGS=${_CONFIG}.scm
+CONFIGE=${_CONFIG_DIR}/emacs.scm
+
 PULL_EXTRA_OPTIONS=
 # --allow-downgrades
 
@@ -15,6 +22,22 @@ ROOT_MOUNT_POINT=/mnt
 
 VERSION=latest
 
+###
+all: tangle inputs ixy/home/reconfigure ixy/system/reconfigure
+
+home: tangle inputs ixy/home/reconfigure
+
+system: tangle inputs ixy/system/reconfigure
+
+inputs:
+	git rev-parse HEAD
+	guix hash -x ${CONFIGO}
+	guix hash -x ${CONFIGS}
+	guix hash -x ${CONFIGE}
+
+tangle:
+	emacs -Q --batch --eval '(setq python-indent-guess-indent-offset nil)' -f package-initialize ${CONFIGO} -f org-babel-tangle
+###
 
 ixy/home/build: guix
 	RDE_TARGET=ixy-home ${GUIX} home \
