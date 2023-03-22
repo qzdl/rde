@@ -2473,12 +2473,15 @@ host	all	all	0.0.0.0/0       md5
 :END:
 
 #+begin_src scheme :noweb-ref null
-;; TODO understand why kanshi freezes my kernel (1200 seconds of cup sleep!! hard poweroff only)
+;; TODO understand why kanshi freezes my kernel
+;;
+;;(1200 seconds of cup sleep!!  dangerous, hard poweroff via button is only
+;;recourse)
 (feature-kanshi
-  #:extra-config
-  `((profile laptop ((output eDP-1 enable)))
-    (profile docked ((output eDP-1 disable)
-                     (output DP-2 enable)))))
+ #:extra-config
+ `((profile laptop ((output eDP-1 enable)))
+   (profile docked ((output eDP-1 disable)
+                    (output DP-2 enable)))))
 #+end_src
 
 ****** i3
