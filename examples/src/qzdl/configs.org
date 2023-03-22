@@ -1246,6 +1246,75 @@ Kubernetes clusters within Emacs.")
    (license license:gpl3+)))
 #+end_src
 
+***** python-keyring-pass
+:PROPERTIES:
+:ID:       6637fa51-4274-4ac9-b19f-8632f14ae5be
+:CREATED:  [2023-03-12 Sun 12:39]
+:UPDATED:  [2023-03-12 Sun 13:25]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+(use-modules
+ (guix packages)
+ (guix download)
+ (guix gexp)
+ (guix git-download)
+ (guix build-system cargo)
+ (guix build-system python)
+ (gnu packages)
+ (gnu packages python-crypto))
+
+;; TODO upstream to python-crypto
+;; TODO
+;; * keyringrc.cfg
+;; [backend]
+;; default-keyring=keyring_pass.PasswordStoreBackend
+;; [pass]
+;; key-prefix=/path/to/pass/dir
+;; OR, given pythonkeyring >=23.0.0, envar KEYRING_PROPERTY_PASS_KEY_PREFIX
+
+
+(define-public python-keyring-pass
+  (package
+    (name "python-keyring-pass")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "keyring_pass" version))
+        (sha256
+          (base32 "0rqrsm0gxxvv6vkqyg3snf29m8q44ljsz63f3j2rkizry9csd1fl"))))
+    (build-system python-build-system)
+    (propagated-inputs (list python-keyring))
+    (home-page "https://github.com/nazarewk/keyring_pass")
+    (synopsis
+      "https://www.passwordstore.org/ backend for https://pypi.org/project/keyring/")
+    (description
+      "https://www.passwordstore.org/ backend for https://pypi.org/project/keyring/")
+    (license license:expat)))
+
+;; TODO upgrade to 0.8.0 (needs jaraco-classes==4.0.0)
+;; (define-public python-keyring-pass
+;;   (package
+;;   (name "python-keyring-pass")
+;;   (version "0.8.0")
+;;   (source (origin
+;;             (method url-fetch)
+;;             (uri (pypi-uri "keyring_pass" version))
+;;             (sha256
+;;              (base32
+;;               "0dsjg5wv7n4gshpygnddg0w27fx7whdvwyms9h90xg5hqyxcpsdw"))))
+;;   (build-system python-build-system)
+;;   (propagated-inputs (list python-jaraco-classes python-keyring))
+;;   (home-page "https://github.com/nazarewk/keyring_pass")
+;;   (synopsis
+;;    "https://www.passwordstore.org/ backend for https://pypi.org/project/keyring/")
+;;   (description
+;;    "https://www.passwordstore.org/ backend for https://pypi.org/project/keyring/")
+;;   (license license:expat)))
+#+end_src
+
 ***** emacs-ox-slack
 :PROPERTIES:
 :ID:       a24f5f97-483b-440b-adb7-a1cd7732a212
