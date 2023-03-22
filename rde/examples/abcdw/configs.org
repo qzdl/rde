@@ -795,6 +795,10 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
       (mail-account
        (id   'work)
        (fqda "sculpepper@newstore.com")
+       (type 'gmail-tls))
+      (mail-account
+       (id   'gmail)
+       (fqda "imzaniiyt@gmail.com")
        (type 'gmail-tls)))
      #:mailing-lists
      (list
