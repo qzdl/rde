@@ -3091,7 +3091,7 @@ subject:/home:/) and tag:new}\"'")
 :PROPERTIES:
 :ID:       9490f8c2-7074-4a89-a62e-f82b6bfc2f2b
 :CREATED:  [2022-08-01 Mon 10:55]
-:UPDATED:  [2022-11-21 Mon 18:42]
+:UPDATED:  [2023-03-12 Sun 12:45]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -3099,6 +3099,8 @@ subject:/home:/) and tag:new}\"'")
 (feature-base-packages
  #:home-packages
  (append
+  (list python-keyring-pass)
+
   (pkgs
    "wl-clipboard"
    "figlet" ;; TODO: Move to emacs-artist-mode
