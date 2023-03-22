@@ -6,6 +6,7 @@ include profiles.mk
 GUIX_PROFILE=target/profiles/guix
 GUIX=./pre-inst-env ${GUIX_PROFILE}/bin/guix
 
+
 RDE_LOCAL ?= qzdl
 SRC_DIR=./src
 _CONFIG_DIR=${SRC_DIR}/${RDE_LOCAL}
@@ -36,7 +37,10 @@ inputs:
 	guix hash -x ${CONFIGE}
 
 tangle:
-	emacs -Q --batch --eval '(setq python-indent-guess-indent-offset nil)' -f package-initialize ${CONFIGO} -f org-babel-tangle
+	emacs -Q --batch \
+	  --eval '(setq python-indent-guess-indent-offset nil)' \
+	  -f package-initialize ${CONFIGO} \
+	  -f org-babel-tangle
 ###
 
 ixy/home/build: guix
