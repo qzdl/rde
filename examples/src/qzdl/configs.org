@@ -2744,11 +2744,12 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       1019ae2e-1221-4883-bb1e-35270a6fb25d
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-08-01 Mon 12:40]
+:UPDATED:  [2023-03-02 Thu 17:58]
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src scheme :noweb-ref main
+
+#+begin_src scheme :noweb-ref null
 (feature-emacs-erc
  #:erc-kill-buffers-on-quit #t
  #:erc-nick "qzdl"
