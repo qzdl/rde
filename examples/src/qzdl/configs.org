@@ -914,8 +914,8 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
     (list (channel
            (name 'guix)
            (url "https://git.savannah.gnu.org/git/guix.git")
-           (commit
-            "2b6af630d61dd5b16424be55088de2b079e9fbaf"))))
+           ;;;; [2023-03-12 Sun 12:44]
+           (commit "a70b9fb319e7f8d64ea90e8f659dcf40a6b971b0"))))
 
   (define inferior (inferior-for-channels channel-guix))
   (define (get-inferior-pkg pkg-name)
