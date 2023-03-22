@@ -9689,7 +9689,7 @@ check with (org-redisplay-inline-images)
           (save-excursion
             (beginning-of-line 1)
             (when (looking-at org-drawer-regexp)
-              (let* ((start (1- (match-beginning 0)))
+              (let* ((start (- 1 (match-beginning 0)))
                      (limit
                       (save-excursion
                         (outline-next-heading)
@@ -9699,7 +9699,7 @@ check with (org-redisplay-inline-images)
                             "org-cycle-hide-drawers:  "
                             "`:END:`"
                             " line missing at position %s")
-                           (1+ start))))
+                           (+ 1 start))))
                 (if (re-search-forward "^[ \t]*:END:" limit t)
                     (outline-flag-region start (point-at-eol) t)
                   (user-error msg))))))))))
@@ -9963,7 +9963,7 @@ a communication channel."
 :ID:       21946f30-986f-49fe-a51d-38c78f315543
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-11-09 Wed 10:14]
+:UPDATED:  [2023-03-21 Tue 15:46]
 :END:
 
 #+begin_src emacs-lisp
