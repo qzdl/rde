@@ -1506,7 +1506,7 @@ independently.  Clock instances ared updated automatically.  Their resources
 :PROPERTIES:
 :ID:       5b5d963a-b70c-4867-87b8-8beb1633fa02
 :CREATED:  [2022-09-28 Wed 15:47]
-:UPDATED:  [2022-10-04 Tue 16:12]
+:UPDATED:  [2023-03-02 Thu 18:14]
 :ROAM_EXCLUDE: t
 :END:
 #+name: guile-service-envars
@@ -1591,12 +1591,12 @@ independently.  Clock instances ared updated automatically.  Their resources
    ("GDK_BACKEND" . "wayland") ;; ... for clipboarding emasc
    ;;("DISABLE_RTKIT" . "1") ;; TODO [2022-08-03] pipewire broken ;; commented [2022-08-11 Thu]
    ;; TODO fix this path issue
-   ("PATH" . (string-join (list "$PATH"
-                                "$HOME/go/bin"
-                                "$HOME/.local/bin"
-                                "$HOME/.krew/bin"
-                                "${XDG_CACHE_HOME}/npm/bin")
-                          ":"))))
+   ("PATH" . ,(string-join (list "$PATH"
+                                 "$HOME/go/bin"
+                                 "$HOME/.local/bin"
+                                 "$HOME/.krew/bin"
+                                 "${XDG_CACHE_HOME}/npm/bin")
+                           ":"))))
 #+end_src
 
 ******* zsh : profile, *rc
