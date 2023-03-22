@@ -1381,6 +1381,35 @@ independently.  Clock instances ared updated automatically.  Their resources
    (license license:gpl3+)))
 #+end_src
 
+***** emacs-consult-recoll
+:PROPERTIES:
+:ID:       bfd3fa1e-935b-4c03-9b16-0bb232ddcfce
+:CREATED:  [2023-03-04 Sat 12:33]
+:UPDATED:  [2023-03-04 Sat 12:33]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+(define-public emacs-consult-recoll
+  (package
+    (name "emacs-consult-recoll")
+    (version "0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://elpa.gnu.org/packages/consult-recoll-" version
+                    ".tar"))
+              (sha256
+               (base32
+                "02vg1rr2fkcqrrivqgggdjdq0ywvlyzazwq1xd02yah3j4sbv4ag"))))
+    (build-system emacs-build-system)
+    (propagated-inputs (list emacs-consult))
+    (home-page "https://codeberg.org/jao/consult-recoll")
+    (synopsis "Recoll queries using consult")
+    (description "This package provides an emacs interface to perform recoll queries, and display its results, via consult. It is also recommened that you use a a package for vertical display of completions that works well with consult, such as vertico.")
+    (license license:gpl3+)))
+    #+end_src
+
 *** imports
 :PROPERTIES:
 :ID:       065c4d90-4d84-4969-8221-44f5008a9502
