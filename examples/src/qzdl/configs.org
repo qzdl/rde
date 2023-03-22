@@ -3053,15 +3053,15 @@ subject:/home:/) and tag:new}\"'")
  #:notmuch-saved-searches
  (cons*
   '(:name "Inbox :: Personal"  :key "P"
-          :query "tag:unread and tag:inbox and tag:personal")
+    :query "tag:unread and tag:inbox and tag:personal")
   '(:name "Inbox :: Work"      :key "W"
-          :query "tag:unread and tag:inbox and tag:work")
+    :query "tag:unread and tag:inbox and tag:work")
   '(:name "Inbox :: Guix Home" :key "H"
-          :query "tag:unread and tag:guix-home")
+    :query "tag:unread and tag:guix-home")
   '(:name "Inbox :: RDE"       :key "R"
-          :query "tag:unread and (to:/rde/ or cc:/rde/)")
+    :query "tag:unread and (to:/rde/ or cc:/rde/)")
   '(:name "Watching"           :key "tw"
-          :query "thread:{tag:watch}")
+    :query "thread:{tag:watch}")
   %rde-notmuch-saved-searches))
 #+end_src
 
