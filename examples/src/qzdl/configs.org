@@ -4647,7 +4647,7 @@ def go():
                 access_time = int((int(time() * 1000) - t["lastAccessed"]) / 600)
                 if access_time < min_time:
                     most_recent_tab_index = t["entries"][i]["url"]
-                # [(ID(t), ID(c)) for tt in t.get('entries') for c in tt.get('children')]
+                    # [(ID(t), ID(c)) for tt in t.get('entries') for c in tt.get('children')]
 
                 hi = t["entries"][i]
                 tabs.append(
@@ -4662,7 +4662,7 @@ def go():
 
         with open(output, "w") as f:
             json.dump(tabs, f, indent=2)
-        print(output)
+            print(output)
 
 
 go()
