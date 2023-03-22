@@ -486,6 +486,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
   #:use-module (rde features emacs-xyz)
   #:use-module (rde features fontutils)
   #:use-module (rde features gnupg)
+  ;;#:use-module (rde features irc)
   #:use-module (rde features keyboard)
   #:use-module (rde features linux)
   #:use-module (rde features mail)
