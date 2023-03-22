@@ -3238,14 +3238,14 @@ subject:/home:/) and tag:new}\"'")
 #+begin_src scheme
 (define ixy-file-systems
   (list (file-system
-         (device (file-system-label "sys-root"))
-         (mount-point "/")
-         (type "ext4")
-         (dependencies ixy-mapped-devices))
+          (device (file-system-label "sys-root"))
+          (mount-point "/")
+          (type "ext4")
+          (dependencies ixy-mapped-devices))
         (file-system
-         (device "/dev/nvme0n1p1")
-         (mount-point "/boot/efi")
-         (type "vfat"))
+          (device "/dev/nvme0n1p1")
+          (mount-point "/boot/efi")
+          (type "vfat"))
         ))
 #+end_src
 ***** file systems (from andrew)
