@@ -6971,7 +6971,7 @@ CREATED: <2021-11-29 Mon
 :ID:       05415208-95bf-4153-b65c-32e10112c582
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-10-24 Mon 14:25]
+:UPDATED:  [2023-03-21 Tue 17:16]
 :END:
 CREATED: <2021-11-29 Mon>
 
@@ -9978,21 +9978,21 @@ a communication channel."
   (interactive)
   (async-shell-command
    (concat
-    "make -C $HOME/git/sys/rde/rde/examples/abcdw tangle"
+    "make -C $HOME/git/sys/rde/examples tangle"
     " && echo 'tangle--ehg--di' | espeak --stdin")))
 
 (defun qz/reload-config-home ()
   (interactive)
   (async-shell-command
    (concat
-    "make -C $HOME/git/sys/rde/rde/examples/abcdw home"
+    "make -C $HOME/git/sys/rde/examples home"
     "&& echo 'home--bal-ehg--di' | espeak --stdin ")))
 
 (defun qz/reload-config-system ()
   (interactive)
   (async-shell-command
    (concat
-    "sudo -E make -C $HOME/git/sys/rde/rde/examples/abcdw system"
+    "sudo -E make -C $HOME/git/sys/rde/examples system"
     "&& echo 'system--bal-ehg--di' | espeak --stdin")))
 
 (defun qz/reload-config-all ()
@@ -10001,7 +10001,7 @@ a communication channel."
    (concat
     "   make -C $HOME/git/sys/rde rde/channels/update-locked"
     "&& make -C $HOME/git/sys/rde rde/channels/pull-locked"
-    "&& make -C $HOME/git/sys/rde/rde/examples/abcdw all"
+    "&& make -C $HOME/git/sys/rde/examples all"
     "&& echo 'do the do, like ooo; pull & home & system bal-ehg--di'"
     "   | espeak --stdin")))
 
