@@ -9780,6 +9780,9 @@ check with (org-redisplay-inline-images)
 
 #+name: elisp-derived-md-export-without-links
 #+begin_src emacs-lisp :noweb-ref org
+(require 'ox)
+(require 'ox-md)
+
 (defun qz/org-md-nolink (link contents info)
   (format "%s" contents))
 
@@ -9788,6 +9791,9 @@ check with (org-redisplay-inline-images)
   '(?M "Export to Markdown without links" (lambda (a s v b) (org-md-export-to-markdown a s v)))
   :translate-alist '((link . qz/org-md-nolink)))
 #+end_src
+
+#+RESULTS: elisp-derived-md-export-without-links
+: #s(org-export-backend my-md md ((link . qz/org-md-nolink)) nil nil nil (77 "Export to Markdown without links" (lambda (a s v b) (org-md-export-to-markdown a s v))))
 
 ***** from subtree, including max-level heading from point
 :PROPERTIES:
