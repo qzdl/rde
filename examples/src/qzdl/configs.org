@@ -7567,7 +7567,7 @@ the major mode specifies support for Font Lock."
 :ID:       46fed150-b670-4899-aaa2-b029262db572
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2023-02-08 Wed 10:55]
+:UPDATED:  [2023-03-21 Tue 12:54]
 :END:
 
 - see also :: about capture templates
@@ -7588,23 +7588,27 @@ the major mode specifies support for Font Lock."
                   ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
                                   "#+filetags: daily private project" "" ""
                                   "%(qz/today-dateref)" "" ""
-                                  "* today, I will"))
-                  ("journal")))))
+                                  "* today, I will"
+                                  "** daily review"
+                                  "** life"
+                                  "** work"))
+                           ("journal")))
+         ))
 
-(setq qz/org-roam-dailies-capture-templates--tangent
-      '("d" "default" entry
-        ,(s-join "\n" '("* TANGENT [%<%H:%M>] %?"
-                        ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
-                        "- from :: %a"))
-        :if-new (file+head+olp
-                 ,qz/org-roam-dailies-filespec
-                 ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
-                                 "#+filetags: daily private project" ""
-                                 "%(qz/today-dateref)" ""
-                                 "* today, I will"
-                                 "* journal"
-                                 "* tangent"))
-                 ("tangent"))))
+      (setq qz/org-roam-dailies-capture-templates--tangent
+            '("d" "default" entry
+              ,(s-join "\n" '("* TANGENT [%<%H:%M>] %?"
+                              ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
+                              "- from :: %a"))
+              :if-new (file+head+olp
+                       ,qz/org-roam-dailies-filespec
+                       ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
+                                       "#+filetags: daily private project" ""
+                                       "%(qz/today-dateref)" ""
+                                       "* today, I will"
+                                       "* journal"
+                                       "* tangent"))
+                       ("tangent"))))
 #+end_src
 
 #+RESULTS:
@@ -9141,7 +9145,7 @@ also accessible from the agenda with the ‘e’ key.
 (message "pre org: %s" (shell-command-to-string "date"))
 (with-eval-after-load 'org
   (require 's)
-  (message "mid org: %s" (shell-command-to-string "date"))
+  (message "loading org: %s" (shell-command-to-string "date"))
   <<org>>
   )
 (message "post org: %s" (shell-command-to-string "date"))
