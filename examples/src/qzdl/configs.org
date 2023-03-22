@@ -2242,19 +2242,20 @@ host	all	all	0.0.0.0/0       md5
                      (port . 22)
                      (identity-file . "~/.ssh/newstore-luminate.pem"))))))))
 #+end_src
-
-****** git
+*
+***** git
 :PROPERTIES:
 :ID:       dcd3cd89-5c4d-41e3-9ed5-324a48dc3546
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2023-02-28 Tue 12:26]
+:UPDATED:  [2023-03-04 Sat 16:41]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src scheme :noweb-ref main
 (feature-git
  #:extra-config
- `((pull (rebase . #t))
+ '((pull
+    ((rebase . #t)))
    ;; (slurp-file-like (local-file "./etc/git/work_config"))
    ;; '(#~"[includeIf \"gitdir:~/git/ns\"]
    ;;     [user]
