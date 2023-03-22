@@ -3447,9 +3447,9 @@ subject:/home:/) and tag:new}\"'")
 
 (define live-file-systems
   (list (file-system
-         (mount-point "/")
-         (device (file-system-label "Guix_image"))
-         (type "ext4"))
+          (mount-point "/")
+          (device (file-system-label "Guix_image"))
+          (type "ext4"))
 
         ;; Make /tmp a tmpfs instead of keeping the overlayfs.  This
         ;; originally was used for unionfs because FUSE creates
@@ -3458,10 +3458,10 @@ subject:/home:/) and tag:new}\"'")
         ;; <http://bugs.gnu.org/23056>).  We keep this for overlayfs to be
         ;; on the safe side.
         (file-system
-         (mount-point "/tmp")
-         (device "none")
-         (type "tmpfs")
-         (check? #f))
+          (mount-point "/tmp")
+          (device "none")
+          (type "tmpfs")
+          (check? #f))
 
         ;; XXX: This should be %BASE-FILE-SYSTEMS but we don't need
         ;; elogind's cgroup file systems.
