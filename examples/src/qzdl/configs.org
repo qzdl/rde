@@ -2121,7 +2121,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       855bb3df-f74b-4fff-9122-7c334a878dcc
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-08-31 Wed 14:25]
+:UPDATED:  [2023-03-04 Sat 12:33]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2146,6 +2146,12 @@ host	all	all	0.0.0.0/0       md5
                      (hostname . "192.168.0.240")
                      (port . 2222)
                      (identity-file . "~/.ssh/ko.pub"))))
+         (ssh-host
+          (host "yoho")
+          (options '((user . "yoho")
+                     (hostname . "192.168.0.12")
+                     (port . 22)
+                     (identity-file . "~/.ssh/yoho.pub"))))
          (ssh-host
           (host "bastion-sandbox")
           (options '((user . "ubuntu@bastion-sandbox")
@@ -2544,8 +2550,8 @@ host	all	all	0.0.0.0/0       md5
    python-pylsp-mypy
    emacs-ox-slack
    emacs-svg-clock
+   emacs-consult-recoll
    ;;
-   ;; emacs-consult-recoll ; TODO qzdl pkg
    ;; emacs-code-review    ; TODO qzdl pkg
    )
   (pkgs
