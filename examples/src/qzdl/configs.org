@@ -1873,6 +1873,76 @@ independently.  Clock instances ared updated automatically.  Their resources
    (list nvidia-driver)))
 #+end_src
 
+******* udev-sdmount
+:PROPERTIES:
+:ID:       c3963cdf-a521-4647-b76c-4128b42457ce
+:CREATED:  [2023-03-14 Tue 17:49]
+:UPDATED:  [2023-03-14 Tue 18:21]
+:END:
+
+******** exposition
+:PROPERTIES:
+:ID:       b665d4a3-0e73-45fb-acf1-747ee64d49ce
+:CREATED:  [2023-03-14 Tue 18:18]
+:UPDATED:  [2023-03-14 Tue 18:21]
+:ROAM_EXCLUDE: t
+:END:
+
+In plain english:
+
+When a block device, such as an SD card, is plugged in, if it's in a
+predefined list of devices (e.g by their filesystem UUIDs) copy the contents
+to the host filesystem, deleting from the source upon completion.
+
+questions:
+- is it really worth namespacing the 'dump' by date?  this would mean rsync
+  cannot dedupe, but protects against residual corrupted data from the SD
+  card.
+
+********* shell example
+:PROPERTIES:
+:ID:       fb07c83c-8e9d-417a-9f85-4d8cd4a8184c
+:CREATED:  [2023-03-14 Tue 18:18]
+:UPDATED:  [2023-03-14 Tue 18:18]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src shell
+# note, uuid is fabricated
+
+id="cf27c7d8-74f7-46ee-9529-513870eef822"
+i="/mnt/dump/${id}"
+o="/media/dump/${id}/$(date +%s)"
+
+mount UUID="${id}" "$i"
+mkdir -p "${o}"
+rsync \
+    --archive \
+    --recursive \
+    --remove-source-files \
+    "${i}" \
+    "${o}"
+
+#+end_src
+******** src
+:PROPERTIES:
+:ID:       941f6f6c-707f-4419-b655-3dfa484d17ef
+:CREATED:  [2023-03-14 Tue 18:18]
+:UPDATED:  [2023-03-14 Tue 18:18]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref services-sys
+(udev-rules-service
+      'ydotool
+      (udev-rule
+       "80-uinput.rules"
+       ;; TODO: Take it from ydotool package
+       (string-append
+        "KERNEL==\"uinput\", MODE==\"0660\", "
+        "GROUP=\"input\", OPTIONS+=\"static_node=uinput\"")))
+
+#+end_src
 ******* X11 gdm with nvidia                                                :inactive:
 :PROPERTIES:
 :ID:       a91bb43f-465e-4a4a-99fa-a8b4a5ba03e6
