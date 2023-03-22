@@ -5750,6 +5750,74 @@ consuming
 #+RESULTS:
 : consult-line-multi
 
+***** recoll
+:PROPERTIES:
+:ID:       27a44696-4cf0-47d2-82b2-b830a61cf8f0
+:CREATED:  [2023-03-04 Sat 12:33]
+:UPDATED:  [2023-03-04 Sat 12:33]
+:ROAM_EXCLUDE: t
+:END:
+
+****** fixing command inflexibility
+:PROPERTIES:
+:ID:       3ea06024-8456-4736-b458-05dd9c2aad1d
+:CREATED:  [2023-03-04 Sat 12:33]
+:UPDATED:  [2023-03-04 Sat 12:33]
+:ROAM_EXCLUDE: t
+:END:
+
+recollq is not a binary, from how we (guix) build it.
+
+sadly there is no variable =consult-recoll-program=, and =codeberg=... ???? so
+we're hacking it the hard way
+
+#+begin_src emacs-lisp
+;; original, as of commit TODO
+;;
+;; (defun consult-recoll--command (text)
+;;   "Command used to perform queries for TEXT."
+;;   (setq consult-recoll--current nil)
+;;   (setq consult-recoll--index 0)
+;;   (setq consult-recoll--snippets nil)
+;;   `("recoll" ,@(consult-recoll--search-flags) ,text))
+;;
+;; we need to add the -t arg (to make it exactly like recollq)
+
+(defun consult-recoll--command (text)
+  "Command used to perform queries for TEXT."
+  (setq consult-recoll--current nil)
+  (setq consult-recoll--index 0)
+  (setq consult-recoll--snippets nil)
+  `("recoll" "-t" ,@(consult-recoll--search-flags) ,text))
+#+end_src
+
+#+RESULTS:
+: consult-recoll--command
+
+******* tracing
+:PROPERTIES:
+:ID:       3d2cca36-536d-4a6e-bb45-be6b54fe13ae
+:CREATED:  [2023-03-04 Sat 12:33]
+:UPDATED:  [2023-03-04 Sat 12:33]
+:ROAM_EXCLUDE: t
+:END:
+
+
+#+begin_src emacs-lisp :noweb-ref null
+(trace-function 'consult-recoll--command)
+;; (call-interactively 'toggle-debug-on-quit)
+
+;; (setq consult-recoll--search-flags 'query)
+;; (consult-recoll "ayo")
+
+(custom-set-variables '(consult-recoll--search-flags 'query))
+consult-recoll--search-flags
+(consult-recoll "customer care order")
+
+(untrace-all)
+#+end_src
+
+
 ***** project-commands
 :PROPERTIES:
 :ID:       16928472-fd8f-4fe9-9c12-6144d5c05998
