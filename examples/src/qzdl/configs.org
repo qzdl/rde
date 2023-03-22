@@ -5568,6 +5568,41 @@ this gets clobbered from RDE
 | project-compile      | Compile        |
 | magit-project-status | Magit          |
 
+**** shell | (ba|z|fi)?sh
+:PROPERTIES:
+:ID:       40701551-041c-4b72-84dd-e5434edbb529
+:CREATED:  [2023-03-14 Tue 17:43]
+:UPDATED:  [2023-03-14 Tue 17:43]
+:ROAM_EXCLUDE: t
+:END:
+
+***** org-babel-default-header-args:shell
+:PROPERTIES:
+:ID:       d2fb4f7c-d760-4fb2-bc3d-2847a3fe97e4
+:CREATED:  [2023-03-14 Tue 17:44]
+:UPDATED:  [2023-03-14 Tue 17:44]
+:ROAM_EXCLUDE: t
+:END:
+
+I have manually typed this out so fucking much it's not even funny.  Here I am
+at [2023-03-14 Tue 17:43] finally writing it to my config hahaha
+
+#+begin_src shell
+rg 'src.(shell|bash|sh).*drawer' $HOME/life/roam | wc -l
+#+end_src
+
+#+RESULTS:
+
+#+begin_src emacs-lisp :noweb-ref org
+(setq org-babel-default-header-args:shell '((:results . "drawer"))
+      org-babel-default-header-args:sh org-babel-default-header-args:shell
+      org-babel-default-header-args:bash org-babel-default-header-args:shell
+      org-babel-default-header-args:zsh org-babel-default-header-args:shell)
+#+end_src
+
+#+RESULTS:
+: ((:results . drawer))
+
 *** package config
 :PROPERTIES:
 :ID:       2fa9d7ef-cfd9-4d3c-aca8-09e1d6243705
