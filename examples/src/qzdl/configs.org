@@ -2632,22 +2632,26 @@ host	all	all	0.0.0.0/0       md5
 ;; "emacs-org-autotangle"
 #+end_src
 
-******* emacs-appearance
+******* TODO emacs-appearance
 :PROPERTIES:
 :ID:       e7344b77-dfd0-4bc5-aade-cd6b92dc58da
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-09-28 Wed 15:37]
+:UPDATED:  [2023-03-02 Thu 18:11]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src scheme :noweb-ref main
-(feature-emacs-appearance
- #:dark? #t
- #:extra-elisp
- `((setq modus-themes-syntax '(faint))
-   ;; (setq modus-themes-region '(bg-only))
-   ;; (setq modus-themes-paren-match '(underline))
-   (setq modus-themes-org-blocks 'tinted-background)))
+(feature-emacs-modus-themes
+ #:dark? #t)
+;; TODO extra-modus-theme-overrides
+;; [[file:~/git/sys/rde/src/rde/features/emacs-xyz.scm::(define* (feature-emacs-modus-themes][emacs-xyz.scm::feature-emacs-modus-themes]]
+;; #:extra-elisp
+;; `((setq modus-themes-syntax '(faint))
+;;   ;; (setq modus-themes-region '(bg-only))
+;;   ;; (setq modus-themes-paren-match '(underline))
+;;   (setq modus-themes-org-blocks 'tinted-background))
+
+(feature-emacs-appearance)
 #+end_src
 
 ******* emacs-faces
