@@ -9354,7 +9354,13 @@ prepend or to append."
 
 (define-key org-mode-map (kbd "C-c M-l") 'qz/org-insert-last-stored-link)
 #+end_src
-
+****** qz/ol-file
+:PROPERTIES:
+:ID:       13edec53-73d8-4384-a793-83c303c047e2
+:CREATED:  [2023-03-13 Mon 12:55]
+:UPDATED: [2023-03-13 Mon 12:57]
+:ROAM_EXCLUDE: t
+:END:
 #+name: def-ol-file
 #+begin_src emacs-lisp :noweb-ref org
 (defun qz/ol-file (link)
@@ -9366,8 +9372,8 @@ prepend or to append."
   ;; (message  "HELLO :: %s/%s" p (car (last (s-split "/" p))))
   (let* ((p (car link))
          (inner (mapcar
-                 (lambda (s) (let ((ss (car s)))
-                               (and (s-contains? (f-base ss) p)
+                 (lambda (s) (let* ((ss (car s)))
+                               (and (s-matches? (concat "\b" (f-base ss)) p)
                                     (cons (f-base ss) ss))))
                  project--list))
          (suffix (s-join
@@ -9380,7 +9386,9 @@ prepend or to append."
                         (mapcar 'car)
                         (reverse)))))
     (format "%s%s"
-            (or (and suffix (format "(%s)" suffix)) "")
+            (or (and suffix (not (string-empty-p suffix))
+                     (format "(%s)" suffix))
+                "")
             (car (last (s-split "/" p))))))
 
 ;;(car org-stored-links)
@@ -9389,7 +9397,7 @@ prepend or to append."
 
 [[file:~/git/ghorg/all-groups/newstore/engineering/libraries/python/events/newstore/shared/events/test.py::def assert_expected_events_were_emitted(self, service_name, test_case):][(ghorg . python . events) test.py::def assert_expected_events_were_emitted(self, service_name, test_case):]]
 #+RESULTS: def-ol-file
-: qz/ol-file
+: t
 
 #+name: org-alias-angle-brackets
 #+begin_src emacs-lisp :noweb-ref org
