@@ -1,11 +1,17 @@
 (use-modules (guix channels))
 
 (list (channel
+        (name 'nonguix)
+        (url "https://gitlab.com/nonguix/nonguix")
+        (branch "master")
+        (commit
+          "110f914f81d0d2c67a45f9b2f87a5dc7ec54dfd0"))
+      (channel
         (name 'rde)
         (url "https://git.sr.ht/~abcdw/rde")
         (branch "master")
         (commit
-          "866a0fbca5e9fcf2bbc97cd605ea669e810c5aa1")
+          "30d6073b3ac26381be892d4cb26a99575ae38ad3")
         (introduction
           (make-channel-introduction
             "257cebd587b66e4d865b3537a9a88cccd7107c95"
@@ -16,7 +22,7 @@
         (url "https://git.savannah.gnu.org/git/guix.git")
         (branch "master")
         (commit
-          "3a2200e1ad2049ad7e25295e6b4e013f74dd84e2")
+          "e9c1ea84fcf4a7f3da9aea9fbfe6136c75643c07")
         (introduction
           (make-channel-introduction
             "9edb3f66fd807b096b48283debdcddccfea34bad"

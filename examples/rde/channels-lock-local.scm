@@ -13,7 +13,7 @@
               "2841 9AC6 5038 7440 C7E9  2FFA 2208 D209 58C1 DEB0"))))
       (channel
         (name 'guix)
-        (url "file:///home/bob/work/gnu/guix")
+        (url "https://git.savannah.gnu.org/git/guix.git")
         (branch "master")
         (commit
           "e6acde4a95dea5b9a27416e58c6f904ff1e9eba6")
