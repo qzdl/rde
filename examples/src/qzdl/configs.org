@@ -2640,7 +2640,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       5f892275-23ad-429c-9651-f48f5e8576ec
 :CREATED:  [2022-09-28 Wed 16:14]
-:UPDATED:  [2022-10-26 Wed 11:45]
+:UPDATED:  [2023-03-24 Fri 10:29]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2648,6 +2648,7 @@ host	all	all	0.0.0.0/0       md5
 "emacs-elfeed"
 "emacs-calfw"
 "emacs-debbugs"
+"emacs-dashboard"
 "emacs-dimmer"
 "emacs-edit-server"
 "emacs-eglot"
