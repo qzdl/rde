@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2023-03-24 Fri 10:29]
+:UPDATED:  [2023-03-30 Thu 12:37]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :CREATED:  [2022-08-30 Tue 11:12]
 :END:
@@ -487,11 +487,11 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
   #:use-module (rde features emacs-xyz)
   #:use-module (rde features fontutils)
   #:use-module (rde features gnupg)
-  ;;#:use-module (rde features irc)
   #:use-module (rde features keyboard)
   #:use-module (rde features linux)
   #:use-module (rde features mail)
   #:use-module (rde features markup)
+  ;;#:use-module (rde features messaging) ;; FIXME
   #:use-module (rde features networking)
   #:use-module (rde features password-utils)
   #:use-module (rde features shells)
@@ -507,6 +507,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
   #:use-module (rde features xdg)
   #:use-module (rde features xdisorg)
   #:use-module (rde features)
+  ;;#:use-module (rde features irc)
 
   #:use-module (rde gexp)
 
@@ -2041,7 +2042,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       1cda9c5a-ef77-4735-aac7-b732054413c3
 :CREATED:  [2022-09-28 Wed 15:54]
-:UPDATED:  [2022-10-27 Thu 10:51]
+:UPDATED:  [2023-03-28 Tue 15:41]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2061,11 +2062,25 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       8f7a4a2a-c195-4d06-8d76-25a5671ad941
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-08-01 Mon 10:52]
+:UPDATED:  [2023-03-28 Tue 15:53]
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src scheme :noweb-ref main
-(unless gaming? (feature-base-services))
+(unless gaming?
+  (feature-base-services
+   #:guix-substitute-urls '("https://substitutes.nonguix.org")
+   #:guix-authorized-keys
+   (list
+     ;;; https://substitutes.nonguix.org/signing-key.pub
+    ;; see also https://guix.gnu.org/manual/en/html_node/Substitutes.html
+    (plain-file "nonguix.pub" "
+(public-key
+ (ecc
+  (curve Ed25519)
+  (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)
+  )
+ )
+"))))
 #+end_src
 
 ***** desktop-services
@@ -2285,7 +2300,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       d9d8aa24-494b-4906-b5ab-0dd56c0bf070
 :CREATED:  [2022-09-28 Wed 15:41]
-:UPDATED:  [2022-09-28 Wed 15:41]
+:UPDATED:  [2023-03-30 Thu 10:40]
 :ROAM_EXCLUDE: t
 :END:
 ****** bluetooth
@@ -2540,19 +2555,19 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       e9a4d259-45cc-43e9-89e5-69319a169928
 :CREATED:  [2022-10-28 Fri 12:09]
-:UPDATED:  [2022-11-01 Tue 18:52]
+:UPDATED:  [2023-03-30 Thu 10:41]
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src scheme :noweb-ref null
+#+begin_src scheme :noweb-ref main
 ;; TODO understand why kanshi freezes my kernel
 ;;
 ;;(1200 seconds of cup sleep!!  dangerous, hard poweroff via button is only
 ;;recourse)
 (feature-kanshi
  #:extra-config
- `((profile laptop ((output eDP-1 enable)))
-   (profile docked ((output eDP-1 disable)
+ `((profile laptop ((output eDP-2 enable)))
+   (profile docked ((output eDP-2 disable)
                     (output DP-2 enable)))))
 #+end_src
 
@@ -3179,7 +3194,7 @@ subject:/home:/) and tag:new}\"'")
 :PROPERTIES:
 :ID:       9490f8c2-7074-4a89-a62e-f82b6bfc2f2b
 :CREATED:  [2022-08-01 Mon 10:55]
-:UPDATED:  [2023-03-12 Sun 12:45]
+:UPDATED:  [2023-03-30 Thu 12:37]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -3192,13 +3207,13 @@ subject:/home:/) and tag:new}\"'")
   (pkgs
    "wl-clipboard"
    "figlet" ;; TODO: Move to emacs-artist-mode
-   "calibre"
-   "icecat" "nyxt"
-   "ungoogled-chromium-wayland" "ublock-origin-chromium"
+   ;;"calibre"
+   ;;"icecat" "nyxt"
+   ;;"ungoogled-chromium-wayland" "ublock-origin-chromium"
 
    "utox" "qtox" "jami"
 
-   "alsa-utils" "mpv" "youtube-dl" "imv" "vim"
+   "alsa-utils" "vim"
    "cozy" "pavucontrol"
    "wev"
    "obs" "obs-wlrobs"
@@ -3207,7 +3222,6 @@ subject:/home:/) and tag:new}\"'")
    ;; TODO: Enable pipewire support to chromium by default
    ;; chrome://flags/#enable-webrtc-pipewire-capturer
    "ispell"
-   "nyxt"
    ;;
    "hicolor-icon-theme" "adwaita-icon-theme" "gnome-themes-extra"
    "papirus-icon-theme" "arc-theme"
@@ -3243,11 +3257,45 @@ subject:/home:/) and tag:new}\"'")
    "libnotify"
    ))
  )
-
-
 #+end_src
 
 #+RESULTS:
+
+***** TODO unsorted
+:PROPERTIES:
+:ID:       72ecbbb1-860b-471e-a2e8-d96cf8c3dac3
+:CREATED:  [2023-03-30 Thu 12:47]
+:UPDATED:  [2023-03-30 Thu 12:47]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src scheme :noweb-ref main
+
+
+(feature-compile)
+(feature-emacs-battery)
+(feature-emacs-browse-url)
+(feature-emacs-comint)
+(feature-emacs-dashboard)
+;;(feature-emacs-debbugs)
+(feature-emacs-dired)
+(feature-emacs-display-wttr)
+(feature-emacs-ednc)
+(feature-emacs-elisp)
+(feature-emacs-emms)
+(feature-emacs-flymake)
+(feature-emacs-graphviz)
+(feature-emacs-help)
+(feature-emacs-pdf-tools)
+;;(feature-emacs-slack)
+(feature-emacs-webpaste)
+(feature-go)
+(feature-gtk3)
+(feature-imv)
+(feature-nyxt)
+(feature-pulseaudio-contro-dl)
+(feature-ungoogled-chromium)
+(feature-youtube-dl)
+#+end_src
 
 *** debug: post-%main-features
 :PROPERTIES:
@@ -10054,7 +10102,7 @@ a communication channel."
 :ID:       21946f30-986f-49fe-a51d-38c78f315543
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2023-03-21 Tue 15:46]
+:UPDATED:  [2023-03-29 Wed 18:47]
 :END:
 
 #+begin_src emacs-lisp
@@ -10067,6 +10115,10 @@ a communication channel."
    (concat
     "make -C $HOME/git/sys/rde/examples tangle"
     " && echo 'tangle--ehg--di' | espeak --stdin")))
+
+(defun qz/suspend ()
+  (interactive)
+  (async-shell-command "loginctl suspend"))
 
 (defun qz/reload-config-home ()
   (interactive)
@@ -10298,8 +10350,9 @@ pactl list sources | grep -E 'Name|Desc' -n
 :ID:       f7063b4c-226d-49cc-8bd8-a43249dd6c65
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2023-03-28 Tue 15:29]
 :END:
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :noweb-ref null
 (custom-set-variables
  '(cursor-type 'hbar))
 #+end_src
