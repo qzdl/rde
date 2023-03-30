@@ -244,7 +244,9 @@ feature-ssh."
      (service iwd-service-type
               (iwd-configuration
                (main-conf
-                `((Settings ((AutoConnect . ,iwd-autoconnect?)))))))
+                `((Settings ((AutoConnect . ,iwd-autoconnect?)))))
+               (nm-conf
+                '((device ((wifi.backend . iwd)))))))
      (service modem-manager-service-type)
      (service usb-modeswitch-service-type)))
 
