@@ -1,6 +1,7 @@
 ;;; rde --- Reproducible development environment.
 ;;;
 ;;; Copyright © 2021, 2022 Andrew Tropin <andrew@trop.in>
+;;; Copyright © 2023 Samuel Culpepper <samuel@samuelculpepper.com>
 ;;;
 ;;; This file is part of rde.
 ;;;
@@ -142,7 +143,11 @@ if one already exists."
                      (if (and vterm-buffer (not current-prefix-arg))
                          (pop-to-buffer-same-window vterm-buffer)
                          (vterm t))))
-                 (define-key project-prefix-map (kbd "t") 'project-vterm)))
+                 (define-key project-prefix-map (kbd "t") 'project-vterm)
+                 (add-to-list 'project-switch-commands
+                              '(project-vterm
+                                "Start vterm in the current project's root directory."))))
+
               '()))
       #:summary "\
 Full-fledged terminal in Emacs"
