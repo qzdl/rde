@@ -144,7 +144,10 @@
   (coreutils (file-like coreutils) "")
   (main-conf
    (ini-config '())
-   "Will be serialized to /etc/iwd/main.conf"))
+   "Will be serialized to /etc/iwd/main.conf")
+  (nm-conf ;; FIXME seems more appropriate to include with nm-applet?
+   (ini-config '())
+   "Will be serialized to /etc/NetworkManager/conf.d/nm.conf"))
 
 (define (iwd-shepherd-service config)
   "Return a shepherd service for iwd"
@@ -174,6 +177,13 @@
                "main.conf"
                (serialize-ini-config cfg))))))
 
+(define (iwd-nm-etc-service config)
+  (let ((cfg (iwd-configuration-main-conf config)))
+    `(("NetworkManager/conf.d/nm.conf"
+       ,(apply mixed-text-file
+               "nm.conf"
+               (serialize-ini-config cfg))))))
+
 (define iwd-package (compose list iwd-configuration-iwd))
 
 (define iwd-service-type
@@ -189,6 +199,9 @@
           (service-extension
            etc-service-type
            iwd-etc-service)
+          (service-extension
+           etc-service-type
+           iwd-nm-etc-service)
           (service-extension
            profile-service-type
            iwd-package)))
