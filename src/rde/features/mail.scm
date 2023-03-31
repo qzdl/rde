@@ -619,30 +619,31 @@ topics with your preferred hierarchy."
                 '())
           (setq gnus-update-message-archive-method t)
           (setq gnus-posting-styles
-                '(,@(if (get-value 'msmtp config)
-                        '()
-                        (map (lambda (mail-acc)
-                               `(,(symbol->string (mail-account-id mail-acc))
-                                 (name ,(get-value 'full-name config))
-                                 (signature
-                                  ,(match (get-value 'message-signature config)
-                                     ((? procedure? e) (e config))
-                                     ((? string? e) e)
-                                     (#f 'nil)
-                                     (_ 't)))
-                                 ("X-Message-SMTP-Method"
-                                  ,(format
-                                    #f "smtp ~a ~a ~a"
-                                    (assoc-ref
-                                     (assoc-ref %default-msmtp-provider-settings
-                                                (mail-account-type mail-acc))
-                                     'host)
-                                    (assoc-ref
-                                     (assoc-ref %default-msmtp-provider-settings
-                                                (mail-account-type mail-acc))
-                                     'port)
-                                    (mail-account-fqda mail-acc)))))
-                             mail-accounts))
+                '(,@(map (lambda (mail-acc)
+                           `(,(symbol->string (mail-account-id mail-acc))
+                             (address ,(mail-account-fqda mail-acc))
+                             ("Gcc" ,(string-append
+                                      "nnmaildir+"
+                                      (symbol->string
+                                       (mail-account-id mail-acc))
+                                      ":sent"))
+                             ,@(if (get-value 'msmtp config)
+                                   '()
+                                   `(("X-Message-SMTP-Method"
+                                      ,(format
+                                        #f "smtp ~a ~a ~a"
+                                        (assoc-ref
+                                         (assoc-ref
+                                          %default-msmtp-provider-settings
+                                          (mail-account-type mail-acc))
+                                         'host)
+                                        (assoc-ref
+                                         (assoc-ref
+                                          %default-msmtp-provider-settings
+                                          (mail-account-type mail-acc))
+                                         'port)
+                                        (mail-account-fqda mail-acc)))))))
+                         mail-accounts)
                   ,@posting-styles))
           (setq gnus-select-method '(nnnil))
           (setq gnus-secondary-select-methods
@@ -759,7 +760,8 @@ default severities with which bugs should be filered with DEFAULT-SEVERITIES."
           #:key
           (mail-account-id #f))
   "Configure smtpmail, a simple mail protocol for sending mail from Emacs.
-If no MAIL-ACCOUNT-ID is provided, the first mail account will be used."
+If no MAIL-ACCOUNT-ID is provided, no account-specific settings will be
+configured."
   (ensure-pred maybe-symbol? mail-account-id)
 
   (define emacs-f-name 'smtpmail)
@@ -774,10 +776,10 @@ If no MAIL-ACCOUNT-ID is provided, the first mail account will be used."
           (filter (lambda (acc)
                     (= (mail-account-id acc) mail-account-id))
                   (get-value 'mail-accounts config))
-          (car (get-value 'mail-accounts config))))
+          #f))
     (define smtp-provider
       (assoc-ref %default-msmtp-provider-settings
-                 (mail-account-type mail-acc)))
+                 (and=> mail-acc mail-account-type)))
     (define smtp-host (assoc-ref smtp-provider 'host))
     (define smtp-port (assoc-ref smtp-provider 'port))
 
@@ -787,16 +789,18 @@ If no MAIL-ACCOUNT-ID is provided, the first mail account will be used."
       config
       `((with-eval-after-load 'smtpmail
           (require 'xdg)
-          (setq smtpmail-smtp-user ,(or (mail-account-user mail-acc)
-                                        (mail-account-fqda mail-acc)))
-          (setq smtpmail-smtp-service ,smtp-port)
+          ,@(if mail-account-id
+                '((setq smtpmail-smtp-user ,(or (mail-account-user mail-acc)
+                                                (mail-account-fqda mail-acc)))
+                  (setq smtpmail-smtp-service ,smtp-port)
+                  (setq smtpmail-smtp-server ,smtp-host)
+                  (setq smtpmail-default-smtp-server ,smtp-host))
+                '())
           (setq smtpmail-stream-type 'starttls)
           (setq smtpmail-queue-dir
                 (expand-file-name "emacs/smtpmail/queued-mail"
                                   (xdg-cache-home)))
-          (setq smtpmail-debug-info t)
-          (setq smtpmail-smtp-server ,smtp-host)
-          (setq smtpmail-default-smtp-server ,smtp-host))))))
+          (setq smtpmail-debug-info t))))))
 
   (feature
    (name f-name)
@@ -851,8 +855,6 @@ to offset block quotes."
         (with-eval-after-load 'org
           (define-key org-mode-map (kbd "C-c M-o")
             'org-mime-org-buffer-htmlize))
-        (add-hook 'message-send-hook
-                  'org-mime-confirm-when-no-multipart)
         (with-eval-after-load 'message
           (let ((map message-mode-map))
             (define-key map (kbd "C-c M-z") 'org-mime-htmlize)

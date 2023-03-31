@@ -59,49 +59,6 @@
     "Paragraph justification for emacs using Knuth/Plass algorithm ")
    (license license:gpl3+))))
 
-(define-public emacs-ol-notmuch
-  (let* ((commit "1a53d6c707514784cabf33d865b577bf77f45913")
-         (revision "0"))
-    (package
-     (name "emacs-ol-notmuch")
-     (version (git-version "2.0.0" revision commit))
-     (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://git.sr.ht/~tarsius/ol-notmuch")
-             (commit commit)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "16p7j51z8r047alwn2hkb6944f7ds29ckb97b4k8ia00vwch0d67"))))
-     (build-system emacs-build-system)
-     (inputs (list emacs-org emacs-compat emacs-notmuch))
-     (home-page "https://git.sr.ht/~tarsius/ol-notmuch")
-     (synopsis "Links to notmuch messages and searches")
-     (description
-      "This package implements links to notmuch messages and searches. A search is a query to be performed by notmuch; it is the equivalent to folders in other mail clients. Similarly, mails are referred to by a query, so both a link can refer to several mails.")
-     (license license:gpl3+))))
-
-
-(define-public emacs-cyrillic-dvorak-im
-  (package
-    (name "emacs-cyrillic-dvorak-im")
-    (version "0.1.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/xFA25E/cyrillic-dvorak-im")
-             (commit version)))
-       (sha256
-        (base32 "12adszd4p9i9glx2chasgq68i6cnxcrwbf5c268jjb5dw4q7ci0n"))
-       (file-name (git-file-name name version))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/xFA25E/cyrillic-dvorak-im")
-    (synopsis "Cyrillic input method for dvorak layout")
-    (description "Cyrillic input method for dvorak layout.")
-    (license license:gpl3+)))
-
 (define-public emacs-hide-header-line
   (package
     (inherit emacs-hide-mode-line)
@@ -167,13 +124,68 @@ sending Git patches via Email, without leaving Emacs."))))
    (inputs
     `(("emacs-magit" ,emacs-magit)))
    (propagated-inputs
-    `(("emacs-git-gutter" ,emacs-git-gutter)
-      ("emacs-transient" ,emacs-transient-latest)))
+    `(("emacs-git-gutter" ,emacs-git-gutter)))
    (license license:gpl3+)
    (home-page "https://sr.ht/~abcdw/git-gutter-transient")
    (synopsis "Navigate, stage and revert hunks with ease")
    (description "This package provides transient interface for git-gutter function
 to manipulate and navigate hunks.")))
+
+(define-public emacs-gider
+  (package
+    (name "emacs-gider")
+    (version "0.1.0")
+    (source
+     (local-file "../../../files/emacs/gider" #:recursive? #t))
+    (arguments
+     (list
+      #:exclude #~(list "^\\.dir-locals\\.el$" "^test/")
+      #:include #~(cons "^src/" %default-include)))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     (list emacs-geiser emacs-geiser-guile))
+    (license license:gpl3+)
+    (home-page "https://sr.ht/~abcdw/rde")
+    (synopsis "Guile Interactive Development Enviroment")
+    (description "Right now it's just a few helpers on top of geiser.")))
+
+(define-public emacs-geiser-latest
+  (let ((commit "bd12f2dc6c5949e260f094fb60737498cd0ae9a5")
+        (revision "1"))
+    (package
+      (inherit emacs-geiser)
+      (name "emacs-geiser")
+      (version (git-version "0.28.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/emacs-geiser/geiser")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "16qi3vk1yps4f5v98ipdl5kq0jq5qlnlpx8c598csj9yk86p1hsw")))))))
+
+(define-public emacs-geiser-guile-latest
+  ((package-input-rewriting/spec
+    `(("emacs-geiser" . ,(const emacs-geiser-latest))))
+   emacs-geiser-guile))
+
+(define-public emacs-geiser-eros-latest
+  ((package-input-rewriting/spec
+    `(("emacs-geiser" . ,(const emacs-geiser-latest))))
+   emacs-geiser-eros))
+
+(define-public emacs-gider-latest
+  ((package-input-rewriting/spec
+    `(("emacs-geiser" . ,(const emacs-geiser-latest))
+      ("emacs-geiser-guile" . ,(const emacs-geiser-guile-latest))))
+   emacs-gider))
+
+(define-public emacs-guix-latest
+  ((package-input-rewriting/spec
+    `(("emacs-geiser" . ,(const emacs-geiser-latest))))
+   emacs-guix))
 
 (define-public emacs-telega-server-latest emacs-telega-server)
 
@@ -211,5 +223,59 @@ to manipulate and navigate hunks.")))
           (base32 "11l8jpqj6m04ndhnfz41nhph1rqjvqbfd5vw334mph776aq1baln"))))
       (propagated-inputs
        (modify-inputs (package-propagated-inputs emacs-docker)
-         (delete "emacs-docker-tramp")
-         (append emacs-transient-latest))))))
+         (delete "emacs-docker-tramp"))))))
+
+(define-public emacs-clojure-ts-mode
+  (let ((commit "c9f1ed357d1cc9b73dfa53ef239a846a7ef17bd2")
+        (revision "0"))
+    (package
+      (name "emacs-clojure-ts-mode")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/clojure-emacs/clojure-ts-mode.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1nm4g9pxami5liib0y1apngarphpggf7fvq4hi661vlcfpqg22kq"))))
+      (build-system emacs-build-system)
+      (arguments (list #:emacs emacs-next-pgtk))
+      (license license:gpl3+)
+      (home-page "https://github.com/clojure-emacs/clojure-ts-mode.git")
+      (synopsis "Major mode for Clojure code backed up by Tree-sitter")
+      (description "\
+clojure-ts-mode is an Emacs major mode that provides font-lock (syntax
+highlighting), indentation, and navigation support for the Clojure(Script)
+programming language, powered by the tree-sitter-clojure tree-sitter grammar."))))
+
+(define-public emacs-combobulate
+  (let ((commit "2e11f429349a4ac1f211dd612d8686081bc7c320")
+        (revision "0"))
+    (package
+      (name "emacs-combobulate")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mickeynp/combobulate.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1ggrpv5j23m65cm3fjkr3irb9aypxf2hz0jjc5sbvsnfc3iwv601"))))
+      (build-system emacs-build-system)
+      (arguments (list #:emacs emacs-next-pgtk))
+      (license license:gpl3+)
+      (home-page "https://github.com/mickeynp/combobulate.git")
+      (synopsis "Structured Editing and Navigation in Emacs")
+      (description "Combobulate is a package that adds structured editing and movement to a wide
+range of programming languages. Unlike most programming major modes that use
+error-prone imperative code and regular expressions to determine what's what
+in your code, Combobulate uses Emacs 29's tree-sitter library. Tree-sitter
+maintains a concrete syntax tree of your code; it gives Combobulate absolute
+clarity of all aspects of your code, enabling more correct movement and
+editing than you would otherwise have."))))

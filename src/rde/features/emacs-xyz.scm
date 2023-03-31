@@ -66,6 +66,8 @@
             feature-emacs-comint
             feature-emacs-help
             feature-emacs-shell
+            feature-emacs-browse-url
+            feature-emacs-tab-bar
 
             ;; Completion
             feature-emacs-completion
@@ -140,6 +142,10 @@
 ;; removed and done by extending imenu with feature category information.
 (define --UI--)
 
+;; TODO: Take a look at nano-emacs and maybe incorporate some ideas from it
+;; https://github.com/rougier/nano-emacs
+;; MAYBE: Use doom-nano-modeline
+;; https://github.com/ronisbr/doom-nano-modeline
 (define* (feature-emacs-appearance
           #:key
           (margin 8)
@@ -1029,7 +1035,8 @@ accordingly set its appearance with DISPLAY-TIME-24HR? and DISPLAY-TIME-DATE?."
              (t (funcall command)))))
 
         ,@(if (get-value 'emacs-consult-initial-narrowing? config)
-              '((with-eval-after-load 'tramp
+              '((autoload 'tramp-list-remote-buffers "tramp-cmd")
+                (with-eval-after-load 'tramp
                   (defvar rde-tramp-buffer-source
                     `(:name "Tramp"
                       :narrow ?r
@@ -1175,8 +1182,7 @@ path /sudo:HOST:/path if the user in sudoers.")))
          (setq delete-by-moving-to-trash nil)
          (setq dired-recursive-deletes 'always)
          (setq dired-clean-confirm-killing-deleted-buffers nil)
-         (setq dired-recursive-copies 'always)
-         (setq dired-deletion-confirmer 'y-or-n-p))
+         (setq dired-recursive-copies 'always))
 
         (with-eval-after-load 'dired-rsync
           (setq dired-rsync-options
@@ -1437,6 +1443,308 @@ process-in-a-buffer derived packages like shell, REPLs, etc."
                   (add-to-list 'project-switch-commands
                                '(project-shell "Start an inferior shell"))))
               '())))))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . #t)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-browse-url
+          #:key
+          (extra-url-mappings '()))
+  "Configure and extend the browse-url library to enhance the handling of URLs
+to browsers in Emacs.  You can set URL mappings to rewrite URLs in Emacs
+buffers, open sites with cookies, make sure URLs use HTTPS, among other."
+  (ensure-pred elisp-config? extra-url-mappings)
+
+  (define emacs-f-name 'browse-url)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile
+         (require 'cl-lib))
+        (defgroup rde-browse-url nil
+          "Generic utilities to enhance `browse-url'."
+          :group 'rde)
+        (defcustom rde-browse-url-mappings '()
+          "URL mapping alist.
+It has the form (SERVICE . ALT) where SERVICE is the original hostname of
+the service and ALT is the alternative service host to rewrite urls to, and
+viceversa."
+          :type 'list
+          :group 'rde-browse-url)
+
+        (cl-defun rde-browse-url--transform-url (url &key (alt t))
+          "Transform URL to its alternative in `rde-browse-url-mappings'.
+If ALT is non-nil, URL is assumed to be an alternative so the logic is reversed."
+          (string-match (rx (group (+ any) "://" (* (not "/"))) (* any)) url)
+          (if-let* ((service-url (match-string 1 url))
+                    (mapping (if alt
+                                 (cl-rassoc service-url rde-browse-url-mappings
+                                            :test 'string=)
+                               (assoc-string service-url
+                                             rde-browse-url-mappings))))
+              (if alt
+                  (replace-regexp-in-string
+                   service-url
+                   (car mapping)
+                   url)
+                (replace-regexp-in-string
+                 service-url
+                 (cdr mapping)
+                 url))
+            url))
+
+        (defun rde-browse-url-bookmark-make-record (url title)
+          "Create a bookmark record from a browser buffer with URL and TITLE."
+          (let* ((defaults (delq nil (list title url)))
+                 (bookmark
+                  `(,title
+                    ,@(bookmark-make-record-default 'no-file)
+                    ,(cons 'browser-url url)
+                    ,(cons 'filename url)
+                    ,(cons 'handler 'rde-browse-url-bookmark-jump)
+                    ,(cons 'defaults defaults))))
+            bookmark))
+
+        (defun rde-browse-url-bookmark-jump (bookmark)
+          "Jump to BOOKMARK in the default browser."
+          (let ((location (bookmark-prop-get bookmark 'browser-url)))
+            (browse-url-default-browser location)))
+
+        (defun rde-browse-url-alt-bookmark-jump (bookmark)
+          "Jump to BOOKMARK in an alternative browser."
+          (cl-letf (((symbol-function 'browse-url-can-use-xdg-open) 'ignore))
+            (rde-browse-url-bookmark-jump bookmark)))
+
+        ,@(if (get-value 'emacs-embark config)
+              '((defun rde-browse-url-open-with-cookies (cookies &optional url)
+                  "Open URL with COOKIES in corresponding external application."
+                  (interactive "\nsURL: ")
+                  (let ((url-request-extra-headers
+                         `(("Cookie"
+                            ,(cl-loop for (field cookie) in cookies
+                                      collect (format " %s=%s;" field cookie)
+                                      into headers
+                                      finally (return (string-join headers))))))
+                        (filename (concat temporary-file-directory
+                                          (car (last (split-string url "/"))))))
+                    (unless (file-exists-p filename)
+                      (with-current-buffer
+                          (url-retrieve-synchronously url t)
+                        (goto-char (point-min))
+                        (re-search-forward "^$")
+                        (forward-line 1)
+                        (delete-region (point) (point-min))
+                        (write-region (point-min) (point-max) filename)))
+                    (embark-open-externally filename)))
+
+                (with-eval-after-load 'embark
+                  (define-key embark-bookmark-map "c"
+                              'rde-browse-url-alt-bookmark-jump)))
+              '())
+
+        (defun rde-browse-url-add-scheme (fun url &rest args)
+          "Add https scheme to URL if missing and invoke FUN and ARGS with it."
+          (let ((link (if (string-match (rx bol (+ (in (?A . ?Z))) ":") url)
+                          url
+                        (concat "https:" url))))
+            (apply fun link args)))
+
+        (defun rde-browse-url-trace-url (fun url &rest args)
+          "Transform URL to its original form and invoke FUN and ARGS with it."
+          (let ((link (rde-browse-url--transform-url url)))
+            (apply fun link args)))
+
+        (setq rde-browse-url-mappings
+              (append
+               (list
+                ,@(if (get-value 'youtube-frontend config)
+                      `((cons "https://www.youtube.com"
+                              ,(get-value 'youtube-frontend config)))
+                      '())
+                ,@(if (get-value 'reddit-frontend config)
+                      `((cons "https://www.reddit.com"
+                              ,(get-value 'reddit-frontend config)))
+                      '())
+                ,@(if (get-value 'quora-frontend config)
+                      `((cons "https://quora.com"
+                              ,(get-value 'quora-frontend config)))
+                      '())
+                ,@(if (get-value 'twitter-frontend config)
+                      `((cons "https://twitter.com"
+                              ,(get-value 'twitter-frontend config)))
+                      '())
+                ,@(if (get-value 'imgur-frontend config)
+                      `((cons "https://imgur.com"
+                              ,(get-value 'imgur-frontend config)))
+                      '())
+                ,@(if (get-value 'google-frontend config)
+                      `((cons "https://www.google.com"
+                              ,(get-value 'google-frontend config)))
+                      '())
+                ,@(if (get-value 'medium-frontend config)
+                      `((cons "https://medium.com"
+                              ,(get-value 'medium-frontend config)))
+                      '()))
+               ',extra-url-mappings))
+        (advice-add 'browse-url-xdg-open :around 'rde-browse-url-add-scheme)
+        (with-eval-after-load 'browse-url
+          (setq browse-url-browser-function 'browse-url-xdg-open))))))
+
+  (feature
+   (name f-name)
+   (values `((,f-name . #t)))
+   (home-services-getter get-home-services)))
+
+(define* (feature-emacs-tab-bar
+          #:key
+          (modules-left '())
+          (modules-center '())
+          (modules-right '())
+          (tab-bar-format '(rde-tab-bar-format-left
+                            rde-tab-bar-format-center
+                            rde-tab-bar-format-right)))
+  "Configure the Emacs Tab Bar.  Add the appropriate formatters via
+TAB-BAR-FORMAT.  The default ones allow you to place \"modules\" (i.e. menu
+items constructed by the helper @code{make-rde-tab-bar-module}) arbitrarily
+on each side of the bar, but you can also include built-in formatters such as
+@code{tab-bar-format-tabs}.
+
+The examples below show different types of modules:
+
+@lisp
+(make-rde-tab-bar-module
+ :id 'text
+ :label \"My arbitrary text\")
+(make-rde-tab-bar-module
+ :id 'battery
+ :label 'battery-mode-line-string)
+(make-rde-tab-bar-module
+ :id 'notifications
+ :label '(:eval (rde-ednc--notify)))
+@end lisp"
+  (ensure-pred elisp-config? modules-left)
+  (ensure-pred elisp-config? modules-center)
+  (ensure-pred elisp-config? modules-right)
+  (ensure-pred list? tab-bar-format)
+
+  (define emacs-f-name 'tab-bar)
+  (define f-name (symbol-append 'emacs- emacs-f-name))
+
+  (define (get-home-services config)
+    "Return home services related to the Emacs Tab Bar."
+    (define emacs-all-the-icons (get-value 'emacs-all-the-icons config))
+
+    (list
+     (rde-elisp-configuration-service
+      emacs-f-name
+      config
+      `((eval-when-compile
+         (require 'cl-lib))
+        (defgroup rde-tab-bar nil
+          "Configure the tab bar via menu items."
+          :group 'rde)
+        (cl-defstruct rde-tab-bar-module id label help action)
+        (defcustom rde-tab-bar-modules-left '()
+          "List of modules on the left-hand side of the tab bar."
+          :type '(repeat rde-tab-bar-module)
+          :group 'rde-tab-bar)
+
+        (defcustom rde-tab-bar-modules-center '()
+          "List of modules in the center of the tab bar."
+          :type '(repeat rde-tab-bar-module)
+          :group 'rde-tab-bar)
+
+        (defcustom rde-tab-bar-modules-right '()
+          "List of modules on the right-hand side of the tab bar."
+          :type '(repeat rde-tab-bar-module)
+          :group 'rde-tab-bar)
+
+        (defun rde-tab-bar-build-formatter (modules)
+          "Build a tab bar formatter with MODULES."
+          (mapcar (lambda (item)
+                    (if (rde-tab-bar-module-p item)
+                        (let ((label (rde-tab-bar-module-label item)))
+                          `(,(rde-tab-bar-module-id item) menu-item
+                            ,(cond
+                              ((symbolp label)
+                               `(when (boundp ',label)
+                                  ,label))
+                              ((and (listp label) (equal (car label) :eval))
+                               `(format-mode-line ',label))
+                              (t label))
+                            ,(or (rde-tab-bar-module-action item) 'nil)
+                            ,@(when (rde-tab-bar-module-help item)
+                                `(:help ,(rde-tab-bar-module-help item)))))
+                      item))
+                  modules))
+
+        (defun rde-tab-bar-format-left ()
+          "Return modules for the left-hand side of the tab bar."
+          (rde-tab-bar-build-formatter rde-tab-bar-modules-left))
+
+        (defun rde-tab-bar-format-center ()
+          "Return modules for the center of the tab bar."
+          (let* ((modules (mapconcat
+                           (lambda (module)
+                             (let ((label (rde-tab-bar-module-label module)))
+                               (if (symbolp label)
+                                   (symbol-value label)
+                                 label)))
+                           rde-tab-bar-modules-center ""))
+                 (str (concat (propertize
+                               " " 'display
+                               `(space :align-to
+                                       (- center
+                                          ,(/ (length modules) 2.0)))))))
+            (cons
+             `(align-center menu-item ,str nil)
+             (rde-tab-bar-build-formatter rde-tab-bar-modules-center))))
+
+        (defun rde-tab-bar-format-right ()
+          "Return modules for the right-hand side of the tab bar."
+          (let* ((labels (mapconcat
+                          (lambda (module)
+                            (let ((label (rde-tab-bar-module-label module)))
+                              (if (symbolp label)
+                                  (symbol-value label)
+                                label)))
+                          rde-tab-bar-modules-right ""))
+                 (n-icons (cl-loop with nprops = 1
+                                   for i from 0 to (- (length labels) 1)
+                                   when (get-text-property
+                                         i 'rear-nonsticky labels)
+                                   do (cl-incf nprops)
+                                   finally (cl-return nprops)))
+                 (hpos (+ (length labels) n-icons))
+                 (str (propertize " " 'display
+                                  `(space :align-to (- right ,hpos)))))
+            (cons
+             `(align-right menu-item ,str nil)
+             (rde-tab-bar-build-formatter rde-tab-bar-modules-right))))
+
+        (tab-bar-mode)
+        ,@(if emacs-all-the-icons
+              `((eval-when-compile
+                 (require 'all-the-icons))
+                (setq rde-tab-bar-modules-left (list ,@modules-left))
+                (setq rde-tab-bar-modules-center (list ,@modules-center))
+                (setq rde-tab-bar-modules-right (list ,@modules-right)))
+              '())
+        (with-eval-after-load 'tab-bar
+          (setq tab-bar-format ',tab-bar-format)
+          (setq tab-bar-border nil)
+          (setq tab-bar-close-button-show nil)
+          (setq tab-bar-show t)))
+      #:elisp-packages (or (and=> emacs-all-the-icons list) '())
+      #:summary "Extensions to Emacs's Tab Bar"
+      #:commentary "Provide extensions to the Emacs Tab Bar, allowing you to \
+supply custom menu items in the form of modules.")))
 
   (feature
    (name f-name)
@@ -1785,6 +2093,9 @@ Annotations for completion candidates using marginalia."
           (emacs-vertico emacs-vertico)
           (completion-in-region? #t))
   "Configure vertico completion UI for GNU Emacs."
+  (ensure-pred file-like? emacs-vertico)
+  (ensure-pred boolean? completion-in-region?)
+
   (define emacs-f-name 'vertico)
   (define f-name (symbol-append 'emacs- emacs-f-name))
 
@@ -2401,6 +2712,8 @@ adjustments."
    (values `((,f-name . #t)))
    (home-services-getter get-home-services)))
 
+;; TODO: Migrate to beframe
+;; <https://git.sr.ht/~protesilaos/beframe/tree/main/item/beframe.el>
 (define* (feature-emacs-perspective
           #:key
           (emacs-perspective emacs-perspective)
@@ -2864,11 +3177,15 @@ Almost all other operations are covered by magit."
 
 (define* (feature-emacs-geiser
           #:key
-          (emacs-geiser emacs-geiser)
-          (emacs-geiser-guile emacs-geiser-guile))
+          (emacs-geiser emacs-geiser-latest)
+          (emacs-gider emacs-gider-latest)
+          (emacs-geiser-guile emacs-geiser-guile-latest)
+          (emacs-geiser-eros emacs-geiser-eros-latest))
   "Configure geiser for emacs."
   (ensure-pred file-like? emacs-geiser)
+  (ensure-pred file-like? emacs-gider)
   (ensure-pred file-like? emacs-geiser-guile)
+  (ensure-pred file-like? emacs-geiser-eros)
 
   (define emacs-f-name 'geiser)
   (define f-name (symbol-append 'emacs- emacs-f-name))
@@ -2885,10 +3202,14 @@ Almost all other operations are covered by magit."
                 (expand-file-name "emacs/geiser_history"
                                   (or (xdg-cache-home) "~/.cache")))
           (setq geiser-repl-add-project-paths nil))
+        (with-eval-after-load 'geiser-mode
+          (geiser-eros-mode)
+          (gider-mode))
         (with-eval-after-load 'geiser-impl
           (setq geiser-default-implementation 'guile)
           (setq geiser-active-implementations '(guile))
           (setq geiser-implementations-alist '(((regexp "\\.scm$") guile))))
+
         ,@(if (get-value 'emacs-org config)
               '((with-eval-after-load 'org
                   (add-to-list 'org-structure-template-alist
@@ -2900,7 +3221,7 @@ Almost all other operations are covered by magit."
                         '((:results . "scalar")))))
               '()))
       #:elisp-packages
-      (list emacs-geiser emacs-geiser-guile)
+      (list emacs-geiser emacs-geiser-guile emacs-geiser-eros emacs-gider)
       #:summary "\
 Scheme interpreter, giving access to a REPL and live metadata."
       #:commentary "\
@@ -2913,7 +3234,7 @@ Geiser is configured for the Guile scheme implementation.")))
 
 (define* (feature-emacs-guix
           #:key
-          (emacs-guix emacs-guix)
+          (emacs-guix emacs-guix-latest)
           (guix-key "s-G")
           (guix-directory "~/work/gnu/guix"))
   "Configure emacs for guix usage and development."
@@ -3244,14 +3565,14 @@ built-in help that provides much more contextual information."
      (rde-elisp-configuration-service
       emacs-f-name
       config
-      `((let ((map help-map))
+      `((let ((map global-map))
           (define-key map (vector 'remap 'describe-function) 'helpful-callable)
           (define-key map (vector 'remap 'describe-variable) 'helpful-variable)
           (define-key map (vector 'remap 'describe-key) 'helpful-key)
           (define-key map (vector 'remap 'describe-command) 'helpful-command)
           (define-key map (vector 'Info-goto-emacs-command-node)
-            'helpful-function)
-          (define-key map "o" 'helpful-at-point))
+            'helpful-function))
+        (define-key help-map "o" 'helpful-at-point)
         ,@(if (get-value 'emacs-embark config)
               '((with-eval-after-load 'embark
                   (define-key embark-symbol-map (vector 'remap 'describe-symbol)
@@ -3476,6 +3797,7 @@ Start an unlimited search at `point-min' otherwise."
                  (add-hook 'org-mode-hook 'org-make-toc-mode))
                '())
 
+         ;; TODO: Move to feature notmuch
          (with-eval-after-load 'notmuch (require 'ol-notmuch))
 
          (add-hook 'org-mode-hook 'org-appear-mode)
@@ -3663,7 +3985,7 @@ the node, relative to `org-roam-directory'."
          (org-roam-db-autosync-enable)
 
          ,@(if org-roam-capture-templates
-               `((setq org-roam-capture-templates org-roam-capture-templates))
+               `((setq org-roam-capture-templates ',org-roam-capture-templates))
                '())
 
          ,@(if org-roam-dailies-directory
@@ -4467,26 +4789,28 @@ retrieve information about tracks via EMMS-INFO-METHOD."
          ,@(if emacs-ytdl
              '((eval-when-compile
                  (require 'ytdl))
-               (defun rde-emms-download-track ()
-                 "Download EMMS track at point using `ytdl'."
-                 (interactive)
-                 (emms-playlist-ensure-playlist-buffer)
-                 (with-current-emms-playlist
-                   (let* ((dl-type (ytdl--get-download-type))
-                          (track (emms-playlist-track-at))
-                          (title (emms-track-get track 'info-title))
-                          (source (emms-track-get track 'name)))
-                     (if (equal (emms-track-get track 'type) 'url)
-                         (ytdl--download-async
-                          source
-                          (expand-file-name
-                           title (ytdl--eval-field (nth 1 dl-type)))
-                          (ytdl--eval-list (ytdl--eval-field (nth 2 dl-type)))
-                          'ignore
-                          (car dl-type))
-                       (error "Track `%s' is not a remote track to download"
-                              title)))))
-               (with-eval-after-load 'emms
+
+               (with-eval-after-load 'emms-playlist-mode
+                 (defun rde-emms-download-track ()
+                   "Download EMMS track at point using `ytdl'."
+                   (interactive)
+                   (emms-playlist-ensure-playlist-buffer)
+                   (with-current-emms-playlist
+                     (let* ((dl-type (ytdl--get-download-type))
+                            (track (emms-playlist-track-at))
+                            (title (emms-track-get track 'info-title))
+                            (source (emms-track-get track 'name)))
+                       (if (equal (emms-track-get track 'type) 'url)
+                           (ytdl--download-async
+                            source
+                            (expand-file-name
+                             title (ytdl--eval-field (nth 1 dl-type)))
+                            (ytdl--eval-list
+                             (ytdl--eval-field (nth 2 dl-type)))
+                            'ignore
+                            (car dl-type))
+                         (error "Track `%s' is not a remote track to download"
+                                title)))))
                  (define-key emms-playlist-mode-map "m"
                    'rde-emms-download-track)))
              '())
@@ -4515,10 +4839,9 @@ retrieve information about tracks via EMMS-INFO-METHOD."
            (define-key map "a" 'rde-emms-seek-to-beginning))
 
          (with-eval-after-load 'emms
-           (eval-when-compile
-            (require 'emms-browser))
            (require 'emms-setup)
            (require 'xdg)
+           (require 'env)
            (require ',emms-info-method)
 
            ,@(if (get-value 'mpv config)
@@ -4530,28 +4853,24 @@ retrieve information about tracks via EMMS-INFO-METHOD."
                                 "--force-window=no"))
                  '())
 
-           (emms-browser-make-filter
-            "all-files" (emms-browser-filter-only-type 'file))
-           (emms-browser-make-filter
-            "last-week" (emms-browser-filter-only-recent 7))
-
-           (let ((mp3-function (assoc "mp3"
-                                      emms-tag-editor-tagfile-functions)))
+           (with-eval-after-load 'emms-tag-editor
+             (let ((mp3-function (assoc "mp3"
+                                        emms-tag-editor-tagfile-functions)))
+               (add-to-list
+                'emms-tag-editor-tagfile-functions
+                `("aac" ,(cadr mp3-function) ,(caddr mp3-function))))
              (add-to-list
               'emms-tag-editor-tagfile-functions
-              `("aac" ,(cadr mp3-function) ,(caddr mp3-function))))
-           (add-to-list
-            'emms-tag-editor-tagfile-functions
-            '("m4a" ,atomicparsley-bin
-              ((info-artist . "--artist")
-               (info-title . "--title")
-               (info-album . "--album")
-               (info-tracknumber . "--tracknum")
-               (info-year . "--year")
-               (info-genre . "--genre")
-               (info-note . "--comment")
-               (info-albumartist . "--albumArtist")
-               (info-composer . "--composer"))))
+              '("m4a" ,atomicparsley-bin
+                ((info-artist . "--artist")
+                 (info-title . "--title")
+                 (info-album . "--album")
+                 (info-tracknumber . "--tracknum")
+                 (info-year . "--year")
+                 (info-genre . "--genre")
+                 (info-note . "--comment")
+                 (info-albumartist . "--albumArtist")
+                 (info-composer . "--composer")))))
 
            (setq emms-playlist-buffer-name "*EMMS Playlist*")
            (setq emms-playlist-mode-center-when-go t)
@@ -4559,13 +4878,20 @@ retrieve information about tracks via EMMS-INFO-METHOD."
                  (expand-file-name "emacs/emms-history"
                                    (or (xdg-cache-home) "~/.cache")))
            (setq emms-seek-seconds 15)
-           (setq emms-source-file-default-directory ,music-dir)
+           (setq emms-source-file-default-directory
+                 (substitute-env-vars ,music-dir))
            (setq emms-repeat-playlist t)
            (setq emms-info-functions '(,emms-info-method))
            (setq emms-mode-line-format "%s")
            (setq emms-mode-line-icon-enabled-p nil)
 
            (with-eval-after-load 'emms-browser
+             (eval-when-compile
+              (require 'emms-browser))
+             (emms-browser-make-filter
+              "all-files" (emms-browser-filter-only-type 'file))
+             (emms-browser-make-filter
+              "last-week" (emms-browser-filter-only-recent 7))
              (setq emms-browser-covers 'emms-browser-cache-thumbnail-async)
              (setq emms-browser-switch-to-playlist-on-add t)
              (setq emms-browser-thumbnail-small-size 64)
@@ -4586,11 +4912,13 @@ System."))))
           #:key
           (emacs-pulseaudio-control emacs-pulseaudio-control)
           (volume-step "5%")
-          (display-volume? #f))
+          (display-volume? #f)
+          (pulseaudio-key "v"))
   "Configure pulseaudio-control for PulseAudio integration in Emacs."
   (ensure-pred file-like? emacs-pulseaudio-control)
   (ensure-pred string? volume-step)
   (ensure-pred boolean? display-volume?)
+  (ensure-pred string? pulseaudio-key)
 
   (define emacs-f-name 'pulseaudio-control)
   (define f-name (symbol-append 'emacs emacs-f-name))
@@ -4608,9 +4936,11 @@ System."))))
        (rde-elisp-configuration-service
         emacs-f-name
         config
-        `((autoload 'pulseaudio-control-default-keybindings
-                    "pulseaudio-control")
-          (pulseaudio-control-default-keybindings)
+        `((with-eval-after-load 'rde-keymaps
+            (define-key rde-app-map (kbd ,pulseaudio-key) 'pulseaudio-control-map))
+          ,@(if display-volume?
+                '((add-hook 'after-init-hook 'pulseaudio-control-display-mode))
+                '())
           (with-eval-after-load 'pulseaudio-control
             (define-key pulseaudio-control-map "L"
               'pulseaudio-control-toggle-sink-input-mute-by-index)
@@ -4640,10 +4970,7 @@ System."))))
             (setq pulseaudio-control-volume-step ,volume-step)
             (setq pulseaudio-control-volume-verbose nil)
             (pulseaudio-control-default-sink-mode)
-            (pulseaudio-control-default-source-mode)
-            ,@(if display-volume?
-                  '((pulseaudio-control-display-mode))
-                  '())))
+            (pulseaudio-control-default-source-mode)))
         #:elisp-packages (append (list emacs-pulseaudio-control)
                                  (or (and=> emacs-all-the-icons list) '()))))))
 

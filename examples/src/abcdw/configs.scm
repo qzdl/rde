@@ -30,6 +30,7 @@
 
   #:use-module (gnu packages)
   #:use-module (rde packages)
+  #:use-module (rde packages aspell) ; needed for strings->packages
 
   #:use-module (guix gexp)
   #:use-module (guix inferior)
@@ -65,6 +66,19 @@
    'emacs-extra-packages
    home-emacs-service-type
    (home-emacs-extension
+    (init-el
+     `((with-eval-after-load 'org
+         (setq org-use-speed-commands t)
+         (define-key org-mode-map (kbd "M-o")
+           (lambda ()
+             (interactive)
+             (org-end-of-meta-data t))))
+       (with-eval-after-load 'simple
+         (setq-default display-fill-column-indicator-column 80)
+         (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode))
+       (setq copyright-names-regexp
+             (format "%s <%s>" user-full-name user-mail-address))
+       (add-hook 'after-save-hook (lambda () (copyright-update nil nil)))))
     (elisp-packages
      (append
       (strings->packages
@@ -98,7 +112,7 @@
 
      "utox" "qtox" "jami"
 
-     "alsa-utils" "yt-dlp" "imv" "cozy"
+     "alsa-utils" "yt-dlp" "cozy"
      "pavucontrol" "wev"
      "imagemagick"
      "obs" "obs-wlrobs"
@@ -314,17 +328,22 @@
    (feature-emacs-time)
    (feature-emacs-spelling
     #:spelling-program (@ (gnu packages hunspell) hunspell)
-    #:spelling-dictionaries (strings->packages
-                             "hunspell-dict-en"
-                             "hunspell-dict-ru"))
+    #:spelling-dictionaries
+    (list
+     (@ (gnu packages hunspell) hunspell-dict-en)
+     (@ (rde packages aspell) hunspell-dict-ru)))
    (feature-emacs-git
     #:project-directory "~/work")
    (feature-emacs-org
     #:org-directory "~/work/abcdw/private"
     #:org-indent? #f
     #:org-capture-templates
-    `(("t" "Todo" entry (file+headline "" "Tasks") ;; org-default-notes-file
-       "* TODO %?\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t)))
+    ;; https://libreddit.tiekoetter.com/r/orgmode/comments/gc76l3/org_capture_inside_notmuch/
+    `(("r" "Reply" entry (file+headline "" "Tasks")
+       "* TODO Reply %:subject %?\nSCHEDULED: %t\n%U\n%a\n"
+       :immediate-finish t)
+      ("t" "Todo" entry (file+headline "" "Tasks") ;; org-default-notes-file
+       "* TODO %?\nSCHEDULED: %t\n%a\n" :clock-in t :clock-resume t)))
    (feature-emacs-org-roam
     ;; TODO: Rewrite to states
     #:org-roam-directory "~/work/abcdw/notes/notes")
@@ -352,7 +371,7 @@ subject:/home:/) and tag:new}\"'")
      '(:name "Guix Home Inbox" :key "H" :query "tag:guix-home and tag:unread")
      '(:name "RDE Inbox"       :key "R"
              :query "(to:/rde/ or cc:/rde/) and tag:unread")
-
+     '(:name "New TODO" :query "tag:todo or (tag:inbox and not tag:unread)" :key "T")
      ;; '(:name "Watching" :query "thread:{tag:watch} and tag:unread" :key "tw")
      %rde-notmuch-saved-searches))
 
@@ -452,7 +471,6 @@ G9.lc/f.U9QxNW1.2MZdV1KzW6uMJ0t23KKoN/")
    (append
     (strings->packages
      "icecat"
-     "ungoogled-chromium-wayland" "ublock-origin-chromium"
      "imv" "wev"
      "make"
      "adwaita-icon-theme" "gnome-themes-extra"

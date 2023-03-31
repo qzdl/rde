@@ -6,6 +6,7 @@
   #:use-module (rde features docker)
   #:use-module (rde features virtualization)
   #:use-module (rde features finance)
+  #:use-module (rde features image-viewers)
   #:use-module (rde features markup)
   #:use-module (rde features video)
   #:use-module (rde features bittorrent)
@@ -41,6 +42,7 @@
    (feature-ungoogled-chromium
     #:default-browser? #t)
    (feature-ledger)
+   (feature-imv)
    (feature-mpv
     #:extra-mpv-conf '((speed . 1.61)))))
 
@@ -123,6 +125,7 @@
 
    (feature-emacs-tramp)
    (feature-emacs-project)
+   (feature-compile)
    (feature-emacs-perspective)
    (feature-emacs-input-methods)
    (feature-emacs-which-key)
