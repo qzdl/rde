@@ -6224,26 +6224,27 @@ while from the archive; but I mean... [[id:0f7be177-127d-4476-9a0f-a1ed3a570400]
 :ID:       530fac5a-4f90-489a-83d8-69b1b75ab249
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2023-04-12 Wed 17:31]
 :END:
 
-***** TODO (require 'hyperbole)
+***** ... require
 :PROPERTIES:
 :ID:       03b4c561-6d9e-4c53-97ea-559dfbfc7eff
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-08-03 Wed 13:16]
+:UPDATED:  [2023-04-12 Wed 17:30]
 :END:
 #+begin_src emacs-lisp
-;;(require 'hyperbole) ;; TODO klink
+(require 'hyperbole)
 #+end_src
 
-***** {C-<mouse-2} hkey-either
+***** {C-<mouse-2} hkey-either                                                  :kbd:
 :PROPERTIES:
 :ID:       ccc12df3-8b40-4bec-937f-c28692f1fed4
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src emacs-lisp
-(define-key global-map (kbd "C-<down-mouse-2>") 'hkey-either)
+(define-key global-map (kbd "C-<mouse-2>") 'hkey-either)
 (define-key global-map (kbd "M-<return>") 'hkey-either)
 #+end_src
 
