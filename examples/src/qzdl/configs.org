@@ -9850,10 +9850,11 @@ see q
   "Add ID properties to all headlines in the current file which
 do not already have one."
   (interactive)
-  (org-map-entries (lambda (&rest r)
-                     (unless (org-id-get)
-                       (org-id-get-create)
-                       (org-set-property "ROAM_EXCLUDE" "t")))))
+  (when (file-exists-p (buffer-file-name (current-buffer)))
+    (org-map-entries (lambda (&rest r)
+                       (unless (org-id-get)
+                         (org-id-get-create)
+                         (org-set-property "ROAM_EXCLUDE" "t"))))))
 
 
 (add-hook 'org-mode-hook
@@ -9863,6 +9864,9 @@ do not already have one."
 
 (setq org-id-link-to-org-use-id t)
 #+end_src
+
+#+RESULTS:
+: t
 
 ***** org-mode-hook -> adaptive-wrap-prefix-mode
 :PROPERTIES:
@@ -10345,7 +10349,7 @@ a communication channel."
 :PROPERTIES:
 :ID:       8fbfdfd8-edfb-4f7d-a6ed-a1927aa1885a
 :CREATED:  [2022-04-22 Fri 11:56]
-:UPDATED:  [2022-11-08 Tue 12:16]
+:UPDATED:  [2023-04-04 Tue 18:37]
 :ROAM_EXCLUDE: t
 :END:
 
