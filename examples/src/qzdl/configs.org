@@ -4997,6 +4997,24 @@ body      *values you wish to transform*: a list; cons, proper,
 #+RESULTS:
 : qz/ensure-list
 
+**** save without hooks
+:PROPERTIES:
+:ID:       1cbecd4e-64c7-4692-a478-c7cb577a7b83
+:CREATED:  [2023-04-03 Mon 12:46]
+:UPDATED:  [2023-04-03 Mon 12:46]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref general
+(defun qz/save-no-hooks ()
+  (interactive)
+  (let ((before-save-hook nil))
+    (save-buffer)))
+#+end_src
+
+#+RESULTS:
+: qz/save-no-hooks
+
 **** TODO debug
 :PROPERTIES:
 :ID:       fe64fe7a-bb4c-4828-bb8b-5f263df8b3e9
