@@ -4338,12 +4338,26 @@ maximum [[id:6eb04531-fbcc-45da-86e9-499b48caeb8a][ergonomics]]
 :ID:       c8b38800-ee6c-499e-adba-359d0bd1afe5
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-10-21 Fri 12:03]
+:UPDATED:  [2023-04-12 Wed 17:34]
 :END:
 
 This is so core and unchanging that I put it in the RDE emacs config
 elisp, so even if my user config is fucked, I am not a helpless deer
 getting C-u and C-x mixed up; see [[id:d2fc9152-8683-46c1-9ef2-4ca84510bb49][(rde . config) emacs]]
+
+**** {C-s-k}           :: kill-buffer
+:PROPERTIES:
+:ID:       8a2d78b3-5926-4d90-acdd-2f0d0fc01d8c
+:CREATED:  [2023-04-12 Wed 17:34]
+:UPDATED:  [2023-04-12 Wed 17:51]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp
+(define-key global-map (kbd "C-s-k") 'kill-this-buffer)
+#+end_src
+
+#+RESULTS:
+: kill-this-buffer
 
 **** {C-z}             :: newline-above
 :PROPERTIES:
