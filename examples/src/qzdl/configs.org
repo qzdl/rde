@@ -6251,6 +6251,18 @@ while from the archive; but I mean... [[id:0f7be177-127d-4476-9a0f-a1ed3a570400]
 #+RESULTS:
 : hkey-either
 
+**** dogears
+:PROPERTIES:
+:ID:       8391d31e-023a-4c80-b19c-47fbb2def264
+:CREATED:  [2023-04-12 Wed 18:11]
+:UPDATED:  [2023-04-12 Wed 18:11]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+(require 'dogears)
+#+end_src
+
 **** kubernetes
 :PROPERTIES:
 :ID:       97ae5500-35f5-43c9-b2cb-088159ae2f2b
