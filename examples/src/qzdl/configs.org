@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2023-04-12 Wed 18:05]
+:UPDATED:  [2023-04-12 Wed 18:13]
 :CREATED:  [2022-08-30 Tue 11:12]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :END:
@@ -7346,19 +7346,17 @@ fuck the speed my man; {M-x load-library RET ob-} is so annoying
 ****** library of babel
 :PROPERTIES:
 :ID:       922a7334-bfde-448a-bdf2-809f1b8eeb14
-:CREATED:  <2022-02-22 Tue 15:27>
+:CREATED:  [2021-11-29 Mon]
 :ROAM_EXCLUDE: t
 :END:
-CREATED: <2021-11-29 Mon
->
+
 ******* lob-ingest-files                                                   :var:func:
 :PROPERTIES:
 :ID:       05415208-95bf-4153-b65c-32e10112c582
-:CREATED:  <2022-02-22 Tue 15:27>
+:CREATED:  [2021-11-29 Mon]
 :ROAM_EXCLUDE: t
-:UPDATED:  [2023-03-21 Tue 17:16]
+:UPDATED:  [2023-04-12 Wed 18:13]
 :END:
-CREATED: <2021-11-29 Mon>
 
 
 #+begin_src emacs-lisp :noweb-ref roam :colnames '(count file)
@@ -7407,10 +7405,10 @@ CREATED: <2021-11-29 Mon>
 ******* choose babel block                                                     :func:
 :PROPERTIES:
 :ID:       d8ebb517-f247-48a2-af5f-08a3d6c6c3ae
-:CREATED:  <2022-02-22 Tue 15:27>
+:CREATED: [2021-11-29 Mon]
 :ROAM_EXCLUDE: t
+:UPDATED:  [2023-04-12 Wed 18:08]
 :END:
-CREATED: <2021-11-29 Mo>n
 
 #+begin_src emacs-lisp :noweb-ref org
 (defun qz/org-babel-choose-block (&optional lob)
@@ -7420,10 +7418,11 @@ might honestly be better to generate `yas' template when we load
 blocks with `qz/org-babel-do-lob-ingest-files', but I've never used
 yas so idk
 
-use a prefix arg to shortcut (org-table-get-constant \"bonk\"
+use a prefix arg to shortcut (org-table-get-constant \"bonk\")
 "
   (interactive)
-  (message "prefix: %s" (list current-prefix-arg prefix-arg lob))
+  ;; HACK I don't understand prefix / current-prefix
+  ;; (message "prefix: %s" (list current-prefix-arg prefix-arg lob))
   (let ((lob (or lob
                  (intern (completing-read
                           "lob: " (mapcar 'car org-babel-library-of-babel))))))
@@ -7554,10 +7553,10 @@ to improve:
 ******* {M-l} bind lob-choose-babel-block to insert convention                  :kbd:
 :PROPERTIES:
 :ID:       7f29a561-60a0-4c5e-9004-ba32910ab0ef
-:CREATED:  <2022-02-22 Tue 15:27>
+:CREATED: [2021-11-29 Mon]
+:UPDATED:  [2023-04-12 Wed 18:09]
 :ROAM_EXCLUDE: t
 :END:
-CREATED: <2021-11-29 Mon>
 
 #+begin_src emacs-lisp :noweb-ref org
 (define-key org-babel-map (kbd "M-l") 'qz/org-babel-choose-block)
@@ -7569,10 +7568,10 @@ CREATED: <2021-11-29 Mon>
 ******* {M-g} bind lob-goto-named-src-block to insert convention                :kbd:
 :PROPERTIES:
 :ID:       fb0c5f97-b758-43fe-85a0-a2fb2514df84
-:CREATED:  <2022-02-22 Tue 15:27>
+:CREATED:  [2021-11-29 Mon]
+:UPDATED:  [2023-04-12 Wed 18:09]
 :ROAM_EXCLUDE: t
 :END:
-CREATED: <2021-11-29 Mon>
 
 #+begin_src emacs-lisp :noweb-ref org
 (define-key org-babel-map (kbd "M-l") 'qz/org-babel-choose-block)
@@ -9993,10 +9992,10 @@ I'm using tags and auto-tags rather sporadically
 ***** org-tag-alist                                                             :var:
 :PROPERTIES:
 :ID:       21abbf73-43fb-4bc4-a5fb-53e7dc0e6345
-:CREATED:  <2022-02-22 Tue 15:27>
+:CREATED:  [2021-12-07 Tue 14:13]
 :ROAM_EXCLUDE: t
+:UPDATED:  [2023-04-12 Wed 18:13]
 :END:
-CREATED: <2021-12-07 Tue 14:13>
 
 #+begin_src emacs-lisp
 (setq org-tag-alist
@@ -10056,7 +10055,7 @@ check with (org-redisplay-inline-images)
 :PROPERTIES:
 :ID:       b531b1b9-17ef-406c-9650-a04f7c669e5e
 :CREATED:  [2022-09-29 Thu 13:14]
-:UPDATED:  [2023-02-19 Sun 16:31]
+:UPDATED:  [2023-04-12 Wed 17:38]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -10106,16 +10105,11 @@ check with (org-redisplay-inline-images)
   #+RESULTS:
   : org-cycle-hide-drawers
 
-#+end_src
-
-#+RESULTS:
-: org-cycle-hide-drawers
-
 ***** {M-x align tags}
 :PROPERTIES:
 :ID:       3db09afc-ea16-4ec4-883c-27ad7589f7f1
 :CREATED:  [2022-04-25 Mon 10:10]
-:UPDATED:  [2022-04-25 Mon 11:26]
+:UPDATED:  [2023-04-12 Wed 17:39]
 :ROAM_EXCLUDE: t
 :END:
 
