@@ -6314,11 +6314,14 @@ processing a lot"
 #+begin_src emacs-lisp :noweb-ref agenda :results drawer
 (setq qz/daily-title-regexp ".?[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}.?")
 
-(defun qz/agenda-daily-files-f ()
-  (seq-filter (lambda (s) (string-match qz/daily-title-regexp s))
-              org-agenda-files))
+(defun qz/agenda-daily-files-f (&optional k)
+  (let ((k 60))
+    (seq-take (sort (seq-filter (lambda (s) (string-match qz/daily-title-regexp s))
+                                org-agenda-files)
+                    'string-greaterp)
+              k)))
 
-;;(qz/agenda-daily-files-f)
+;;(sort (qz/agenda-daily-files-f) 'string-greaterp)
 #+end_src
 
 #+RESULTS:
