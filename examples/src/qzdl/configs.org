@@ -2739,6 +2739,7 @@ host	all	all	0.0.0.0/0       md5
    emacs-svg-clock
    emacs-consult-recoll
    emacs-bigquery-mode
+   emacs-dogears
    ;;
    ;; emacs-code-review    ; TODO qzdl pkg
    )
