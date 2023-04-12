@@ -11786,19 +11786,6 @@ PATH should be a topic that can be thrown at the man command."
 :ROAM_EXCLUDE: t
 :END:
 
-*** TODO reload
-:PROPERTIES:
-:ID:       ad6bd24a-ee5a-4ff1-a982-fe59aa1cd78e
-:CREATED:  [2022-11-08 Tue 12:06]
-:UPDATED:  [2022-11-08 Tue 12:07]
-:ROAM_EXCLUDE: t
-:END:
-
-#+begin_src emacs-lisp :noweb-ref reload :var file="/home/samuel/git/sys/rde/rde/examples/abcdw/configs.org"
-(require 'org)
-(org-babel-tangle-file file)
-#+end_src
-
 *** on/off
 :PROPERTIES:
 :ID:       47e85da5-f5ea-4f5c-b26a-a10c0b8fdd3c
