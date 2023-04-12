@@ -4526,11 +4526,11 @@ hmm, doesn't allow further input
 #+RESULTS:
 : org-store-link
 
-**** {s-TAB} | {s-C-i} :: dwim-fold
+**** {s-TAB} | {C-s-i} :: dwim-fold
 :PROPERTIES:
 :ID:       0c29ea9e-6cd2-43a5-8062-a8b8f557906a
 :CREATED:  [2022-10-05 Wed 15:41]
-:UPDATED:  [2022-11-18 Fri 19:46]
+:UPDATED:  [2023-04-12 Wed 17:50]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -4544,16 +4544,22 @@ dispatches on /received/ inputs; it won't capture 'horizontally' from
     - {C-i} is equivalent to {TAB}
 
 #+begin_src emacs-lisp
+(defun qz/mode-is-or-derives (mode)
+  (or (eq major-mode mode)
+      (derived-mode-p mode)))
+
+;;  (trace-function 'qz/mode-is-or-derives)
+
 (defun qz/dwim-fold ()
   (interactive)
-  (let* ((is-or-derives (lambda (mode)
-                          (or (eq major-mode mode)
-                              (derived-mode-p major-mode mode))))
-         (fold-fn
-          (cond ((funcall is-or-derives 'org-mode) 'qz/org-fold)
-                ((funcall is-or-derives 'magit-diff-mode) 'magit-section-cycle-diffs)
-                (t (message "no dwim path configured, honey")))))
+  (let ((fold-fn
+         (cond ((qz/mode-is-or-derives 'org-mode)
+                'qz/org-fold)
+               ((qz/mode-is-or-derives 'magit-mode)
+                'magit-section-cycle)
+               (t (message "no dwim path configured, honey")))))
     (when (symbolp fold-fn)
+      (message "dn: %s" fold-fn)
       (call-interactively fold-fn))))
 
 (define-key global-map (kbd "s-TAB") 'qz/dwim-fold)
@@ -4581,6 +4587,40 @@ intermediate movement is
 
 seems like lots of ways to move
 
+**** {C-s-u}           :: dwim-unfold
+:PROPERTIES:
+:ID:       ab36de5a-2dd8-430a-a94f-796f8c7b0376
+:CREATED:  [2023-03-02 Thu 12:21]
+:UPDATED:  [2023-04-12 Wed 17:38]
+:ROAM_EXCLUDE: t
+:END:
+
+- from :: [[id:8f062390-ab92-43d8-bcfd-d2babb287c07][[16:34] trying org-cycle]]
+
+#+begin_src emacs-lisp
+(defun qz/dwim-unfold ()
+  (interactive)
+  (let ((fold-fn
+         (cond ((qz/mode-is-or-derives 'org-mode) 'qz/org-unfold)
+               ((qz/mode-is-or-derives 'magit-mode) 'magit-section-cycle-global)
+               (t (message "no dwim path configured, honey")))))
+    (when (symbolp fold-fn)
+      (call-interactively fold-fn))))
+
+(defun qz/org-show-all ()
+  (interactive)
+  (run-hook-with-args 'org-pre-cycle-hook 'all)
+  (org-show-all '(headings blocks))
+  (setq org-cycle-global-status 'all)
+  (run-hook-with-args 'org-cycle-hook 'all))
+
+(defalias 'qz/org-unfold 'qz/org-show-all)
+
+(define-key global-map (kbd "C-s-u") 'qz/dwim-unfold)
+#+end_src
+
+#+RESULTS:
+: qz/dwim-unfold
 **** toggle
 :PROPERTIES:
 :ID:       c724ddea-fffe-4fba-a908-a6cb1b8fed3b
