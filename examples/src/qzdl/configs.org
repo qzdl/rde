@@ -9838,6 +9838,7 @@ prepend or to append."
 :PROPERTIES:
 :ID:       b07ff6f9-2e00-467c-98e8-c4c8697ce08f
 :CREATED:  <2022-02-23 Wed 09:17>
+:UPDATED:  [2023-04-12 Wed 17:09]
 :END:
 
 adapted for [[id:b33372ae-f731-4482-8e3a-0c5e986ac70a][org-roam]], the =ROAM_EXCLUDE= property is set, to reduce
@@ -10368,6 +10369,7 @@ a communication channel."
                       (or res
                           (completing-read "resolution: "
                                            '("1920x1080"
+                                             "3840x1080"
                                              "5120x1440")
                                            nil t)))))
     (when (y-or-n-p (format "exec ~%s~?" cmd))
