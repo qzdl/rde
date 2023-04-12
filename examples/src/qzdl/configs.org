@@ -6207,11 +6207,11 @@ while from the archive; but I mean... [[id:0f7be177-127d-4476-9a0f-a1ed3a570400]
 :PROPERTIES:
 :ID:       ad0691da-c0b2-464b-a031-021d50f6b258
 :CREATED:  [2022-10-26 Wed 11:50]
-:UPDATED:  [2022-10-26 Wed 11:51]
+:UPDATED:  [2023-04-06 Thu 11:27]
 :ROAM_EXCLUDE: t
 :END:
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :noweb-ref null
 (global-hi-lock-mode 1)
 #+end_src
 
