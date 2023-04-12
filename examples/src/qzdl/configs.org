@@ -7145,13 +7145,43 @@ The diary entry can contain `%s' which will be replaced with
 :UPDATED:  [2022-10-11 Tue 17:40]
 :ROAM_EXCLUDE: t
 :END:
-******
+****** url
 :PROPERTIES:
 :ID:       0968480e-2a2e-44bf-9641-e672e440aa3b
 :CREATED:  [2022-10-11 Tue 17:40]
-:UPDATED:  [2022-10-11 Tue 17:40]
+:UPDATED:  [2023-04-03 Mon 16:55]
 :ROAM_EXCLUDE: t
 :END:
+
+#+begin_src emacs-lisp :noweb-ref org
+(setq jiralib-url "https://goodscloud.atlassian.net")
+#+end_src
+
+#+RESULTS:
+: https://goodscloud.atlassian.net
+****** get-issues-by-board limit=999
+:PROPERTIES:
+:ID:       7ff6dd68-9f1e-418e-90f4-d1ac7b9e1774
+:CREATED:  [2023-04-04 Tue 16:02]
+:UPDATED:  [2023-04-04 Tue 16:02]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref org
+(defun qz/org-jira-get-issues-by-board (&optional board-id)
+  "Get list of ISSUES from agile board."
+  (interactive)
+  (let ((board-id (or board-id (cdr (org-jira-read-board)))))
+    (jiralib-get-board-issues
+     board-id
+     :callback org-jira-get-issue-list-callback
+     :limit 999
+     :query-params (org-jira--make-jql-queryparams board-id))))
+#+end_src
+
+#+RESULTS:
+: qz/org-jira-get-issues-by-board
+
 ***** [[id:0213945d-cba5-4dd0-812c-9c01d6f51148][babel]]
 :PROPERTIES:
 :ID:       5bfb32fe-c5fb-46cb-a5ed-fe819d17949e
