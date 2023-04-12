@@ -11828,7 +11828,50 @@ PATH should be a topic that can be thrown at the man command."
 #+RESULTS:
 | herd | start  | pipewire |      |
 | sudo | rfkill | block    | wifi |
+*** docker-passthrough
+:PROPERTIES:
+:ID:       c1f73c07-9941-4d4e-b288-d6047888ab7d
+:CREATED:  [2023-04-03 Mon 13:05]
+:UPDATED:  [2023-04-03 Mon 13:05]
+:ROAM_EXCLUDE: t
+:END:
+**** TODO gcloud-auth
+:PROPERTIES:
+:ID:       da849b17-a219-4271-b724-fdaea774478d
+:CREATED:  [2023-04-03 Mon 13:05]
+:UPDATED:  [2023-04-03 Mon 13:05]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src shell :tangle ~/.local/bin/gcloud-auth
+#!/usr/bin/env sh
 
+eval "docker run --rm --volumes-from gcloud-config gcr.io/google.com/cloudsdktool/google-cloud-cli gcloud auth login"
+#+end_src
+**** gcloud
+:PROPERTIES:
+:ID:       09a964e2-400a-4fd0-b379-d5acf0e1933f
+:CREATED:  [2023-04-03 Mon 13:05]
+:UPDATED:  [2023-04-03 Mon 13:05]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src shell :tangle ~/.local/bin/gcloud
+#!/usr/bin/env sh
+
+eval "docker run --rm --volumes-from gcloud-config gcr.io/google.com/cloudsdktool/google-cloud-cli gcloud" "$@"
+#+end_src
+**** bq
+:PROPERTIES:
+:ID:       13367261-6c04-4004-8a8b-45a5323035cc
+:CREATED:  [2023-04-03 Mon 13:05]
+:UPDATED:  [2023-04-03 Mon 13:05]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src shell :tangle ~/.local/bin/bq
+#!/usr/bin/env sh
+
+eval "docker run --rm --volumes-from gcloud-config gcr.io/google.com/cloudsdktool/google-cloud-cli bq" "$@"
+#+end_src
 * Footnotes
 :PROPERTIES:
 :ID:       476ef762-1350-4afa-a8ad-2cd3e42eb730
