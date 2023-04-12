@@ -7559,13 +7559,13 @@ CREATED: <2021-11-29 Mon>
 :PROPERTIES:
 :ID:       3ed48629-8f96-4dfe-9cc8-894cfb2920c0
 :CREATED:  [2022-06-21 Tue 23:58]
-:UPDATED:  [2022-08-29 Mon 10:19]
+:UPDATED:  [2023-04-12 Wed 17:18]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src emacs-lisp :noweb-ref org
 (defun qz/to-shell (command)
-  (interactive) ;; TODO how to interactive bind to `command'??
+  (interactive)
   (with-current-buffer (vterm "*to-shell*")
     (mapc
      (lambda (c)
@@ -7578,12 +7578,15 @@ CREATED: <2021-11-29 Mon>
   (interactive)
   (s-split
    "[\n]"
-   (kill-new (nth 6 (car ;; lspec
-                     (cdr (car
-                           (save-excursion
-                             (when-let ((head (org-babel-where-is-src-block-head)))
-                               (goto-char head))
-                             (org-babel-tangle-single-block 1 t)))))))))
+   (let ((src
+          (nth 6 (car ;; lspec
+                  (cdr (car
+                        (save-excursion
+                          (when-let ((head (org-babel-where-is-src-block-head)))
+                            (goto-char head))
+                          (org-babel-tangle-single-block 1 t))))))))
+     (kill-new src)
+     src)))
 
 (defun qz/shell-current-src-block ()
   (interactive)
