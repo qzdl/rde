@@ -6544,7 +6544,10 @@ get a list of `TODO' entries, from daily files, ordered by date (from filename/c
 (when (not (boundp 'org-agenda-custom-commands))
   (setq org-agenda-custom-commands nil))
 
-(require 'org-roam)
+(when (not (boundp 'org-agenda-custom-commands))
+  (setq org-roam-directory "~/life/roam"))
+;; TODO why require this? because of org-roam-directory?
+;(require 'org-roam)
 
 ;; (message "agenda: setting custom commands\n%s" org-agenda-custom-commands)
 
