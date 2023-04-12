@@ -7120,6 +7120,24 @@ The diary entry can contain `%s' which will be replaced with
 
 #+RESULTS:
 : qz/diary-sunset
+***** clock
+:PROPERTIES:
+:ID:       d4dca377-556a-4783-9ad2-7eac26cece41
+:CREATED:  [2023-04-03 Mon 12:17]
+:UPDATED:  [2023-04-03 Mon 12:17]
+:ROAM_EXCLUDE: t
+:END:
+****** org-clock-idle-time
+:PROPERTIES:
+:ID:       6cd9b9aa-3834-421c-a4ca-3451613479ce
+:CREATED:  [2023-04-03 Mon 12:17]
+:UPDATED:  [2023-04-03 Mon 12:17]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb-ref org
+(setq org-clock-idle-time 15)
+
+#+end_src
 ***** jira
 :PROPERTIES:
 :ID:       5fd74f4a-26f8-40d8-9947-01927e0f06ed
