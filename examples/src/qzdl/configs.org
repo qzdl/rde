@@ -2738,6 +2738,7 @@ host	all	all	0.0.0.0/0       md5
    emacs-ox-slack
    emacs-svg-clock
    emacs-consult-recoll
+   emacs-bigquery-mode
    ;;
    ;; emacs-code-review    ; TODO qzdl pkg
    )
