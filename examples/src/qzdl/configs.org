@@ -4231,10 +4231,23 @@ buffer are offered."
 ;;                 (funcall-interactively 'org-global-cycle '(4)))))
 
 (defun qz/org-fold ()
-  "go to default opening mode -- see `org-startup-folded'"
+  "go to default opening mode -- see `org-startup-folded'
+
+when prefix arg single,    fold to current level.
+when prefix arg numerical, fold to given level.
+when prefix arg nil,       fold to all levels."
   (interactive)
-  (let ((prefix-arg current-prefix-arg))
-    (funcall-interactively 'org-content (or current-prefix-arg 9999))))
+  (let ((prefix-arg
+         (if current-prefix-arg
+             (if (equal '(4) current-prefix-arg)
+                 ;; with C-u prefix, reveal sibling-level detail
+                 (org-outline-level)
+               current-prefix-arg)
+           ;; by default, reveal all
+           9999)))
+    ;; HACK I don't understand prefix / current-prefix
+    (message "prefix: %s" (list current-prefix-arg prefix-arg))
+    (funcall-interactively 'org-content prefix-arg)))
 
 
 ;; current subtree
