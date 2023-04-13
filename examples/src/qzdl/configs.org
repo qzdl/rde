@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2023-04-13 Thu 17:27]
+:UPDATED:  [2023-04-13 Thu 17:30]
 :CREATED:  [2022-08-30 Tue 11:12]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :END:
@@ -4019,7 +4019,7 @@ nil
 :ID:       a2e3f5db-5cc5-4531-9c9d-470183f5e8aa
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-07-09 Sat 16:57]
+:UPDATED:  [2023-04-14 Fri 16:44]
 :END:
 
 #+begin_src emacs-lisp :noweb-ref org
@@ -4030,18 +4030,24 @@ nil
 ;;(setq qz/org-babel-indent-exclude-lang nil)
 ;;(setq qz/debug t)
 
-(defun qz/org-babel-indent-block (beg end &rest args)
-  (interactive "r")
-  (and qz/debug (message "qz/org-babel-indent-block: BEG %s END %s ARGS %s" beg end args))
+(defun qz/org-babel-indent-block ()
+  (interactive)
   (save-mark-and-excursion
-    (when (and (funcall-interactively 'org-babel-mark-block)
+    (when (and (call-interactively 'org-babel-mark-block)
                (not (seq-contains-p
                      qz/org-babel-indent-exclude-lang
                      (car (car (cdr (car (org-babel-tangle-single-block 1 t))))))))
       (call-interactively 'indent-region))))
 
+(defun qz/org-babel-indent-block-hook (beg end &rest args)
+  (interactive "r")
+  ;; (and qz/debug (message "qz/org-babel-indent-block: BEG %s END %s ARGS %s" beg end args))
+  (qz/org-babel-indent-block))
+
 (define-key org-mode-map
             (kbd "C-c C-v C-\\") 'qz/org-babel-indent-block)
+(define-key global-map
+            (kbd "C-M-|") 'qz/org-babel-indent-block)
 
 ;; NOTE: blocks default
 ;;(add-to-list 'org-ctrl-c-ctrl-c-hook 'qz/org-babel-indent-block)
@@ -4054,11 +4060,11 @@ nil
 ;; conclusion: use `advice' so as not to block standard org-mode
 ;; `{C-c C-c}' behaviour like with `org-ctrl-c-ctrl-c-hook'
 
-(qz/advice- org-babel-execute-src-block :before qz/org-babel-indent-block)
+(qz/advice- org-babel-execute-src-block :before qz/org-babel-indent-block-hook)
 #+end_src
 
 #+RESULTS:
-| qz/advice-enable--org-babel-execute-src-block--qz/org-babel-indent-block | qz/advice-disable--org-babel-execute-src-block--qz/org-babel-indent-block |
+| qz/advice-enable--org-babel-execute-src-block--qz/org-babel-indent-block-hook | qz/advice-disable--org-babel-execute-src-block--qz/org-babel-indent-block-hook |
 
 ******** org-babel-refresh-graphics
 :PROPERTIES:
@@ -11966,7 +11972,7 @@ eval "docker run --rm --volumes-from gcloud-config gcr.io/google.com/cloudsdktoo
 :ID:       476ef762-1350-4afa-a8ad-2cd3e42eb730
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2023-04-13 Thu 17:27]
+:UPDATED:  [2023-04-13 Thu 17:30]
 :END:
 
 [fn:4] as of [2022-10-05 Wed], [[id:93ad19fa-a4fe-48c8-81ac-42bd5e138af9][swaywm]]
