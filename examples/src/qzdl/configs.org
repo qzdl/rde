@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2023-04-12 Wed 18:13]
+:UPDATED:  [2023-04-13 Thu 17:27]
 :CREATED:  [2022-08-30 Tue 11:12]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :END:
@@ -4530,7 +4530,7 @@ hmm, doesn't allow further input
 :PROPERTIES:
 :ID:       0c29ea9e-6cd2-43a5-8062-a8b8f557906a
 :CREATED:  [2022-10-05 Wed 15:41]
-:UPDATED:  [2023-04-12 Wed 17:50]
+:UPDATED:  [2023-04-13 Thu 17:22]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -4544,9 +4544,9 @@ dispatches on /received/ inputs; it won't capture 'horizontally' from
     - {C-i} is equivalent to {TAB}
 
 #+begin_src emacs-lisp
-(defun qz/mode-is-or-derives (mode)
+(defun qz/mode-is-or-derives (mode &rest modes)
   (or (eq major-mode mode)
-      (derived-mode-p mode)))
+      (apply 'derived-mode-p mode modes)))
 
 ;;  (trace-function 'qz/mode-is-or-derives)
 
@@ -4557,6 +4557,13 @@ dispatches on /received/ inputs; it won't capture 'horizontally' from
                 'qz/org-fold)
                ((qz/mode-is-or-derives 'magit-mode)
                 'magit-section-cycle)
+               ((qz/mode-is-or-derives 'outline-mode
+                                       ;; .. elisp
+                                       'lisp-data-mode
+                                       ;; .. markdown
+                                       'text-mode
+                                       )
+                'outline-cycle)
                (t (message "no dwim path configured, honey")))))
     (when (symbolp fold-fn)
       (message "dn: %s" fold-fn)
@@ -4591,7 +4598,7 @@ seems like lots of ways to move
 :PROPERTIES:
 :ID:       ab36de5a-2dd8-430a-a94f-796f8c7b0376
 :CREATED:  [2023-03-02 Thu 12:21]
-:UPDATED:  [2023-04-12 Wed 17:38]
+:UPDATED:  [2023-04-13 Thu 14:36]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -4603,6 +4610,12 @@ seems like lots of ways to move
   (let ((fold-fn
          (cond ((qz/mode-is-or-derives 'org-mode) 'qz/org-unfold)
                ((qz/mode-is-or-derives 'magit-mode) 'magit-section-cycle-global)
+               ((qz/mode-is-or-derives 'outline-mode
+                                       ;; .. elisp
+                                       'lisp-data-mode
+                                       ;; .. markdown
+                                       'text-mode)
+                'outline-cycle-buffer)
                (t (message "no dwim path configured, honey")))))
     (when (symbolp fold-fn)
       (call-interactively fold-fn))))
@@ -11953,7 +11966,7 @@ eval "docker run --rm --volumes-from gcloud-config gcr.io/google.com/cloudsdktoo
 :ID:       476ef762-1350-4afa-a8ad-2cd3e42eb730
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-10-05 Wed 15:45]
+:UPDATED:  [2023-04-13 Thu 17:27]
 :END:
 
 [fn:4] as of [2022-10-05 Wed], [[id:93ad19fa-a4fe-48c8-81ac-42bd5e138af9][swaywm]]
