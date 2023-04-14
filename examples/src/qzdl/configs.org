@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2023-04-13 Thu 17:30]
+:UPDATED:  [2023-04-14 Fri 12:13]
 :CREATED:  [2022-08-30 Tue 11:12]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :END:
@@ -9829,7 +9829,7 @@ any value <0 is a most controversial decision
 :PROPERTIES:
 :ID:       220874c8-4330-4440-a616-31b2e0a47ef2
 :CREATED:  [2022-05-23 Mon 10:46]
-:UPDATED:  [2022-11-09 Wed 12:33]
+:UPDATED:  [2023-04-14 Fri 12:12]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -9874,6 +9874,8 @@ prepend or to append."
 
 #+name: def-ol-file
 #+begin_src emacs-lisp :noweb-ref org
+(require 'f)
+
 (defun qz/ol-file (link)
   "transform file path into pretty ol-output
             - respect projects; truncate prior path, keeping only basename
