@@ -3241,16 +3241,16 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       3b57f1e4-e156-4505-8d82-085ef082408c
 :CREATED:  [2022-08-01 Mon 10:55]
-:UPDATED:  [2022-10-28 Fri 12:25]
+:UPDATED:  [2023-04-14 Fri 11:24]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src scheme :noweb-ref main
 (feature-notmuch
  #:extra-tag-updates-post
- '("notmuch tag +guix-home -- 'thread:\"\
-{((subject:guix and subject:home) or (subject:service and subject:home) or \
-subject:/home:/) and tag:new}\"'")
+ '("notmuch tag +guix-home -- 'thread:\"{((subject:guix and subject:home) or (subject:service and subject:home) or subject:/home:/) and tag:new}\"'"
+   "notmuch tag +calendar  -- 'tag:work and thread:\"{(subject:/nvitation/ or subject:/eclined/ or subject:/ccepted/ or subject:/anceled/)}\"'"
+   "notmuch tag +noise -- 'tag:work and (tag:calendar or subject:/basecamp/)'")
  #:notmuch-saved-searches
  (cons*
   '(:name "Inbox :: Personal"  :key "P"
@@ -3263,6 +3263,8 @@ subject:/home:/) and tag:new}\"'")
     :query "tag:unread and (to:/rde/ or cc:/rde/)")
   '(:name "Watching"           :key "tw"
     :query "thread:{tag:watch}")
+  '(:name "Work :: data"      :key "W"
+    :query "tag:work and (from:/jlunan/ or to:/dre/)")
   %rde-notmuch-saved-searches))
 #+end_src
 
