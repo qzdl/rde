@@ -9668,6 +9668,21 @@ once we find out about sequences and repeats
 (setq org-log-done 'note)
 #+end_src
 
+***** org-todo-keywords
+:PROPERTIES:
+:ID:       4c420d26-b3bb-41e7-a992-ee843a4987a2
+:CREATED:  [2023-04-13 Thu 19:34]
+:UPDATED:  [2023-04-13 Thu 19:34]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp :noweb-ref org
+(setq org-todo-keywords '((sequence "TODO" "NEXT" "DONE")))
+#+end_src
+
+#+RESULTS:
+| sequence | TODO | NEXT | DONE |
+
+
 ***** org-startup-folded                                                        :var:
 :PROPERTIES:
 :ID:       948baebf-3fae-499d-8036-6e454de83417
