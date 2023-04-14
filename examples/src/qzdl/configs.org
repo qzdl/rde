@@ -11977,14 +11977,19 @@ eval "docker run --rm --volumes-from gcloud-config gcr.io/google.com/cloudsdktoo
 :PROPERTIES:
 :ID:       13367261-6c04-4004-8a8b-45a5323035cc
 :CREATED:  [2023-04-03 Mon 13:05]
-:UPDATED:  [2023-04-03 Mon 13:05]
+:UPDATED:  [2023-04-14 Fri 18:09]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src shell :tangle ~/.local/bin/bq
 #!/usr/bin/env sh
 
-eval "docker run --rm --volumes-from gcloud-config gcr.io/google.com/cloudsdktool/google-cloud-cli bq" "$@"
+# fucking hell :: https://stackoverflow.com/questions/1668649/how-to-keep-quotes-in-bash-arguments#1669548
+# the saddest part is that it works 😭
+# OFFERED WITH NO WARRANTY
+qargs=$( printf ' %q' "$@" | sed -e 's/\\n//g' -e "s/\$'/'/g")
+
+eval "docker run --rm --volumes-from gcloud-config gcr.io/google.com/cloudsdktool/google-cloud-cli bq" "$qargs" | tee /tmp/bq-last.out
 #+end_src
 * Footnotes
 :PROPERTIES:
