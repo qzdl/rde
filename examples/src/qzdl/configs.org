@@ -10891,7 +10891,15 @@ swaymsg output \"*\" background ~/.cache/wallpaper.png fill" tag))
 #+RESULTS:
 : qz/unsplash
 
-*** stuff I nicked from the emacs wiki
+*** stuff I nicked from other people
+:PROPERTIES:
+:ID:       4242e55b-4625-4636-87a8-665ec3c87159
+:CREATED:  [2023-04-14 Fri 17:22]
+:UPDATED:  [2023-04-14 Fri 17:22]
+:ROAM_EXCLUDE: t
+:END:
+
+**** the emacs wiki
 :PROPERTIES:
 :ID:       de8e054e-30ff-44ce-b66e-2d420e757b51
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -10899,7 +10907,7 @@ swaymsg output \"*\" background ~/.cache/wallpaper.png fill" tag))
 :UPDATED:  [2022-09-28 Wed 16:25]
 :HEADER-ARGS: :noweb-ref null
 :END:
-**** col-highlight.el
+***** col-highlight.el
 :PROPERTIES:
 :ID:       6284a4a9-70f8-487b-b4b2-140b94b70264
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -11403,7 +11411,7 @@ MINIBUFFER-ALSO-P is non-nil."
 #+RESULTS:
 : col-highlight
 
-**** vline.el
+***** vline.el
 :PROPERTIES:
 :ID:       bb42ed82-562f-4d92-9a60-3a524b82283d
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -11805,7 +11813,7 @@ if `truncate-lines' is non-nil."
 #+RESULTS:
 : vline
 
-**** rde: scheme reader incompatibility: =(defvar vline-line-char ?|)=
+***** rde: scheme reader incompatibility: =(defvar vline-line-char ?|)=
 :PROPERTIES:
 :ID:       3193f8ae-2c44-4b87-ab8c-9df0aabf2c7a
 :CREATED:  [2022-09-30 Fri 13:11]
@@ -11813,7 +11821,7 @@ if `truncate-lines' is non-nil."
 :ROAM_EXCLUDE: t
 :END:
 
-**** ol-man.el
+***** ol-man.el
 :PROPERTIES:
 :ID:       03e99cd2-5275-4b44-9b9a-137a84156826
 :CREATED:  <2022-02-22 Tue 15:27>
@@ -11823,13 +11831,13 @@ if `truncate-lines' is non-nil."
 
 an [[id:6baf4bff-d5fe-4ce0-a130-0464e49de67d][org-mode]] extension for a new link backend targeting manpages
 
-***** TODO [[id:cfcecb80-bcde-4c1d-a4fd-8a55eb5e5f20][deep link]] (content-based) encode line for context & regexp jump
+****** TODO [[id:cfcecb80-bcde-4c1d-a4fd-8a55eb5e5f20][deep link]] (content-based) encode line for context & regexp jump
 :PROPERTIES:
 :ID:       dc7a1ca8-9d36-4cfb-ada5-ef2040394b62
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
-***** source
+****** source
 :PROPERTIES:
 :ID:       8f2b6e70-b945-4021-bd88-429891641d8e
 :CREATED:  <2022-02-22 Tue 15:27>
