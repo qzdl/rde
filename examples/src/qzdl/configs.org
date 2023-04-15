@@ -2468,7 +2468,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       05be317e-8f65-4a14-a83f-db104b19788f
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-10-28 Fri 13:37]
+:UPDATED:  [2023-04-15 Sat 10:52]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2485,9 +2485,10 @@ host	all	all	0.0.0.0/0       md5
    #:extra-config
    `(;;(include ,(local-file "./config/sway/config"))
      ;; TODO sway: toggle opacity for WINDOW
-     (,#~"output eDP-1 bg ~/.cache/wallpaper.png fill")
-     (,#~"output DP-2 res 3840x1080 bg ~/.cache/wallpaper.png fill")
-     (,#~"output DP-1 res 3840x1080 bg ~/.cache/wallpaper.png fill")
+     (,#~"output * bg ~/.cache/wallpaper.png fill")
+     ;;(,#~"output eDP-1 bg ~/.cache/wallpaper.png fill")
+     (,#~"output DP-2 res 3840x1080")
+     (,#~"output DP-1 res 3840x1080")
      ;; TODO sway: wacom input rotation matrix
      (,#~"input \"*\" tool_mode \"*\" relative calibration_matrix 0.0 -1.0 1.0 1.0 0.0 0.0")
      ;; danke demis ht - Sharing Indicatortps://github.com/minikN/guix/blob/ca15b5a5954d50fe75e2b03f21afc019e002022b/config.scm#L173
