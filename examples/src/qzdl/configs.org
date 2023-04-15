@@ -5493,6 +5493,45 @@ CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
 
 #+RESULTS:
 : ((:engine . postgres) (:dbport . 5432) (:dbhost . localhost))
+***** org-babel-execute:bq
+:PROPERTIES:
+:ID:       4bc34558-e335-475b-ad80-87333824ac44
+:CREATED:  [2023-04-14 Fri 18:34]
+:UPDATED:  [2023-04-14 Fri 18:43]
+:ROAM_EXCLUDE: t
+:END:
+
+made with chopi!!!
+she said im cool!!
+
+- based on :: [[https://github.com/renzmann/.emacs.d][baserenzmann/.emacs.d: My literate Emacs configuration]] ([[https://github.com/renzmann/.emacs.d#bigquery-sql-blocks-in-org-babel][exact ref]])
+- next: auto-taxy query plan  :: https://github.com/alphapapa/taxy.el/tree/master/examples
+
+#+begin_src elisp :noweb-ref org
+(defun org-babel-execute:bq (orig-fun body params)
+  (let ((dry? (assq :dry params)))
+    (if (string-equal-ignore-case (cdr (assq :engine params)) "bq")
+        (let ((res (org-babel-execute:shell (format "bq query --format=json --nouse_legacy_sql %s '%s'"
+                                                    (if dry? "--dry_run" "")
+                                                    body)
+                                            params)))
+          ;; here we can talk about RES
+          ;; TODO don't forget precision elisp format string is %.Nf
+          (ignore-errors
+            (message "Estimated Bytes: %.2f MB"
+                     (let ((b (string-to-number (or (cdr (assoc 'totalBytesProcessed
+                                                                (cdr (assoc 'statistics
+                                                                            (json-read-from-string res)))))
+                                                    0))))
+                       ;; get MiB
+                       (/ (/ b 1024.0) 1024.0))))
+          (json-to-org-table-parse-json-string res))
+      (org-babel-execute:sql body params))))
+
+(advice-add 'org-babel-execute:sql :around 'org-babel-execute:bq)
+#+end_src
+
+#+RESULTS:
 
 **** [[id:091ac573-6b34-4e0e-88b8-415785d5ae85][python]]
 :PROPERTIES:
