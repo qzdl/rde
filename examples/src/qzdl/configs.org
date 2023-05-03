@@ -4758,6 +4758,66 @@ seems like lots of ways to move
 
 #+RESULTS:
 
+**** org-refile-to-point
+:PROPERTIES:
+:ID:       2cad6252-5269-460d-8c57-84f521057184
+:CREATED:  [2023-04-20 Thu 15:50]
+:UPDATED:  [2023-04-24 Mon 10:27]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref org
+(defvar qz/org-refile-last-prior-location nil)
+
+(defun qz/org-refile-to-point--undo ()
+  (interactive)
+  (when qz/org-refile-last-prior-location
+    (org-id-goto (plist-get qz/org-refile-last-prior-location :id))
+    (org-refile
+     nil nil
+     (list nil
+           (plist-get qz/org-refile-last-prior-location :file)
+           nil
+           (plist-get qz/org-refile-last-prior-location :pos)))))
+
+(defun qz/org-refile-to-point (file pos)
+  (interactive)
+  ;;; FROM {M-x describe-function RET org-refile RET}
+  ;;
+  ;; RFLOC can be a refile location obtained in a different way.  It
+  ;; should be a list with the following 4 elements:
+  ;;
+  ;; 1. Name - an identifier for the refile location, typically the
+  ;; headline text
+  ;; 2. File - the file the refile location is in
+  ;; 3. nil - used for generating refile location candidates, not
+  ;; needed when passing RFLOC
+  ;; 4. Position - the position in the specified file of the
+  ;; headline to refile under
+  (let ((rfloc (list (org-id-get)
+                     (buffer-file-name (current-buffer))
+                     nil
+                     (point))))
+    (save-mark-and-excursion
+      (with-current-buffer (find-file-noselect file)
+        (goto-char pos)
+        (let ((id (org-id-get))
+              (heading (org-link-display-format (org-get-heading))))
+          (message "qz: refiling last capture: id :: %s" id)
+          (message "qz: refiling last capture: heading :: %s" heading)
+          (setq qz/org-refile-last-prior-location
+                (list :id id :heading heading :file file :pos pos)))
+        (org-refile nil nil rfloc nil)))))
+
+(defun qz/org-refile-last-capture-to-point ()
+  (interactive)
+  (qz/org-refile-to-point
+   (bookmark-get-filename "org-capture-last-stored")
+   (bookmark-get-position "org-capture-last-stored")))
+#+end_src
+
+
+
 **** aws
 :PROPERTIES:
 :ID:       11aa93f5-5d65-4d2e-a3cd-6c5455bfb255
