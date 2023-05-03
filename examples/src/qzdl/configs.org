@@ -11158,6 +11158,25 @@ a communication channel."
 #+RESULTS:
 : org-slack-headline
 
+*** writing
+:PROPERTIES:
+:ID:       98482d46-ba6c-4555-99aa-bc589e0a1c13
+:CREATED:  [2023-04-21 Fri 16:18]
+:UPDATED:  [2023-04-21 Fri 16:18]
+:ROAM_EXCLUDE: t
+:END:
+
+**** sentence-end-double-space
+:PROPERTIES:
+:ID:       285dc2b9-8c0f-42ca-b1e6-dd215efd396d
+:CREATED:  [2023-04-21 Fri 16:18]
+:UPDATED:  [2023-04-21 Fri 16:18]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+(setq sentence-end-double-space t)
+#+end_src
 
 *** system commands
 :PROPERTIES:
