@@ -6759,6 +6759,64 @@ qz/agenda-daily-files-f
 #+RESULTS:
 : qz/clock-files
 
+******* month-updated.created-files
+:PROPERTIES:
+:ID:       98260a44-eedb-4a3b-9831-3b9b50c7699a
+:CREATED:  [2023-04-19 Wed 17:03]
+:UPDATED:  [2023-04-19 Wed 17:10]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src elisp
+(defun qz/month-files ()
+  (split-string
+   (shell-command-to-string
+    "rg '2023-04-1' ~/life/roam/ -c -t org | grep -vE 'org#' | awk -F '[,:]' '{print $1}'")))
+#+end_src
+
+#+RESULTS:
+: qz/month-files
+
+******** inspect
+:PROPERTIES:
+:ID:       53ef55de-35bd-4f16-af93-967289493f35
+:CREATED:  [2023-04-19 Wed 19:11]
+:UPDATED:  [2023-04-19 Wed 19:11]
+:ROAM_EXCLUDE: t
+:END:
+
+********* count
+:PROPERTIES:
+:ID:       1e865d7c-b919-43ca-b1c7-81bc03bdddaa
+:CREATED:  [2023-04-19 Wed 19:11]
+:UPDATED:  [2023-04-19 Wed 19:11]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src shell
+rg '2023-04-1' ~/life/roam/ -c -t org | grep -v 'org#' | awk -F '[,:]' '{print $1}' \
+    | xargs wc | sort -k1n
+#+end_src
+
+
+********* headings
+:PROPERTIES:
+:ID:       6cd5dfe0-0402-4387-9f14-a4d061185077
+:CREATED:  [2023-04-19 Wed 19:11]
+:UPDATED:  [2023-04-19 Wed 19:11]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src shell
+rg '^\*+' $(rg '2023-04-1' ~/life/roam/ -c -t org | grep -v 'org#' | awk -F '[,:]' '{print $1}') | wc -l
+
+#+end_src
+
+#+RESULTS:
+:results:
+1737
+:end:
+
 ******* files-agenda                                                           :func:
 :PROPERTIES:
 :ID:       53b918cd-26d6-4d02-9e6d-b0a4bffc9c3e
