@@ -3009,16 +3009,6 @@ host	all	all	0.0.0.0/0       md5
 ;;(feature-emacs-ement) ;; TODO qzdl
 #+end_src
 
-******* emacs-telega
-:PROPERTIES:
-:ID:       49c1d710-7fd2-45f7-9db1-df885bb4db70
-:CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-08-01 Mon 10:52]
-:ROAM_EXCLUDE: t
-:END:
-#+begin_src scheme :noweb-ref main
-(feature-emacs-telega)
-#+end_src
 
 ******* emacs-pdf-tools
 :PROPERTIES:
