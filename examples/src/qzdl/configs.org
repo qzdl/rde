@@ -8253,11 +8253,12 @@ to improve:
 
 (define-key org-babel-map (kbd "C-<return>") 'qz/shell-current-src-block)
 #+end_src
+
 ******* {C-c C-v M-w} org-kill-expanded-src-block                          :func:kbd:
 :PROPERTIES:
 :ID:       b156336c-2c1e-4ec6-9944-076c6566933f
 :CREATED:  [2022-08-16 Tue 18:21]
-:UPDATED:  [2022-08-16 Tue 18:21]
+:UPDATED:  [2023-04-25 Tue 13:19]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -8271,7 +8272,77 @@ to improve:
 #+end_src
 
 #+RESULTS:
+
 : qz/org-kill-expanded-src-block
+******* org-expand-call
+:PROPERTIES:
+:ID:       824bc327-7c73-46cb-b9fe-34c8416eff80
+:CREATED:  [2023-04-26 Wed 15:22]
+:UPDATED:  [2023-04-26 Wed 18:08]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref org
+(defun qz/org-expand-src-or-call-block ()
+  (when-let* ((context (org-element-lineage
+                        (org-element-context)
+                        ;; limit to call, src
+                        '(inline-babel-call
+                          babel-call
+                          inline-src-block
+                          src-block)
+                        t)))
+    (cl-case (org-element-type context)
+      ((or babel-call inline-babel-call)
+       (let ((info (org-babel-lob-get-info context)))
+         ;; this setf is to convert the the 'call args to 'src args.
+         ;;
+         ;;   call :: (:var . "ya=\"dooby\"")
+         ;;   src  :: (:var ya . "dooby")
+         ;;
+         ;; in org proper 'org-babel-execute-src-block, this parameter
+         ;; normalization also happens before the 'expand call
+         (let ((old-info (copy-tree info)))
+           (setf (nth 2 info)
+                 (org-babel-process-params (nth 2 info)))
+           (list (car info) (org-babel-expand-src-block nil info)))))
+      (t
+       (let ((info (org-babel-get-src-block-info context)))
+         (list (car info) (org-babel-expand-src-block nil info)))))))
+
+
+(defun qz/preview-org-expand-src-or-call-block ()
+  (interactive)
+  (let* ((buf (progn (and (get-buffer "*qz/Org Src*")
+                          (kill-buffer (get-buffer "*qz/Org Src*")))
+                     (get-buffer-create "*qz/Org Src*")))
+         (info (qz/org-expand-src-or-call-block)))
+    (with-current-buffer buf
+      (funcall (intern (concat (car info) "-mode")))
+      (insert (cadr info)))
+    (select-window (temp-buffer-window-show buf))))
+#+end_src
+
+#+RESULTS:
+: qz/preview-org-expand-src-or-call-block
+
+******** {C-c C-v v} :: qz/preview-org-expand-src-or-call-block
+:PROPERTIES:
+:ID:       9242b212-985b-4af0-97d2-e2b591c59e5c
+:CREATED:  [2023-04-26 Wed 15:22]
+:UPDATED:  [2023-04-26 Wed 15:22]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref org
+(define-key org-babel-map (kbd "v")
+            'qz/preview-org-expand-src-or-call-block)
+;; NOTE default is:
+;; (define-key org-babel-map (kbd "C-v") 'org-babel-expand-src-block)
+#+end_src
+
+#+RESULTS:
+: qz/preview-org-expand-src-or-call-block
 
 ******* org-expand-call
 :PROPERTIES:
