@@ -9086,7 +9086,7 @@ relevance: 20
 :ID:       46fed150-b670-4899-aaa2-b029262db572
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2023-03-21 Tue 12:54]
+:UPDATED:  [2023-04-19 Wed 19:44]
 :END:
 
 - see also :: about capture templates
@@ -9096,9 +9096,10 @@ relevance: 20
       `(("d" "default" entry
          ,(s-join "\n" '("* [%<%H:%M:%S>] %?"
                          ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
-                         "- from :: %a"
+                         "- from: point :: %a"
+                         "- from: tab   :: %(qz/tab nil 'as-link)"
                          ;;"- from (point) :: %f"
-                         "- clocking :: %K" ; REVIEW does this solve tangents?
+                         "- clocking    :: %K" ; REVIEW does this solve tangents?
                          ;; the region one is a bit tricky
                          ;;"- region ::\n  #+begin_quote\n%(\"%i\")\n#+end_quote"
                          ))
@@ -9111,23 +9112,23 @@ relevance: 20
                                   "** daily review"
                                   "** life"
                                   "** work"))
-                           ("journal")))
-         ))
+                  ("journal")))
+        ))
 
-      (setq qz/org-roam-dailies-capture-templates--tangent
-            '("d" "default" entry
-              ,(s-join "\n" '("* TANGENT [%<%H:%M>] %?"
-                              ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
-                              "- from :: %a"))
-              :if-new (file+head+olp
-                       ,qz/org-roam-dailies-filespec
-                       ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
-                                       "#+filetags: daily private project" ""
-                                       "%(qz/today-dateref)" ""
-                                       "* today, I will"
-                                       "* journal"
-                                       "* tangent"))
-                       ("tangent"))))
+(setq qz/org-roam-dailies-capture-templates--tangent
+      '("d" "default" entry
+        ,(s-join "\n" '("* TANGENT [%<%H:%M>] %?"
+                        ;;"CREATED: <%<%Y-%m-%d %H:%M>>"
+                        "- from :: %a"))
+        :if-new (file+head+olp
+                 ,qz/org-roam-dailies-filespec
+                 ,(s-join "\n" '("#+title: <%<%Y-%m-%d>>"
+                                 "#+filetags: daily private project" ""
+                                 "%(qz/today-dateref)" ""
+                                 "* today, I will"
+                                 "* journal"
+                                 "* tangent"))
+                 ("tangent"))))
 #+end_src
 
 #+RESULTS:
