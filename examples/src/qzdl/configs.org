@@ -8197,7 +8197,7 @@ we use the '(4) prefix arg, to respect a running timer, as follows (from doc of 
     (call-interactively 'org-timer-set-timer)))
 #+end_src
 
-****** {s-u} :: qz/org-timer-set-timer :kbd:
+****** {s-u} :: qz/org-timer-set-timer                                          :kbd:
 :PROPERTIES:
 :ID:       8271bebc-21d9-4d32-9236-77529f64b43e
 :CREATED:  [2023-04-15 Sat 13:43]
@@ -8937,7 +8937,7 @@ the major mode specifies support for Font Lock."
   (setq org-agenda-directory nil))
 #+end_src
 
-****** org-roam-complete-everywhere :redef:
+****** org-roam-complete-everywhere                                           :redef:
 :PROPERTIES:
 :ID:       1a52190a-5646-488c-a881-951a45d9c01f
 :CREATED:  [2023-05-03 Wed 11:10]
@@ -11684,6 +11684,7 @@ a communication channel."
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
+
 #+begin_src emacs-lisp
 (defun qz/get-mail ()
   (interactive)
