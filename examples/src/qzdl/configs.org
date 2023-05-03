@@ -8522,6 +8522,83 @@ the major mode specifies support for Font Lock."
 (unless (boundp 'org-agenda-directory)
   (setq org-agenda-directory nil))
 #+end_src
+
+****** org-roam-complete-everywhere :redef:
+:PROPERTIES:
+:ID:       1a52190a-5646-488c-a881-951a45d9c01f
+:CREATED:  [2023-05-03 Wed 11:10]
+:UPDATED:  [2023-05-03 Wed 11:10]
+:ROAM_EXCLUDE: t
+:END:
+
+bro, use ='symbol=.
+
+#+begin_src emacs-lisp :noweb-ref roam
+(defun org-roam-complete-everywhere ()
+  "Complete symbol at point as a link completion to an Org-roam node.
+This is a `completion-at-point' function, and is active when
+`org-roam-completion-everywhere' is non-nil.
+
+Unlike `org-roam-complete-link-at-point' this will complete even
+outside of the bracket syntax for links (i.e. \"[[roam:|]]\"),
+hence \"everywhere\"."
+  (when (and org-roam-completion-everywhere
+             (thing-at-point 'symbol) ;; ✂️
+             (not (org-in-src-block-p))
+             (not (save-match-data (org-in-regexp org-link-any-re))))
+    (let ((bounds (bounds-of-thing-at-point 'symbol))) ;; ✂️
+      (list (car bounds) (cdr bounds)
+            (org-roam--get-titles)
+            :exit-function
+            (lambda (str _status)
+              (delete-char (- (length str)))
+              (insert "[[roam:" str "]]"))
+            ;; Proceed with the next completion function if the returned titles
+            ;; do not match. This allows the default Org capfs or custom capfs
+            ;; of lower priority to run.
+            :exclusive 'no))))
+#+end_src
+
+#+RESULTS:
+: org-roam-complete-everywhere
+
+******* COMMENT
+:PROPERTIES:
+:ID:       738bcea1-9721-4d18-b7a8-b30e67ebdcc6
+:CREATED:  [2023-05-03 Wed 11:12]
+:UPDATED:  [2023-05-03 Wed 11:14]
+:ROAM_EXCLUDE: t
+:END:
+
+taken from =f4h9ipqbysl21g7lqvblkg6wll74andh-emacs-org-roam-2.2.2-0.74422df=
+
+- commit :: 74422df546a515bc984c2f3d3a681c09d6f43916
+#+begin_src shell
+guix search emacs-org-roam
+#+end_src
+
+#+RESULTS:
+:results:
+name: emacs-org-roam
+version: 2.2.2-0.74422df
+outputs:
++ out: everything
+systems: x86_64-linux i686-linux
+dependencies: emacs-dash@2.19.1 emacs-emacsql-sqlite3@1.0.2 emacs-f@0.20.0
++ emacs-magit@3.3.0-4.a760dd1 emacs-org@9.6.4 emacs-s@1.13.0 graphviz@2.49.0
++ texinfo@6.7
+location: gnu/packages/emacs-xyz.scm:34285:4
+homepage: https://github.com/org-roam/org-roam/
+license: GPL 3+
+synopsis: Non-hierarchical note-taking with Org mode
+description: Emacs Org Roam is a solution for taking non-hierarchical notes
++ with Org mode.  Notes are captured without hierarchy and are connected by
++ tags.  Notes can be found and created quickly.  Org Roam should also work as a
++ plug-and-play solution for anyone already using Org mode for their personal
++ wiki.
+relevance: 20
+:end:
+
 ****** create node :: ensure id, and non-exclusion
 :PROPERTIES:
 :ID:       38d5adfe-f060-4d06-af94-eba7fbe74621
