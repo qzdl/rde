@@ -4025,7 +4025,7 @@ nil
 :ID:       a2e3f5db-5cc5-4531-9c9d-470183f5e8aa
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2023-04-14 Fri 16:44]
+:UPDATED:  [2023-04-16 Sun 15:37]
 :END:
 
 #+begin_src emacs-lisp :noweb-ref org
@@ -4047,7 +4047,8 @@ nil
 
 (defun qz/org-babel-indent-block-hook (beg end &rest args)
   (interactive "r")
-  ;; (and qz/debug (message "qz/org-babel-indent-block: BEG %s END %s ARGS %s" beg end args))
+
+  (qz/debug- (message "qz/org-babel-indent-block: BEG %s END %s ARGS %s" beg end args))
   (qz/org-babel-indent-block))
 
 (define-key org-mode-map
