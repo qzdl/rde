@@ -2816,6 +2816,7 @@ host	all	all	0.0.0.0/0       md5
 "emacs-adaptive-wrap" ;; TODO feature-olivetti
 "emacs-org-tree-slide"
 "emacs-chess"
+"emacs-org-web-tools"
 ;; TODO feature-emacs-lsp
 ;;"emacs-artbollocks"
 ;;"emacs-vlf" ;; TODO guix: package emacs-vlf
