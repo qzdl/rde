@@ -1815,14 +1815,15 @@ guix import elpa -a melpa ytdl
 :PROPERTIES:
 :ID:       32e2ffde-ff51-4a10-9256-e032d58629bf
 :CREATED:  [2022-09-28 Wed 15:48]
-:UPDATED:  [2022-09-28 Wed 15:48]
+:UPDATED:  [2023-04-18 Tue 14:07]
 :ROAM_EXCLUDE: t
 :END:
+
 ******* envars
 :PROPERTIES:
 :ID:       5b5d963a-b70c-4867-87b8-8beb1633fa02
 :CREATED:  [2022-09-28 Wed 15:47]
-:UPDATED:  [2023-03-02 Thu 18:14]
+:UPDATED:  [2023-04-18 Tue 14:06]
 :ROAM_EXCLUDE: t
 :END:
 #+name: guile-service-envars
@@ -1906,13 +1907,22 @@ guix import elpa -a melpa ytdl
         ;;; ETC
    ("GDK_BACKEND" . "wayland") ;; ... for clipboarding emasc
    ;;("DISABLE_RTKIT" . "1") ;; TODO [2022-08-03] pipewire broken ;; commented [2022-08-11 Thu]
+
+   ("XDG_DATA_DIRS" . ,(string-join
+                        (list "$XDG_DATA_DIRS"
+                              ;;; flatpak: show paks alongside other apps
+                              ;; this sys path is not relevant for GUIX
+                              ;;"/var/lib/flatpak/exports/share"
+                              "/home/samuel/.local/share/flatpak/exports/share")
+                        ":"))
    ;; TODO fix this path issue
-   ("PATH" . ,(string-join (list "$PATH"
-                                 "$HOME/go/bin"
-                                 "$HOME/.local/bin"
-                                 "$HOME/.krew/bin"
-                                 "${XDG_CACHE_HOME}/npm/bin")
-                           ":"))))
+   ("PATH" . ,(string-join
+               (list "$PATH"
+                     "$HOME/go/bin"
+                     "$HOME/.local/bin"
+                     "$HOME/.krew/bin"
+                     "${XDG_CACHE_HOME}/npm/bin")
+               ":"))))
 #+end_src
 
 ******* zsh : profile, *rc
