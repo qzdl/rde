@@ -9933,33 +9933,52 @@ cat /tmp/oo | awk -F, '{print $2,$3}' | sort | uniq -c | sort -rgk1 | head
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
 :END:
+
 ******** TODO templates
+:PROPERTIES:
+:ID:       06622958-6125-42a8-be50-7c9c698f367e
+:CREATED:  [2023-04-24 Mon 18:48]
+:UPDATED:  [2023-04-24 Mon 18:57]
+:ROAM_EXCLUDE: t
+:END:
 :PROPERTIES:
 :ID:       a7f7f97d-d3c7-4941-a522-f3530bc8379c
 :CREATED:  [2022-02-22 Tue 15:27]
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-03-14 Mon 11:12]
+:
 :END:
 
-#+begin_src emacs-lisp  :noweb-ref roam  :results drawer
+#+begin_src emacs-lisp  :noweb-ref roam :results pp
 ;;; ref capture
 (setq org-roam-capture-ref-templates
       `(("r" "ref" plain
          "\n#+begin_quote\n${body}\n#+end_quote\n%?"
          :if-new (file+head ,qz/capture-title-timestamp-roam
                             "#+title: ${title}\n")
-         :unnarrowed t)))
+         :unnarrowed t)
+        ("y" "ref" plain
+         ,(s-join "\n" '("* %U"
+                         "${body}" ""
+                         ;; TODO why a buffer "*Capture*" is popped when the mpv function is run?
+                         "(rde-mpv-play-url \"${ref}\" \"best\" :select nil)"
+                         ;; "%(sleep-for 1)" ;; slee
+                         "%?"))
+         :if-new (file+head ,qz/capture-title-timestamp-roam
+                            "#+title: ${title}\n")
+         :unnarrowed t)
+        ))
 #+end_src
 
 #+RESULTS:
-:results:
-((r ref plain
-#+begin_quote
-${body}
-#+end_quote
-%? :if-new (file+head %(qz/utc-timestamp)-${slug} #+title: ${title}
-) :unnarrowed t))
-:end:
+: (("r" "ref" plain "\n#+begin_quote\n${body}\n#+end_quote\n%?" :if-new
+:   (file+head "%(qz/utc-timestamp)-${slug}.org" "#+title: ${title}\n")
+:   :unnarrowed t)
+:  ("y" "ref" plain "\n* %U\n${body}\n\n(rde-mpv-play-url \"${ref}\" \"best\" :select nil)\n%(sleep-for 1)\n%?" :if-new
+:   (file+head "%(qz/utc-timestamp)-${slug}.org" "#+title: ${title}\n")
+:   :unnarrowed t))
+
+
+
 ****** visual
 :PROPERTIES:
 :ID:       ebccab15-1c63-43fe-be76-8b43d08ecf79
