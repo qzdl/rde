@@ -1643,6 +1643,37 @@ bookmarks-alist) to save and restore places with mode-specific functionality.")
 
 #+RESULTS:
 
+***** emacs-chatgpt-shell
+:PROPERTIES:
+:ID:       9809acde-26e3-4bc8-bb47-a43759be7568
+:CREATED:  [2023-04-21 Fri 16:13]
+:UPDATED:  [2023-04-21 Fri 16:15]
+:ROAM_EXCLUDE: t
+:END:
+
+- [[id:a5b61661-e777-4fdd-b1b0-0e486c27123a][[13:32:51] guix: packaging chatgpt-shell]]
+
+#+begin_src scheme
+(define-public emacs-chatgpt-shell
+  (package
+    (name "emacs-chatgpt-shell")
+    (version "2023-04-21")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xenodium/chatgpt-shell")
+             (commit "0ae307045fdad451f7a6e2a56ffec70c6300b8da")))
+       (sha256
+        (base32 "1s7pn8v79x2l02cj41z89f8rda2xd3naq6yv8vjzd0z4kag3jmzv"))))
+    (build-system emacs-build-system)
+    (home-page "")
+    (synopsis "A minimal ChatGPT Emacs shel")
+    (description
+     "A minimal ChatGPT Emacs shell")
+    (license license:gpl3+)))
+#+end_src
+
 *** imports
 :PROPERTIES:
 :ID:       065c4d90-4d84-4969-8221-44f5008a9502
