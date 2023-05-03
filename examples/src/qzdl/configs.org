@@ -7718,6 +7718,83 @@ The diary entry can contain `%s' which will be replaced with
 (setq org-clock-idle-time 15)
 
 #+end_src
+
+***** timer
+:PROPERTIES:
+:ID:       99c0e72f-ba27-4b1d-9e5f-92ce387f8f32
+:CREATED:  [2023-04-15 Sat 13:41]
+:UPDATED:  [2023-04-15 Sat 13:43]
+:ROAM_EXCLUDE: t
+:END:
+
+- from :: [[id:705daa80-7f16-4b05-8afa-a65530bf57a9][emacs: org-id: roam:fun :: a timer & bell in org]]
+
+****** org-timer-default-timer :: 25 minutes :var
+:PROPERTIES:
+:ID:       dd01f582-01d2-4157-9fbf-ab5ee06182ed
+:CREATED:  [2023-04-15 Sat 13:41]
+:UPDATED:  [2023-04-15 Sat 13:42]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+(setq org-timer-default-timer  "00:25:00")
+#+end_src
+
+****** org-clock-sound
+:PROPERTIES:
+:ID:       2c680f77-51a3-471c-9306-a93c68a2d489
+:CREATED:
+:UPDATED:  [2023-04-15 Sat 13:57]
+:END:
+
+#+begin_src emacs-lisp
+(setq qz/clock-sounds '("~/vids/gong-cut.wav"
+                        "~/vids/sing-cut.wav")
+      org-clock-sound (cadr qz/clock-sounds))
+#+end_src
+
+#+RESULTS:
+: ~/vids/sing-cut.wav
+
+****** qz/org-timer-set-timer
+:PROPERTIES:
+:ID:       9a3b3b83-73a0-4898-b930-5dafde83d429
+:CREATED:  [2023-04-15 Sat 13:43]
+:UPDATED:  [2023-04-15 Sat 13:43]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src emacs-lisp
+(defun qz/org-timer-set-timer (&optional duration)
+  "ergonomics
+
+if no prefix arg, set timer with value org-timer-default-timer.
+if prefix arg, prompt for time (no arg call of 'org-timer-set-timer)
+
+how this is achieved, ontop of org semantics:
+
+we use the '(4) prefix arg, to respect a running timer, as follows (from doc of org-timer-set-timer):
+
+> Called with a C-u prefix arguments, use ‘org-timer-default-timer’
+> without prompting the user for a duration."
+  (interactive)
+  (let* ((current-prefix-arg (if (or current-prefix-arg prefix-arg)
+                                 nil '(4))))
+    (call-interactively 'org-timer-set-timer)))
+#+end_src
+
+****** {s-u} :: qz/org-timer-set-timer :kbd:
+:PROPERTIES:
+:ID:       8271bebc-21d9-4d32-9236-77529f64b43e
+:CREATED:  [2023-04-15 Sat 13:43]
+:UPDATED:  [2023-04-15 Sat 13:44]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+(define-key global-map (kbd "s-u") 'qz/org-timer-set-timer)
+#+end_src
+
 ***** jira
 :PROPERTIES:
 :ID:       5fd74f4a-26f8-40d8-9947-01927e0f06ed
