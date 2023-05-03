@@ -4309,6 +4309,21 @@ ad
 (define-key global-map (kbd "C-c !") 'org-time-stamp-inactive)
 #+end_src
 
+**** {C-s-j}           :: (global) org-roam-dailies-goto-today
+:PROPERTIES:
+:ID:       bfe5a74c-176e-42e8-9843-4cd8095c4b27
+:CREATED:  [2023-04-25 Tue 19:56]
+:UPDATED:  [2023-04-25 Tue 19:56]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref kbd
+(define-key global-map (kbd "C-s-j") 'org-roam-dailies-goto-today)
+#+end_src
+
+#+RESULTS:
+: org-roam-dailies-goto-today
+
 **** {C-M-j}           :: delete-indentation
 :PROPERTIES:
 :ID:       ce4366f0-6d05-4e8b-b0f8-93dc87e8bf5b
