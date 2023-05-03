@@ -10445,6 +10445,44 @@ https://github.com/org-roam/org-roam/issues/991#issuecomment-882010053
 | org-roam-node-section | hide |
 | stashes               | hide |
 
+****** settings
+:PROPERTIES:
+:ID:       37443493-d356-4b1d-9e19-f2b52ac6a004
+:CREATED:  [2023-05-03 Wed 19:26]
+:UPDATED:  [2023-05-03 Wed 19:26]
+:ROAM_EXCLUDE: t
+:END:
+
+******* org-roam-graph-executable "neato"
+:PROPERTIES:
+:ID:       0731c07d-2aa4-41ba-a0de-5f3be1e69f5f
+:CREATED:  [2023-05-03 Wed 19:26]
+:UPDATED:  [2023-05-03 Wed 19:27]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref roam
+(setq org-roam-graph-executable "neato")
+#+end_src
+
+#+RESULTS:
+: neato
+
+******* org-roam-graph-extra-config
+:PROPERTIES:
+:ID:       bd54943e-a232-42ed-9488-5cbea8f08b4f
+:CREATED:  [2023-05-03 Wed 19:26]
+:UPDATED:  [2023-05-03 Wed 19:26]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref roam
+(setq org-roam-graph-extra-config '(("overlap" . "false")))
+#+end_src
+
+#+RESULTS:
+: ((overlap . false))
+
 ***** download                                                                  :var:
 :PROPERTIES:
 :ID:       b32477c3-9346-4c88-8710-043b6eb9824f
