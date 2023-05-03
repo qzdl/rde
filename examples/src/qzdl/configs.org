@@ -6586,6 +6586,26 @@ this is amazing!!!!
 #+RESULTS:
 | qz/advice-enable--git-gutter-transient--git-gutter:popup-hunk | qz/advice-disable--git-gutter-transient--git-gutter:popup-hunk |
 
+***** filter timestamp writes when reverting (avoid circular writing)
+:PROPERTIES:
+:ID:       2f59c06e-6f3e-425c-aa8f-ff4330a7a3a7
+:CREATED:  [2023-05-03 Wed 18:45]
+:UPDATED:  [2023-05-03 Wed 18:51]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref git-gutter
+(defun qz/filter--updated-timestamp (orig-fun &rest R)
+  (let ((before-save-hook (remove 'qz/org-roam--updated-timestamp
+                                  before-save-hook)))
+    (funcall orig-fun)))
+
+(qz/advice- git-gutter:revert-hunk :around qz/filter--updated-timestamp)
+#+end_src
+
+#+RESULTS:
+| qz/advice-enable--git-gutter:revert-hunk--qz/filter--updated-timestamp | qz/advice-disable--git-gutter:revert-hunk--qz/filter--updated-timestamp |
+
 **** consult
 :PROPERTIES:
 :ID:       969bce5f-b959-496e-afe4-81f2407592f3
