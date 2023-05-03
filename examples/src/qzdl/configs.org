@@ -2913,7 +2913,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       e9a4d259-45cc-43e9-89e5-69319a169928
 :CREATED:  [2022-10-28 Fri 12:09]
-:UPDATED:  [2023-03-30 Thu 10:41]
+:UPDATED:  [2023-04-25 Tue 19:50]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2925,8 +2925,13 @@ host	all	all	0.0.0.0/0       md5
 (feature-kanshi
  #:extra-config
  `((profile laptop ((output eDP-2 enable)))
+   (profile laptop0 ((output eDP-1 enable)))
    (profile docked ((output eDP-2 disable)
-                    (output DP-2 enable)))))
+                    (output DP-2 enable)))
+   (profile docked0 ((output eDP-1 disable)
+                     (output DP-2 enable)))))
+#+end_src
+
 #+end_src
 
 ****** i3
