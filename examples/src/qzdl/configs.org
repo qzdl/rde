@@ -13163,9 +13163,11 @@ PATH should be a topic that can be thrown at the man command."
 :PROPERTIES:
 :ID:       2c5534c4-5ae0-4dda-a4b3-66e648b517c4
 :CREATED:  [2023-04-14 Fri 17:22]
-:UPDATED:  [2023-04-14 Fri 18:37]
+:UPDATED:  [2023-04-16 Sun 15:54]
 :ROAM_REFS: https://raw.githubusercontent.com/renzmann/.emacs.d/aad505eaf1b452f6c675b85d43a4556b64cf702a/site-lisp/json-to-org-table/json-to-org-table.el
 :END:
+
+- note :: had to patch =[(foobar) ...]= to =(vector '(foobar)]= because of [[id:d4870719-33ce-4433-98ef-3867e1698969][elisp parser in RDE (clobbers vectors)]]
 
 #+begin_src emacs-lisp
 ;;; json-to-org-table.el --- Converts json string to linked org table -*- lexical-binding: t; -*-
@@ -13192,8 +13194,8 @@ PATH should be a topic that can be thrown at the man command."
 
 (defvar j2t-debug nil)
 
-(defvar j2t-cs-map [("\r" "")
-                    ("\n" "")]
+(defvar j2t-cs-map (vector '("\r" "")
+                           '("\n" ""))
   "Map of characters to replace in json string.")
 
 (defun j2t-cs (str)
