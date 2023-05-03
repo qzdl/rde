@@ -505,6 +505,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
   #:use-module (rde features version-control)
   #:use-module (rde features video)
   #:use-module (rde features virtualization)
+  #:use-module (rde features web-browsers)
   #:use-module (rde features wm)
   #:use-module (rde features xdg)
   #:use-module (rde features xdisorg)
