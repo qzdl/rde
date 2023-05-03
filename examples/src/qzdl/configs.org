@@ -6501,6 +6501,7 @@ rg 'src.(shell|bash|sh).*drawer' $HOME/life/roam | wc -l
 :END:
 #+begin_src emacs-lisp :noweb-ref embark
 #+end_src
+
 **** git-gutter-transient
 :PROPERTIES:
 :ID:       59a2a735-af5e-4401-a55c-78ae28a133f2
@@ -6508,31 +6509,82 @@ rg 'src.(shell|bash|sh).*drawer' $HOME/life/roam | wc -l
 :UPDATED:  [2023-05-03 Wed 13:26]
 :ROAM_EXCLUDE: t
 :END:
-***** Add magit-commit
+
+***** noweb-tangler
 :PROPERTIES:
-:ID:       0261fbe2-6485-458f-8480-c625b24197cc
-:CREATED:  [2023-05-03 Wed 13:27]
-:UPDATED:  [2023-05-03 Wed 13:28]
+:ID:       6074ff3a-a5c5-46ad-9f68-a07318e57a9b
+:CREATED:  [2023-05-03 Wed 18:21]
+:UPDATED:  [2023-05-03 Wed 18:31]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src emacs-lisp
 (with-eval-after-load 'git-gutter-transient
-  (defun git-gutter-transient:magit-commit ()
-    "Close hunk buffer and call `magit-file-dispatch'."
-    (interactive)
-    (git-gutter-transient:quit)
-    (magit-commit))
-
-  (let ((end (- (length (nth 3 (seq--into-list
-                                (transient-get-suffix  'git-gutter-transient
-                                                       '(0)))))
-                1)))
-    ;; ... seems a totally goofy way to simply push stuff to the end
-    ;; of a list...
-    (transient-append-suffix 'git-gutter-transient `(0 ,end)
-      (vector '("c" "Commit" git-gutter-transient:magit-commit)))))
+  <<git-gutter>>
+)
 #+end_src
+
+***** Add magit-commit
+:PROPERTIES:
+:ID:       0261fbe2-6485-458f-8480-c625b24197cc
+:CREATED:  [2023-05-03 Wed 13:27]
+:UPDATED:  [2023-05-03 Wed 18:34]
+:ROAM_EXCLUDE: t
+:END:
+
+
+#+begin_src emacs-lisp :noweb-ref git-gutter
+(defun git-gutter-transient:magit-commit ()
+  "Close hunk buffer and call `magit-file-dispatch'."
+  (interactive)
+  (git-gutter-transient:quit)
+  (magit-commit))
+
+(defun git-gutter-transient:stage-magit-commit ()
+  "Close hunk buffer and call `magit-file-dispatch'."
+  (interactive)
+  (git-gutter-transient:quit)
+  (cl-letf (((symbol-function 'yes-or-no-p) (lambda (&rest args) t))
+            ((symbol-function 'y-or-n-p) (lambda (&rest args) t)))
+    (git-gutter:stage-hunk))
+  (magit-commit))
+
+
+(let ((end (- (length (nth 3 (seq--into-list
+                              (transient-get-suffix  'git-gutter-transient
+                                                     '(0)))))
+              1)))
+  ;; ... seems a totally goofy way to simply push stuff to the end
+  ;; of a list...
+  (transient-append-suffix 'git-gutter-transient `(0 ,end)
+    (vector '("c" "Commit" git-gutter-transient:magit-commit)))
+  (transient-append-suffix 'git-gutter-transient `(0 ,(+ 1 end))
+    (vector '("C" "Stage & Commit" git-gutter-transient:stage-magit-commit))))
+#+end_src
+
+#+RESULTS:
+| [1 transient-column nil ((1 transient-suffix (:key C :description Stage & Commit :command git-gutter-transient:stage-magit-commit)))] |
+
+
+***** show diff when popping up
+:PROPERTIES:
+:ID:       45c9ebe8-5220-4d7f-8c01-1bc3a71e2ead
+:CREATED:  [2023-05-03 Wed 18:21]
+:UPDATED:  [2023-05-03 Wed 19:00]
+:ROAM_EXCLUDE: t
+:END:
+
+this is amazing!!!!
+
+#+begin_src emacs-lisp :noweb-ref git-gutter
+(defun qz/git-gutter:popup-hunk ()
+  (ignore-errors (git-gutter:popup-hunk)))
+
+(qz/advice- git-gutter-transient :after qz/git-gutter:popup-hunk)
+#+end_src
+
+#+RESULTS:
+| qz/advice-enable--git-gutter-transient--git-gutter:popup-hunk | qz/advice-disable--git-gutter-transient--git-gutter:popup-hunk |
 
 **** consult
 :PROPERTIES:
