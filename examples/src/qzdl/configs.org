@@ -4919,22 +4919,38 @@ or
 :PROPERTIES:
 :ID:       c053accd-329e-440d-be77-735ecea9f0b3
 :CREATED:  [2022-10-31 Mon 13:16]
-:UPDATED:  [2023-01-12 Thu 20:25]
+:UPDATED:  [2023-04-21 Fri 10:38]
 :ROAM_EXCLUDE: t
 :END:
 
 #+name: elisp-read-tab
 #+begin_src emacs-lisp
+(defun qz/get-tabs ()
+  (let* ((file (s-trim (shell-command-to-string "python3 $HOME/life/scratch/tabs.py"))))
+    (mapcar (lambda (o) (cons (gethash "title" o) o))
+            (cl-sort ;; accessed ASC
+             (with-temp-buffer
+               (insert-file-contents file)
+               (json-parse-buffer))
+             'lt :key (lambda (o)
+                        (gethash "accessed" o))))))
+
+(defun qz/tab (&optional tab insert?)
+  (let* ((tab (or tab (cdr (car (qz/get-tabs)))))
+         (org (derived-mode-p 'org-mode))
+         (title (gethash "title" tab))
+         (url (gethash "url" tab))
+         (text (if org (org-make-link-string url title)
+                 (format "%s %s :: %s" comment-start title url))))
+    (when insert?
+      (insert text)
+      (org-end-of-line)
+      (org-return))
+    text))
+
 (defun qz/read-tab ()
   (interactive)
-  (let* ((file (s-trim (shell-command-to-string "python3 $HOME/life/scratch/tabs.py")))
-         (jd   (mapcar (lambda (o) (cons (gethash "title" o) o))
-                       (cl-sort ;; accessed ASC
-                        (with-temp-buffer
-                          (insert-file-contents file)
-                          (json-parse-buffer))
-                        'lt :key (lambda (o)
-                                   (gethash "accessed" o)))))
+  (let* ((jd (qz/get-tabs))
          (choice (cdr (assoc
                        (consult--read
                         (mapcar 'car jd)
@@ -4942,16 +4958,17 @@ or
                         :default (car (seq-take jd 1))
                         :sort nil)
                        jd))))
-    (insert
-     (cl-destructuring-bind (title url)
-         (list (gethash "title" choice)
-               (gethash "url" choice))
-       (cl-case major-mode
-         (org-mode (org-make-link-string url title))
-         (t (format "%s :: %s" title url)))))))
+    (qz/tab choice 'as-link)))
 
 (define-key global-map (kbd "C-c C-s-l") 'qz/read-tab)
+
+;; nigari tofu heat at DuckDuckGo :: https://duckduckgo.com/?t=ffab&q=nigari+tofu+heat+&ia=web
+;; Decompression (GNU Emacs Lisp Reference Manual) :: https://www.gnu.org/software/emacs/manual/html_node/elisp/Decompression.html
+;; (qz/tab)
 #+end_src
+
+#+RESULTS: elisp-read-tab
+: qz/read-tab
 
 ***** tabs.py
 :PROPERTIES:
