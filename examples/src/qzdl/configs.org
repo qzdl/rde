@@ -11297,13 +11297,15 @@ a communication channel."
 :ID:       3fb0efe4-8d3f-4840-bd92-74cc3249d975
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2023-04-26 Wed 21:03]
 :END:
+
 #+begin_src emacs-lisp
 (defun qz/rde-sanity ()
   (interactive)
   (async-shell-command
    (concat "cd $HOME/git/sys/rde"
-           "&& guix repl -L . dev/sanity.scm")))
+           "&& guix repl -L src -L examples/src dev/sanity.scm")))
 #+end_src
 
 #+RESULTS:
