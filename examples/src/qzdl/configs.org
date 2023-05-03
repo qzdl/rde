@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2023-04-14 Fri 12:13]
+:UPDATED:  [2023-05-03 Wed 18:56]
 :CREATED:  [2022-08-30 Tue 11:12]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :END:
@@ -420,7 +420,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
 :ROAM_EXCLUDE: t
 :END:
 
-** rde config
+** rde
 :PROPERTIES:
 :ID:       c5578b40-1344-4d48-9b24-5c8f13fa3f77
 :CREATED:  [2022-07-29 Fri 18:22]
@@ -444,7 +444,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
 :PROPERTIES:
 :ID:       6bb15998-32c1-4674-890a-85180a89d66a
 :CREATED:  [2022-07-29 Fri 18:22]
-:UPDATED:  [2023-03-23 Thu 15:53]
+:UPDATED:  [2023-04-25 Tue 20:07]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -766,6 +766,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
 #+begin_src scheme
 (pretty-print "pre-%abcdw-features")
 #+end_src
+
 **** abcdw features
 :PROPERTIES:
 :ID:       1532c6ba-0d0c-499e-bddd-ae1caa1dc778
@@ -2751,11 +2752,11 @@ host	all	all	0.0.0.0/0       md5
  )
 #+end_src
 
-******** emacs-pkgs                                                             :pkg:
+******** packages                                                               :pkg:
 :PROPERTIES:
 :ID:       5f892275-23ad-429c-9651-f48f5e8576ec
 :CREATED:  [2022-09-28 Wed 16:14]
-:UPDATED:  [2023-03-24 Fri 10:29]
+:UPDATED:  [2023-04-24 Mon 19:00]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -3367,7 +3368,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       72ecbbb1-860b-471e-a2e8-d96cf8c3dac3
 :CREATED:  [2023-03-30 Thu 12:47]
-:UPDATED:  [2023-04-03 Mon 12:19]
+:UPDATED:  [2023-04-25 Tue 20:08]
 :ROAM_EXCLUDE: t
 :END:
 #+begin_src scheme :noweb-ref null
@@ -3874,12 +3875,13 @@ host	all	all	0.0.0.0/0       md5
   (url "https://gitlab.com/nonguix/nonguix")))
 #+end_src
 
-** emacs config
+
+** emacs
 :PROPERTIES:
 :ID:       0b25418b-3898-42da-81f2-cfc93aa51017
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2023-01-19 Thu 10:59]
+:UPDATED:  [2023-04-25 Tue 19:48]
 :END:
 
 *** AAA tangle emacs
@@ -5984,7 +5986,7 @@ rg 'src.(shell|bash|sh).*drawer' $HOME/life/roam | wc -l
 #+RESULTS:
 : ((:results . drawer))
 
-*** package config
+*** package
 :PROPERTIES:
 :ID:       2fa9d7ef-cfd9-4d3c-aca8-09e1d6243705
 :CREATED:  [2022-09-28 Wed 16:36]
@@ -6299,11 +6301,12 @@ while from the archive; but I mean... [[id:0f7be177-127d-4476-9a0f-a1ed3a570400]
 (require 'hyperbole)
 #+end_src
 
-***** {C-<mouse-2} hkey-either                                                  :kbd:
+***** {C-<mouse-2} :: hkey-either                                               :kbd:
 :PROPERTIES:
 :ID:       ccc12df3-8b40-4bec-937f-c28692f1fed4
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2023-04-25 Tue 19:55]
 :END:
 #+begin_src emacs-lisp
 (define-key global-map (kbd "C-<mouse-2>") 'hkey-either)
@@ -7518,7 +7521,9 @@ use a prefix arg to shortcut (org-table-get-constant \"bonk\")
 :ID:       899ee4ec-7b38-4cc7-9435-9015b7adf618
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2023-04-25 Tue 13:18]
 :END:
+
 #+begin_src emacs-lisp :noweb-ref org
 (defun qz/lob-get-named-src-block-body (name)
   (cl-destructuring-bind
@@ -7757,6 +7762,76 @@ to improve:
 
 #+RESULTS:
 : qz/org-kill-expanded-src-block
+
+******* org-expand-call
+:PROPERTIES:
+:ID:       824bc327-7c73-46cb-b9fe-34c8416eff80
+:CREATED:  [2023-04-26 Wed 15:22]
+:UPDATED:  [2023-04-26 Wed 18:08]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref org
+(defun qz/org-expand-src-or-call-block ()
+  (when-let* ((context (org-element-lineage
+                        (org-element-context)
+                        ;; limit to call, src
+                        '(inline-babel-call
+                          babel-call
+                          inline-src-block
+                          src-block)
+                        t)))
+    (cl-case (org-element-type context)
+      ((or babel-call inline-babel-call)
+       (let ((info (org-babel-lob-get-info context)))
+         ;; this setf is to convert the the 'call args to 'src args.
+         ;;
+         ;;   call :: (:var . "ya=\"dooby\"")
+         ;;   src  :: (:var ya . "dooby")
+         ;;
+         ;; in org proper 'org-babel-execute-src-block, this parameter
+         ;; normalization also happens before the 'expand call
+         (let ((old-info (copy-tree info)))
+           (setf (nth 2 info)
+                 (org-babel-process-params (nth 2 info)))
+           (list (car info) (org-babel-expand-src-block nil info)))))
+      (t
+       (let ((info (org-babel-get-src-block-info context)))
+         (list (car info) (org-babel-expand-src-block nil info)))))))
+
+
+(defun qz/preview-org-expand-src-or-call-block ()
+  (interactive)
+  (let* ((buf (progn (and (get-buffer "*qz/Org Src*")
+                          (kill-buffer (get-buffer "*qz/Org Src*")))
+                     (get-buffer-create "*qz/Org Src*")))
+         (info (qz/org-expand-src-or-call-block)))
+    (with-current-buffer buf
+      (funcall (intern (concat (car info) "-mode")))
+      (insert (cadr info)))
+    (select-window (temp-buffer-window-show buf))))
+#+end_src
+
+#+RESULTS:
+: qz/preview-org-expand-src-or-call-block
+
+******** {C-c C-v v} :: qz/preview-org-expand-src-or-call-block
+:PROPERTIES:
+:ID:       9242b212-985b-4af0-97d2-e2b591c59e5c
+:CREATED:  [2023-04-26 Wed 15:22]
+:UPDATED:  [2023-04-26 Wed 15:22]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref org
+(define-key org-babel-map (kbd "v")
+            'qz/preview-org-expand-src-or-call-block)
+;; NOTE default is:
+;; (define-key org-babel-map (kbd "C-v") 'org-babel-expand-src-block)
+#+end_src
+
+#+RESULTS:
+: qz/preview-org-expand-src-or-call-block
 
 ******* list->rows                                                             :func:
 :PROPERTIES:
@@ -8854,8 +8929,15 @@ a function of a node
 :PROPERTIES:
 :ID:       5367ec4f-24d6-4416-a8d9-18df8cb1c0c2
 :CREATED:  <2022-02-22 Tue 15:27>
+:UPDATED:  [2023-04-17 Mon 10:30]
+:END:
+
+******** ... description
+:PROPERTIES:
+:ID:       24bc2095-a971-44ab-964a-ee5a613d6d5b
+:CREATED:  [2023-04-16 Sun 16:27]
+:UPDATED:  [2023-04-16 Sun 16:27]
 :ROAM_EXCLUDE: t
-:UPDATED:  [2022-09-28 Wed 16:49]
 :END:
 e.g https://commonplace.doubleloop.net/recentchanges
 (or updated created)
@@ -8866,6 +8948,13 @@ activity log -> (node, ?commit=HEAD) ?updated, created
 created -> property:created, file-name:created
 updated -> property:updated, file-name:updated
 
+******** src
+:PROPERTIES:
+:ID:       e37666c2-4abc-40d1-93f8-315a31842708
+:CREATED:  [2023-04-16 Sun 16:27]
+:UPDATED:  [2023-04-17 Mon 10:30]
+:ROAM_EXCLUDE: t
+:END:
 #+begin_src emacs-lisp
 (defun qz/file-created-as-timestamp (&optional file)
   (when-let* ((file (or file (buffer-file-name (current-buffer))))
@@ -12274,7 +12363,7 @@ eval "docker run --rm --volumes-from gcloud-config gcr.io/google.com/cloudsdktoo
 :ID:       476ef762-1350-4afa-a8ad-2cd3e42eb730
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2023-04-13 Thu 17:30]
+:UPDATED:  [2023-05-03 Wed 18:56]
 :END:
 
 [fn:4] as of [2022-10-05 Wed], [[id:93ad19fa-a4fe-48c8-81ac-42bd5e138af9][swaywm]]
