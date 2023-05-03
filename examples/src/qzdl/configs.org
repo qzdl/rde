@@ -4447,9 +4447,9 @@ nil
   ;;  "%S"
   ;;  (mapc 'org-no-properties
   ;;        (list
-  ;;         (nth (- 1 c) cands)
+  ;;         (nth (- c 1) cands)
   ;;         (nth c cands)
-  ;;         (nth (1+ c) cands))))
+  ;;         (nth (+ 1 c) cands))))
   )
 #+end_src
 
@@ -10421,8 +10421,8 @@ prefix,
 which will prompt for the width."
   (interactive "P")
   (let ((col (org-table-current-column))
-        (min  1e999)		 ; 1e999 will be converted to infinity
-        (max -1e999)		 ; which is the desired result
+        (min most-positive-fixnum)		 ; will be converted to infinity
+        (max most-negative-fixnum)		 ; which is the desired result
         (table (org-table-to-lisp))
         (length
          (cond ((consp ask)
@@ -10434,7 +10434,7 @@ which will prompt for the width."
     ;; Skip table header if any.
     (dolist (x (or (cdr (memq 'hline table)) table))
       (when (consp x)
-        (setq x (nth (1- col) x))
+        (setq x (nth (- col 1) x))
         (when (string-match
                "^[-+]?\\([0-9]*[.]\\)?[0-9]*\\([eE][+-]?[0-9]+\\)?$"
                x)
@@ -10446,7 +10446,7 @@ which will prompt for the width."
     (org-table-store-formulas
      (cons
       (cons
-       (concat "$" (number-to-string (1+ col)))
+       (concat "$" (number-to-string (+ 1 col)))
        (format "'(%s $%s %s %s %s)"
                qz/orgtbl-plot-function col min max length))
       (org-table-get-stored-formulas)))
@@ -11372,7 +11372,7 @@ check with (org-redisplay-inline-images)
           (save-excursion
             (beginning-of-line 1)
             (when (looking-at org-drawer-regexp)
-              (let* ((start (- 1 (match-beginning 0)))
+              (let* ((start (- (match-beginning 0) 1))
                      (limit
                       (save-excursion
                         (outline-next-heading)
