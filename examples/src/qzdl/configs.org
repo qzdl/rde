@@ -2913,7 +2913,15 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       2a3598dc-be14-4f8c-ae66-100d8d3f9552
 :CREATED:  [2022-09-28 Wed 15:36]
-:UPDATED:  [2022-09-28 Wed 15:36]
+:UPDATED:  [2023-04-16 Sun 15:45]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme  :noweb-ref main
+(feature-emacs-corfu
+ #:corfu-doc-auto #f)
+#+end_src
+
 :ROAM_EXCLUDE: t
 :END:
 
