@@ -6470,6 +6470,39 @@ rg 'src.(shell|bash|sh).*drawer' $HOME/life/roam | wc -l
 :END:
 #+begin_src emacs-lisp :noweb-ref embark
 #+end_src
+**** git-gutter-transient
+:PROPERTIES:
+:ID:       59a2a735-af5e-4401-a55c-78ae28a133f2
+:CREATED:  [2023-05-03 Wed 13:26]
+:UPDATED:  [2023-05-03 Wed 13:26]
+:ROAM_EXCLUDE: t
+:END:
+***** Add magit-commit
+:PROPERTIES:
+:ID:       0261fbe2-6485-458f-8480-c625b24197cc
+:CREATED:  [2023-05-03 Wed 13:27]
+:UPDATED:  [2023-05-03 Wed 13:27]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'git-gutter-transient
+  (defun git-gutter-transient:magit-commit ()
+    "Close hunk buffer and call `magit-file-dispatch'."
+    (interactive)
+    (git-gutter-transient:quit)
+    (magit-commit))
+
+  (let ((end (- (length (nth 3 (seq--into-list
+                                (transient-get-suffix  'git-gutter-transient
+                                                       '(0)))))
+                1)))
+    ;; ... seems a totally goofy way to simply push stuff to the end
+    ;; of a list...
+    (transient-append-suffix 'git-gutter-transient `(0 ,end)
+      (vector '("c" "Commit" git-gutter-transient:magit-commit)))))
+#+end_src
+
 **** consult
 :PROPERTIES:
 :ID:       969bce5f-b959-496e-afe4-81f2407592f3
