@@ -6473,13 +6473,43 @@ while from the archive; but I mean... [[id:0f7be177-127d-4476-9a0f-a1ed3a570400]
 :PROPERTIES:
 :ID:       8391d31e-023a-4c80-b19c-47fbb2def264
 :CREATED:  [2023-04-12 Wed 18:11]
-:UPDATED:  [2023-04-12 Wed 18:11]
+:UPDATED:  [2023-04-16 Sun 15:49]
 :ROAM_EXCLUDE: t
 :END:
 
+***** init
+:PROPERTIES:
+:ID:       759bd7c8-702d-4358-8c43-bc8fe048545d
+:CREATED:  [2023-05-03 Wed 11:39]
+:UPDATED:  [2023-05-03 Wed 11:39]
+:ROAM_EXCLUDE: t
+:END:
 #+begin_src emacs-lisp
 (require 'dogears)
+(dogears-mode 1)
 #+end_src
+
+***** dogear upon org-store-link
+:PROPERTIES:
+:ID:       1c1c6905-2462-4aa2-a805-de40854fa3af
+:CREATED:  [2023-05-03 Wed 11:39]
+:UPDATED:  [2023-05-03 Wed 11:46]
+:ROAM_EXCLUDE: t
+:END:
+
+
+#+begin_src emacs-lisp :noweb-ref null
+(defun dogears-safe (&rest ignored)
+  (save-mark-and-excursion
+    (dogears-remember)))
+
+(qz/advice- org-store-link :after dogear-safe)
+
+;; (progn (toggle-debug-on-error) (call-interactively 'org-store-link))
+#+end_src
+
+#+RESULTS:
+| qz/advice-enable--org-store-link--dogear-safe | qz/advice-disable--org-store-link--dogear-safe |
 
 **** kubernetes
 :PROPERTIES:
