@@ -1978,32 +1978,26 @@ guix import elpa -a melpa ytdl
 :PROPERTIES:
 :ID:       c8903598-d72e-4539-884b-a60096be7fbe
 :CREATED:  [2022-09-28 Wed 15:42]
-:UPDATED:  [2023-02-24 Fri 12:38]
+:UPDATED:  [2023-04-16 Sun 15:21]
 :ROAM_EXCLUDE: t
 :END:
 
 #+name: guile-job-notes
 #+begin_src scheme :noweb-ref jobs
      ;;; job: commit my notes
-#~(job
-   '(next-minute '(15))
-   (lambda ()
-     (call-with-output-file "/tmp/commit.log"
-       (lambda (port)
-         (chdir "./life")
-         (display
-          (with-exception-handler
-              (lambda (exn)
-                (format #f "exception: ~s\n" exn))
-            (system*
-             (format #f "~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
-                     #$(file-append (@ (gnu packages version-control) git) "/bin/git")
-                     #$(file-append (@ (gnu packages version-control) git) "/bin/git")
-                     #$(file-append (@ (gnu packages base) coreutils) "/bin/date")))
-            port)))))
-   ;;"cd life && git add . && git commit -m \"auto-commit | $( ~a -uIs )\""
-   "notes-commit"
-   #:user "samuel")
+#~(job '(next-minute '(15))
+       ;;(lambda ()
+         ;; (system*
+         ;;  (format #f "~a add . && ~a commit -m \"auto-commit | $( ~a -uIs )\""
+         ;;          #$(file-append (@ (gnu packages version-control) git) "/bin/git")
+         ;;          #$(file-append (@ (gnu packages version-control) git) "/bin/git")
+         ;;          #$(file-append (@ (gnu packages base) coreutils) "/bin/date"))))
+         "cd life \\
+&& echo job: note-commit \\
+&& git add . \\
+&& git commit -m \"auto-commit | $(date -uIs)\""
+       "backup: notes-commit"
+       #:user "samuel")
 
 ;; (use-modules (guix gexp))
 ;; (let ((f (lambda ()
@@ -2021,7 +2015,7 @@ guix import elpa -a melpa ytdl
 ;;                          ;;(file-append #$(@ (gnu packages version-control) git) "/bin/git")
 ;;                          ;;(file-append #$(@ (gnu packages base) coreutils) "/bin/date")
 ;;                          ))
-;;                 port)))))))
+       ;;                 port)))))))
 ;;   (f))
 
 ;; (call-with-output-file "/tmp/commit.log"
@@ -2069,11 +2063,51 @@ guix import elpa -a melpa ytdl
        #:user "samuel")
 #+end_src
 
+******** hourly reminder
+:PROPERTIES:
+:ID:       fe0efa12-ae27-4652-aa9a-89b0f31b6615
+:CREATED:  [2023-04-15 Sat 12:53]
+:UPDATED:  [2023-04-15 Sat 13:10]
+:ROAM_EXCLUDE: t
+:END:
+
+********* things about which to be reminded
+:PROPERTIES:
+:ID:       2bc6f2f3-19b0-452b-9655-ecd09611c5a9
+:CREATED:  [2023-04-15 Sat 14:00]
+:UPDATED:  [2023-04-15 Sat 14:00]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src conf :tangle ~/.config/cron/humanity
+breathe.  do some pullups
+breathe.  do some pushups
+breathe.  work on your pancake stretch
+breathe.  do some dips
+breathe.  do some hangboarding
+#+end_src
+
+********** job
+:PROPERTIES:
+:ID:       170786cc-da2d-4add-be2a-038b7dc23af4
+:CREATED:  [2023-04-15 Sat 14:00]
+:UPDATED:  [2023-04-18 Tue 12:55]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref jobs
+;;; job: generate tags
+;; ref :: https://guix.gnu.org/en/manual/devel/en/html_node/Scheduled-Job-Execution.html
+#~(job '(next-hour) ;; every hour
+       "aplay ~/vids/gong-cut.wav &>/dev/null; shuf -n1 ~/.config/cron/humanity | espeak -s 150"
+       "gong"
+       #:user "samuel")
+#+end_src
+
 ******** external data; updates
 :PROPERTIES:
 :ID:       17e87570-2fa4-4f2e-95df-ef229c8ec1aa
 :CREATED:  [2022-10-04 Tue 16:19]
-:UPDATED:  [2022-10-04 Tue 16:19]
+:UPDATED:  [2023-04-15 Sat 14:10]
 :ROAM_EXCLUDE: t
 :END:
 
