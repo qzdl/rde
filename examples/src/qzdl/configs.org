@@ -1,5 +1,5 @@
 :PROPERTIES:
-:UPDATED:  [2023-05-03 Wed 18:56]
+:UPDATED:  [2023-05-03 Wed 18:57]
 :CREATED:  [2022-08-30 Tue 11:12]
 :ID:       12f7748c-7095-4969-8261-94ad0169a24c
 :END:
@@ -169,13 +169,36 @@ Debugger entered--Lisp error: (file-missing "Cannot open load file" "No such fil
 :UPDATED:  [2022-09-28 Wed 17:43]
 :ROAM_EXCLUDE: t
 :END:
-****** TODO elisp parser in RDE (clobbers vectors)
+****** TODO elisp parser in RDE
 :PROPERTIES:
 :ID:       d4870719-33ce-4433-98ef-3867e1698969
 :CREATED:  [2022-09-28 Wed 14:12]
 :UPDATED:  [2022-09-28 Wed 17:44]
 :ROAM_EXCLUDE: t
 :END:
+
+******* problems
+:PROPERTIES:
+:ID:       0415f739-d3a7-42bb-b0b0-90eb2ee2c6f7
+:CREATED:  [2023-05-03 Wed 18:06]
+:UPDATED:  [2023-05-03 Wed 18:06]
+:ROAM_EXCLUDE: t
+:END:
+******** clobbers vectors
+:PROPERTIES:
+:ID:       72e5eb23-331e-445a-8004-86637ccf88ad
+:CREATED:  [2023-05-03 Wed 18:06]
+:UPDATED:  [2023-05-03 Wed 18:06]
+:ROAM_EXCLUDE: t
+:END:
+******** clobbers symbols beginning with numbers =44:= -> ~#{44:}~ :: =1+= -> ~#{1+}~
+:PROPERTIES:
+:ID:       3bc8f3bd-3c9d-49d0-8ec8-659b95458f81
+:CREATED:  [2023-05-03 Wed 18:06]
+:UPDATED:  [2023-05-03 Wed 18:06]
+:ROAM_EXCLUDE: t
+:END:
+
 ******* TODO update rde
 :PROPERTIES:
 :ID:       3c4ea3e2-da0d-4265-911a-0a1e8c272e01
@@ -4235,8 +4258,9 @@ annoying! cannot fathom why this doesn't work
 
      ;; NOWEB CONF START
      <<conf-emacs>>
-     ;; NOWEB CONF END
+     ;; NOWEB CONF END (three parens and  terminate the file)
      )))
+
 #+end_src
 
 *** bindings                                                                    :kbd:
@@ -6924,35 +6948,36 @@ while from the archive; but I mean... [[id:0f7be177-127d-4476-9a0f-a1ed3a570400]
 :PROPERTIES:
 :ID:       a571d35b-a8e0-4733-9bb7-86bab3a8f574
 :CREATED:  [2023-04-25 Tue 12:27]
-:UPDATED:  [2023-04-25 Tue 12:27]
+:UPDATED:  [2023-05-03 Wed 16:16]
 :ROAM_EXCLUDE: t
 :END:
-- nicked & consolidated ::
+
+- nicked & consolidated from ::
 https://github.com/NapoleonWils0n/cerberus/blob/master/emacs/mpv-timer.org
 
 #+begin_src emacs-lisp
 (defun mpv-osd ()
   "Show the osd"
   (interactive)
-  (mpv--enqueue '("set_property" "osd-level" "3") #'ignore))
+  (mpv--enqueue '("set_property" "osd-level" "3") 'ignore))
 
 (defun mpv-screenshot ()
   "Take a screenshot"
   (interactive)
-  (mpv--enqueue '("screenshot") #'ignore))
+  (mpv--enqueue '("screenshot") 'ignore))
 
 
 
 (defun mpv-frame-step ()
   "Step one frame forward."
   (interactive)
-  (mpv--enqueue '("frame-step") #'ignore))
+  (mpv--enqueue '("frame-step") 'ignore))
 
 
 (defun mpv-frame-back-step ()
   "Step one frame backward."
   (interactive)
-  (mpv--enqueue '("frame-back-step") #'ignore))
+  (mpv--enqueue '("frame-back-step") 'ignore))
 
 
 #+end_src
@@ -11806,7 +11831,7 @@ pactl list sources | grep -E 'Name|Desc' -n
 :PROPERTIES:
 :ID:       13b782de-a874-43ff-8f8f-e75960674e48
 :CREATED:  [2022-04-22 Fri 15:31]
-:UPDATED:  [2023-05-03 Wed 15:45]
+:UPDATED:  [2023-05-03 Wed 16:17]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -13562,7 +13587,7 @@ eval "docker run --rm --volumes-from gcloud-config gcr.io/google.com/cloudsdktoo
 :ID:       476ef762-1350-4afa-a8ad-2cd3e42eb730
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2023-05-03 Wed 18:56]
+:UPDATED:  [2023-05-03 Wed 18:57]
 :END:
 
 [fn:4] as of [2022-10-05 Wed], [[id:93ad19fa-a4fe-48c8-81ac-42bd5e138af9][swaywm]]
