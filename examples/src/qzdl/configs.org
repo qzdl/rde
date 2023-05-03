@@ -7591,6 +7591,115 @@ The diary entry can contain `%s' which will be replaced with
 
 #+RESULTS:
 : qz/diary-sunset
+
+***** ql
+:PROPERTIES:
+:ID:       604af92f-0215-4639-9eb8-6f1554800f94
+:CREATED:  [2023-04-21 Fri 15:28]
+:UPDATED:  [2023-04-21 Fri 15:28]
+:ROAM_EXCLUDE: t
+:END:
+****** qz/org-ql
+:PROPERTIES:
+:ID:       f4ac07db-3576-4843-8164-ffb169de5db1
+:CREATED:  [2023-04-21 Fri 15:28]
+:UPDATED:  [2023-04-21 Fri 15:37]
+:ROAM_EXCLUDE: t
+:END:
+
+
+#+begin_src emacs-lisp :noweb-ref org :results silent
+;;;;
+(defun qz/org-ql (select from where order limit transform)
+  (let ((limit (or limit 100)))
+    (mapcar
+     transform
+     (seq-take
+      (org-ql-query
+        :select select
+        ;;:from org-agenda-files
+        ;;:from (seq-take (cl-sort (org-roam-dailies--list-files) 'string-greaterp) 1)
+        :from from
+        ;;:where '(clocked)
+        ;;:where '(todo)
+        ;; NOTE arbitrary function doesn't work
+        ;; :where '((lambda (&rest e)
+        ;;            (message "where: %s" e)
+        ;;            t))
+        :order-by order)
+      limit))))
+
+(defun qz/org-ql-:select-default ()
+  (lambda ()
+    (list :title   (cdar (org-collect-keywords '("TITLE")))
+          :outline (org-get-outline-path)
+          :heading (org-get-heading)
+          :id      (org-id-get)
+          :tags    (org-get-tags)
+          :node    (org-roam-node-at-point)
+          :updated (or (org-entry-get (point) "UPDATED") "[0000-00-00]")
+          :created (or (org-entry-get (point) "CREATED") "[0000-00-00]"))))
+
+(defun qz/org-ql-:transform-default (cols)
+  (lambda (e)
+    (let ((trunc 75))
+      (append
+       (mapcar (lambda (col) (plist-get e col)) cols)
+       (list
+        ;; heading
+        (org-make-link-string
+         (concat "id:" (plist-get e :id))
+         (s-truncate trunc
+                     (org-no-properties (org-link-display-format
+                                         (plist-get e :heading)))))
+        ;; node
+        (let ((n (plist-get e :node)))
+          (org-make-link-string
+           (org-roam-node-id n)
+           (s-truncate trunc (org-roam-node-title n)))))))))
+
+(defun qz/org-ql-:order-time (col)
+  (let ((col (or col :updated)))
+    `(lambda (a b)
+       (qz/debug- (message "order pred %s" ,col))
+       (when-let* ((aa (plist-get a ,col))
+                   (bb (plist-get b ,col)))
+         (not (time-less-p (date-to-time aa)
+                           (date-to-time bb)))))))
+
+;; (funcall (qz/org-ql-:order-time :created)
+;;          '(:updated "2023-01-01")
+;;          '(:updated "2023-01-02"))
+
+(defun qz/org-ql--time (time-col &optional limit cols)
+  (let ((cols (or cols
+                  (list time-col :title))))
+    (qz/org-ql
+     ;; select
+     (qz/org-ql-:select-default)
+     ;; from
+     (qz/month-files)
+     ;; where
+     nil
+     ;; order
+     (qz/org-ql-:order-time :updated)
+     ;; limit
+     limit
+     ;; transform
+     (qz/org-ql-:transform-default cols))))
+
+
+(defun qz/org-ql--updated ()
+  (qz/org-ql--time :updated))
+
+(defun qz/org-ql--created ()
+  (qz/org-ql--time :created))
+
+;;(qz/org-ql--updated)
+;;(qz/org-ql--created)
+#+end_src
+
+
 ***** clock
 :PROPERTIES:
 :ID:       d4dca377-556a-4783-9ad2-7eac26cece41
