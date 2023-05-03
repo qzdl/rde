@@ -6564,6 +6564,73 @@ while from the archive; but I mean... [[id:0f7be177-127d-4476-9a0f-a1ed3a570400]
         (auth-source-pass-get 'secret "chatgpt/api/emacs")
         dall-e-shell-openai-key chatgpt-shell-openai-key))
 #+end_src
+
+
+**** mpv
+:PROPERTIES:
+:ID:       7c3d77d7-f5e5-4c69-b260-b7ebd51be79b
+:CREATED:  [2023-04-25 Tue 12:27]
+:UPDATED:  [2023-04-25 Tue 12:27]
+:ROAM_EXCLUDE: t
+:END:
+
+***** etc
+:PROPERTIES:
+:ID:       cf6bc373-1f5e-4a19-ac68-e78e1dc23580
+:CREATED:  [2023-04-25 Tue 12:27]
+:UPDATED:  [2023-04-25 Tue 12:27]
+:ROAM_EXCLUDE: t
+:END:
+
+
+***** helpers
+:PROPERTIES:
+:ID:       a571d35b-a8e0-4733-9bb7-86bab3a8f574
+:CREATED:  [2023-04-25 Tue 12:27]
+:UPDATED:  [2023-04-25 Tue 12:27]
+:ROAM_EXCLUDE: t
+:END:
+- nicked & consolidated ::
+https://github.com/NapoleonWils0n/cerberus/blob/master/emacs/mpv-timer.org
+
+#+begin_src emacs-lisp
+(defun mpv-osd ()
+  "Show the osd"
+  (interactive)
+  (mpv--enqueue '("set_property" "osd-level" "3") #'ignore))
+
+(defun mpv-screenshot ()
+  "Take a screenshot"
+  (interactive)
+  (mpv--enqueue '("screenshot") #'ignore))
+
+
+
+(defun mpv-frame-step ()
+  "Step one frame forward."
+  (interactive)
+  (mpv--enqueue '("frame-step") #'ignore))
+
+
+(defun mpv-frame-back-step ()
+  "Step one frame backward."
+  (interactive)
+  (mpv--enqueue '("frame-back-step") #'ignore))
+
+
+#+end_src
+
+***** TODO quick-cutting
+:PROPERTIES:
+:ID:       d3c85696-80f3-4299-8218-544814daa267
+:CREATED:  [2023-04-25 Tue 12:27]
+:UPDATED:  [2023-04-25 Tue 12:27]
+:ROAM_EXCLUDE: t
+:END:
+
+-kwq
+:: https://github.com/NapoleonWils0n/cerberus/blob/master/emacs/edit-videos-with-ffmpeg-mpv-emacs.org
+
 *** [[id:6baf4bff-d5fe-4ce0-a130-0464e49de67d][org]]
 :PROPERTIES:
 :ID:       71e29a1b-5349-4d90-965f-b628210f1fdb
