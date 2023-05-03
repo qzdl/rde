@@ -10017,6 +10017,82 @@ https://github.com/org-roam/org-roam/issues/991#issuecomment-882010053
 #+begin_src emacs-lisp :noweb-ref org
 (require 'org-download)
 #+end_src
+
+***** table
+:PROPERTIES:
+:ID:       6e74718a-f794-443f-aca1-676f4456fd19
+:CREATED:  [2023-04-27 Thu 14:18]
+:UPDATED:  [2023-04-27 Thu 14:18]
+:ROAM_EXCLUDE: t
+:END:
+
+****** NEXT org-plot
+:PROPERTIES:
+:ID:       97b228d1-c48d-420e-acca-170b77053e97
+:CREATED:  [2023-04-27 Thu 14:18]
+:UPDATED:  [2023-04-27 Thu 21:06]
+:ROAM_EXCLUDE: t
+:END:
+:LOGBOOK:
+CLOCK: [2023-04-27 Thu 14:16]--[2023-04-27 Thu 17:29] =>  3:13
+:END:
+
+#+begin_src emacs-lisp
+(defvar qz/orgtbl-plot-function
+  ;;'orgtbl-uc-draw-cont
+  'orgtbl-uc-draw-grid
+  ;;'orgtbl-ascii-draw
+  )
+
+(defun qz/orgtbl-plot (&optional ask)
+  "Draw an ASCII bar plot in a column.
+
+With cursor in a column containing numerical values, this function
+will draw a plot in a new column.
+
+ASK, if given, is a numeric prefix to override the default 12
+characters width of the plot.  ASK may also be the `\\[universal-argument]' \
+prefix,
+which will prompt for the width."
+  (interactive "P")
+  (let ((col (org-table-current-column))
+        (min  1e999)		 ; 1e999 will be converted to infinity
+        (max -1e999)		 ; which is the desired result
+        (table (org-table-to-lisp))
+        (length
+         (cond ((consp ask)
+                (read-number "Length of column " 12))
+               ((numberp ask) ask)
+               (t 12))))
+    ;; Skip any hline a the top of table.
+    (while (eq (car table) 'hline) (pop table))
+    ;; Skip table header if any.
+    (dolist (x (or (cdr (memq 'hline table)) table))
+      (when (consp x)
+        (setq x (nth (1- col) x))
+        (when (string-match
+               "^[-+]?\\([0-9]*[.]\\)?[0-9]*\\([eE][+-]?[0-9]+\\)?$"
+               x)
+          (setq x (string-to-number x))
+          (when (> min x) (setq min x))
+          (when (< max x) (setq max x)))))
+    (org-table-insert-column)
+    (org-table-move-column-right)
+    (org-table-store-formulas
+     (cons
+      (cons
+       (concat "$" (number-to-string (1+ col)))
+       (format "'(%s $%s %s %s %s)"
+               qz/orgtbl-plot-function col min max length))
+      (org-table-get-stored-formulas)))
+    (org-table-recalculate t)))
+
+(define-key org-mode-map (kbd "C-c \" a") 'qz/orgtbl-plot)
+#+end_src
+
+#+RESULTS:
+: qz/orgtbl-plot
+
 **** capture
 :PROPERTIES:
 :ID:       609ab395-5ce2-4878-8bda-70dfe0182c78
