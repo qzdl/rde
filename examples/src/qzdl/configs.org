@@ -5084,14 +5084,19 @@ go()
 :ROAM_EXCLUDE: t
 :UPDATED:  [2022-09-28 Wed 16:36]
 :END:
-**** advice                                                              :func:macro:
+**** qz/advice                                                           :func:macro:
 :PROPERTIES:
 :ID:       f061bce6-701f-4f81-b0e2-dc97554b58c2
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2023-04-16 Sun 15:34]
 :END:
+
 #+begin_src emacs-lisp :noweb-ref general
 (defmacro qz/advice- (target-fn state advice-fn)
+  "Helper to manage advice functions.
+
+Creates commands for on/off which state the name of the target and advised functions."
   (let* ((s-advice (lambda (e)
                      (intern (format "qz/advice-%s--%s--%s"
                                      e target-fn advice-fn))))
@@ -5207,25 +5212,28 @@ body      *values you wish to transform*: a list; cons, proper,
 :ID:       fe64fe7a-bb4c-4828-bb8b-5f263df8b3e9
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2023-04-16 Sun 15:35]
 :END:
 #+begin_src emacs-lisp :noweb-ref general
 (defvar qz/debug 0 "debugging assists")
 
 (defmacro qz/debug- (&rest body)
-  (if qz/debug
+  (if (< 0 qz/debug)
       `(progn ,@body)))
 
 (qz/debug- (message "yo"))
 #+end_src
 
 #+RESULTS:
-: yo
+
 ***** demo ;; what is happening here? why is message evaluated
 :PROPERTIES:
 :ID:       759495b5-773d-4276-ae76-449267545e4c
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2023-04-16 Sun 15:36]
 :END:
+
 #+begin_src emacs-lisp :tangle no :noweb-ref null
 (view-echo-area-messages)
 (setq qz/debug 0)
@@ -5235,7 +5243,6 @@ body      *values you wish to transform*: a list; cons, proper,
 #+end_src
 
 #+RESULTS:
-: on
 
 **** newstore
 :PROPERTIES:
