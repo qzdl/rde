@@ -9389,11 +9389,14 @@ so we can use it as a COMMAND. better traceability than a lambda
 :ID:       2bb19766-f330-4c47-9a61-93445e72ef38
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
+:UPDATED:  [2023-04-24 Mon 10:29]
 :END:
+
 #+begin_src emacs-lisp  :noweb-ref org
 (with-eval-after-load 'org-roam
   ;; NOWEB ROAM START
   (message "roam start")
+  (require 'org-roam-protocol)
   <<roam-hoist>>
 
   <<roam>>
