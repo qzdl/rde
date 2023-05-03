@@ -518,6 +518,7 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
   #:use-module (rde packages emacs)
   #:use-module (rde packages emacs-xyz)
   #:use-module (rde packages)
+  #:use-module (rde system services accounts)
   ;;#:use-module (gnu home-services shellutils)
   ;;#:use-module (nongnu packages nvidia)
   ;;#:use-module (rde features bluetooth) ;; TODO qzdl
@@ -3086,7 +3087,6 @@ annoying! cannot fathom why this doesn't work
 "emacs-string-inflection"
 "emacs-terraform-mode"
 "emacs-yaml-mode"
-"emacs-ytdl"
 "emacs-org-jira"
 "emacs-org-ql"
 "emacs-orgit"        ;; TODO feature-version-control
@@ -3668,18 +3668,27 @@ annoying! cannot fathom why this doesn't work
 :UPDATED:  [2023-04-25 Tue 20:08]
 :ROAM_EXCLUDE: t
 :END:
-#+begin_src scheme :noweb-ref null
-;; :noweb-ref main
 
+
+#+begin_src scheme :noweb-ref main
+(feature-youtube-dl
+ #:emacs-ytdl emacs-ytdl-next)
+(feature-nyxt)
+(feature-emacs-dashboard)
+(feature-emacs-ednc)
+(feature-emacs-pulseaudio-control)
+#+end_src
+
+#+begin_src scheme :noweb-ref null
 (feature-compile)
 (feature-emacs-battery)
 (feature-emacs-browse-url)
 (feature-emacs-comint)
-(feature-emacs-dashboard)
+
 ;;(feature-emacs-debbugs)
 (feature-emacs-dired)
 (feature-emacs-display-wttr)
-(feature-emacs-ednc)
+
 (feature-emacs-elisp)
 (feature-emacs-emms)
 (feature-emacs-flymake)
@@ -3691,8 +3700,6 @@ annoying! cannot fathom why this doesn't work
 (feature-go)
 (feature-gtk3)
 (feature-imv)
-(feature-nyxt)
-(feature-pulseaudio-contro-dl)
 (feature-ungoogled-chromium)
 (feature-youtube-dl)
 #+end_src
@@ -6481,7 +6488,7 @@ rg 'src.(shell|bash|sh).*drawer' $HOME/life/roam | wc -l
 :PROPERTIES:
 :ID:       0261fbe2-6485-458f-8480-c625b24197cc
 :CREATED:  [2023-05-03 Wed 13:27]
-:UPDATED:  [2023-05-03 Wed 13:27]
+:UPDATED:  [2023-05-03 Wed 13:28]
 :ROAM_EXCLUDE: t
 :END:
 
