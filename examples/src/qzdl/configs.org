@@ -5579,6 +5579,42 @@ CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
 #+end_src
 
 #+RESULTS:
+***** sqlfluff
+:PROPERTIES:
+:ID:       0f7c1f78-677a-40a5-ac69-218c1c5e157e
+:CREATED:  [2023-04-26 Wed 16:47]
+:UPDATED:  [2023-04-27 Thu 15:43]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+(defun qz/sqlfluff-region (&optional beg end info)
+  "uses src block by default"
+  (interactive)
+  (let ((dialect
+         (cl-case (intern (cdr (assoc :engine
+                                      (nth 2 (or info
+                                                 (org-babel-get-src-block-info))))))
+           (bq "bigquery")
+           (postgres "postgresql")
+           (t (error "🙄 my lazy ass")))))
+    (cl-destructuring-bind
+        (beg end) (or (and beg end (list beg end))
+                      (save-mark-and-excursion
+                        (org-babel-mark-block)
+                        (list (region-beginning) (region-end))))
+      (shell-command-on-region
+       beg end
+       (format
+        "sqlfluff fix --force --disable_progress_bar --dialect %s -"
+        dialect)
+       nil ;; no output buffer
+       'replace))))
+#+end_src
+
+#+RESULTS:
+: qz/sqlfluff-region
+
 ***** org-babel-default-header-args:sql
 :PROPERTIES:
 :ID:       51e144e6-da9d-4293-974d-9639cbee4173
