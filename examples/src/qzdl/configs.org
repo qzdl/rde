@@ -5639,7 +5639,7 @@ CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
 :PROPERTIES:
 :ID:       4bc34558-e335-475b-ad80-87333824ac44
 :CREATED:  [2023-04-14 Fri 18:34]
-:UPDATED:  [2023-04-14 Fri 18:43]
+:UPDATED:  [2023-04-17 Mon 13:14]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -5653,12 +5653,11 @@ she said im cool!!
 (defun org-babel-execute:bq (orig-fun body params)
   (let ((dry? (assq :dry params)))
     (if (string-equal-ignore-case (cdr (assq :engine params)) "bq")
-        (let ((res (org-babel-execute:shell (format "bq query --format=json --nouse_legacy_sql %s '%s'"
-                                                    (if dry? "--dry_run" "")
-                                                    body)
-                                            params)))
-          ;; here we can talk about RES
-          ;; TODO don't forget precision elisp format string is %.Nf
+        (let ((res (org-babel-execute:shell
+                    (format "bq query --format=json --nouse_legacy_sql %s '%s'"
+                            (if dry? "--dry_run" "")
+                            (org-babel-expand-body:sql body params))
+                    params)))
           (ignore-errors
             (message "Estimated Bytes: %.2f MB"
                      (let ((b (string-to-number (or (cdr (assoc 'totalBytesProcessed
@@ -5670,10 +5669,11 @@ she said im cool!!
           (json-to-org-table-parse-json-string res))
       (org-babel-execute:sql body params))))
 
-(advice-add 'org-babel-execute:sql :around 'org-babel-execute:bq)
+(qz/advice- org-babel-execute:sql :around org-babel-execute:bq)
 #+end_src
 
 #+RESULTS:
+| qz/advice-enable--org-babel-execute:sql--org-babel-execute:bq | qz/advice-disable--org-babel-execute:sql--org-babel-execute:bq |
 
 **** [[id:091ac573-6b34-4e0e-88b8-415785d5ae85][python]]
 :PROPERTIES:
