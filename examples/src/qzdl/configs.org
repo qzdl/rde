@@ -6548,6 +6548,22 @@ while from the archive; but I mean... [[id:0f7be177-127d-4476-9a0f-a1ed3a570400]
 #+RESULTS:
 : t
 
+**** chatgpt-shell
+:PROPERTIES:
+:ID:       7c74478a-1c1a-4bb3-8b13-04a30da500dc
+:CREATED:  [2023-04-21 Fri 16:10]
+:UPDATED:  [2023-04-21 Fri 16:10]
+:ROAM_EXCLUDE: t
+:END:
+
+- :: https://github.com/xenodium/chatgpt-shell
+
+#+begin_src emacs-lisp :results silent
+(with-eval-after-load 'chatgpt-shell
+  (setq chatgpt-shell-openai-key
+        (auth-source-pass-get 'secret "chatgpt/api/emacs")
+        dall-e-shell-openai-key chatgpt-shell-openai-key))
+#+end_src
 *** [[id:6baf4bff-d5fe-4ce0-a130-0464e49de67d][org]]
 :PROPERTIES:
 :ID:       71e29a1b-5349-4d90-965f-b628210f1fdb
