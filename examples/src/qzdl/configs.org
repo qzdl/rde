@@ -2932,6 +2932,19 @@ host	all	all	0.0.0.0/0       md5
                      (output DP-2 enable)))))
 #+end_src
 
+****** TODO redshift
+:PROPERTIES:
+:ID:       43d6b991-b37e-4d1c-86e5-36fd0a0e5cdf
+:CREATED:  [2023-04-26 Wed 21:11]
+:UPDATED:  [2023-04-26 Wed 21:32]
+:ROAM_EXCLUDE: t
+:END:
+
+annoying! cannot fathom why this doesn't work
+
+#+begin_src scheme :noweb-ref main
+;; (feature-redshift
+;;  #:redshift redshift-wayland)
 #+end_src
 
 ****** i3
