@@ -1674,6 +1674,58 @@ bookmarks-alist) to save and restore places with mode-specific functionality.")
     (license license:gpl3+)))
 #+end_src
 
+***** emacs-ytdl-next
+:PROPERTIES:
+:ID:       24f69dd9-3e91-4743-88fa-6efd43a4ca8d
+:CREATED:  [2023-04-24 Mon 15:41]
+:UPDATED:  [2023-04-24 Mon 15:42]
+:ROAM_EXCLUDE: t
+:END:
+
+
+#+begin_src scheme
+(define-public emacs-ytdl-next
+  (package
+    (name "emacs-ytdl")
+    (version "20230331.1804")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/tuedachu/ytdl.git")
+                    (commit "2ea3daf2f6aa9d18b71fe3e15f05c30a56fca228")))
+              (sha256
+               (base32
+                "0y62lkgsg19j05dpd6sp6zify8vq8xvpc8caqiy4rwi7p4ahacsf"))))
+    (build-system emacs-build-system)
+    (propagated-inputs (list emacs-async emacs-transient emacs-dash))
+    (home-page "https://gitlab.com/tuedachu/ytdl")
+    (synopsis "Emacs Interface for youtube-dl")
+    (description
+     "ytdl.el is an Emacs-based interface for youtube-dl, written in emacs-lisp.
+youtube-dl is a command-line program to download videos from YouTube and a few
+more sites.  More information at https://yt-dl.org.  youtube-dl supports many
+more sites: PeerTube, BBC, IMDB, InternetVideoArchive (non-exhaustive list) *
+Setup Add \"(require ytdl)\" to your \"init.el\" file.  Further customization can be
+found in the documentation online.")
+    (license license:gpl3+)))
+#+end_src
+
+#+RESULTS:
+
+****** import from melpa
+:PROPERTIES:
+:ID:       d6821367-61d5-4369-bb81-66aab6b424f8
+:CREATED:  [2023-04-24 Mon 15:42]
+:UPDATED:  [2023-04-24 Mon 15:42]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src shell
+guix import elpa -a melpa ytdl
+#+end_src
+
+
+
+
 *** imports
 :PROPERTIES:
 :ID:       065c4d90-4d84-4969-8221-44f5008a9502
