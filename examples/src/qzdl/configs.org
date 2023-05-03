@@ -2922,12 +2922,18 @@ host	all	all	0.0.0.0/0       md5
  #:corfu-doc-auto #f)
 #+end_src
 
+******* emacs-helpful
+:PROPERTIES:
+:ID:       d652de96-8917-4689-bf94-426a509c1a98
+:CREATED:  [2023-04-16 Sun 15:45]
+:UPDATED:  [2023-04-16 Sun 15:45]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src scheme :noweb-ref main
-(feature-emacs-corfu
- #:corfu-doc-auto #f)
+(feature-emacs-help)
+#+end_src
+
 #+end_src
 
 ******* emacs-tempel
