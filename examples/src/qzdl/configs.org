@@ -11806,7 +11806,7 @@ pactl list sources | grep -E 'Name|Desc' -n
 :PROPERTIES:
 :ID:       13b782de-a874-43ff-8f8f-e75960674e48
 :CREATED:  [2022-04-22 Fri 15:31]
-:UPDATED:  [2022-04-25 Mon 15:15]
+:UPDATED:  [2023-05-03 Wed 15:45]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -11818,20 +11818,73 @@ pactl list sources | grep -E 'Name|Desc' -n
    (format "bluetoothctl connect %s" mac)
    "*bluetoothctl*"))
 
+
+;;  [AnnePro2 P4]# block 44:F0:9E:51:52:7B
+;; [CHG] Device 44:F0:9E:51:52:7B Blocked: yes
+;; Changing 44:F0:9E:51:52:7B block succeeded
+;; [CHG] Device 44:F0:9E:51:52:7B Connected: no
+;; [DEL] Transport /org/bluez/hci0/dev_44_F0_9E_51_52_7B/sep1/fd5
+;; [DEL] Endpoint /org/bluez/hci0/dev_44_F0_9E_51_52_7B/sep1
+;; [DEL] Endpoint /org/bluez/hci0/dev_44_F0_9E_51_52_7B/sep2
+;; [DEL] Endpoint /org/bluez/hci0/dev_44_F0_9E_51_52_7B/sep3
+;; [AnnePro2 P4]# disconnect 44:F0:9E:51:52:7B
+
+
+(defun qz/bt-do (commands mac)
+  (interactive "saddress: ")
+  (mapcar (lambda (c) (async-shell-command
+                       (format "bluetoothctl %s %s" c mac)
+                       "*bluetoothctl*"))
+
+          (qz/ensure-list command)))
+
+(defun qz/bt-ignore (mac)
+  (interactive "saddress: ")
+  (qz/bt-do '(block disconnect) mac))
+
+(defmacro qz/bt-ui (command-devices)
+  "A macro as a UI to manage bluetooth actions.
+
+Creates mapped commands against each named device."
+  (let ((f-name (lambda (e)
+                  (intern (format "qz/bt-%s--%s"
+                                  command device))))
+
+    (mapcar (lambda ()
+
+              (defun ,TODO ()
+                (qz/bt-, ,actions mac))
+
+       (defun ,enable ()
+         (interactive)
+         (advice-add ',target-fn ,state ',advice-fn))
+
+       (defun ,(funcall s-advice 'disable) ()
+         (interactive)
+         (advice-remove ',target-fn ',advice-fn))
+
+       (,enable)
+       (list ',enable ',disable))))))
+
+(defvar qz/bluetooth-devices
+  '(airpods . 44:F0:9E:51:52:7B))
+
+
 (defun qz/bt-airpods ()
   (interactive)
   (qz/bt-connect "44:F0:9E:51:52:7B"))
 
 (defun qz/bt-aiaiai ()
   (interactive)
-  (qz/bt-connect "44:F0:9E:51:52:7B")
+  (qz/bt-connect "44:F0:9E:51:52:7B"))
 
-
-  )
+(defun qz/bt-boomzo ()
+  (interactive)
+  (qz/bt-connect "44:F0:9E:51:52:7B"))
 #+end_src
 
 #+RESULTS:
-: qz/bt-aiaiai
+: qz/bt-boomzo
 
 *** visual
 :PROPERTIES:
