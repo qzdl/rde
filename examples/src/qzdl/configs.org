@@ -6271,6 +6271,21 @@ consuming
 #+RESULTS:
 : consult-line-multi
 
+***** {C-c C-j} :: consult-imenu
+:PROPERTIES:
+:ID:       cc85169e-c54b-4841-bda7-6c3d189c0b34
+:CREATED:  [2023-04-25 Tue 19:54]
+:UPDATED:  [2023-04-25 Tue 19:54]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp :noweb-ref kbd
+(define-key global-map (kbd "C-c C-j") 'consult-imenu)
+#+end_src
+
+#+RESULTS:
+: consult-imenu
+
 ***** recoll
 :PROPERTIES:
 :ID:       27a44696-4cf0-47d2-82b2-b830a61cf8f0
