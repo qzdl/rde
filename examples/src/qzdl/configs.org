@@ -756,6 +756,137 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
    (system-services-getter bluetooth-home-services)))
 #+end_src
 
+***** TODO redshift
+:PROPERTIES:
+:ID:       2fb33148-9ba8-4a2c-9d81-df60039c8267
+:CREATED:  [2023-04-26 Wed 20:39]
+:UPDATED:  [2023-04-26 Wed 20:39]
+:ROAM_EXCLUDE: t
+:END:
+
+****** feature
+:PROPERTIES:
+:ID:       a8f7a40d-54a1-4b3f-ba76-396bf25c6d82
+:CREATED:  [2023-04-26 Wed 21:22]
+:UPDATED:  [2023-04-26 Wed 21:22]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref null
+(use-modules (gnu services configuration)
+             (gnu home-services-utils)
+             (gnu home services shepherd)
+             (gnu packages xdisorg)
+             (rde serializers ini))
+
+(define* (feature-redshift
+          #:key
+          (redshift redshift-wayland)
+          (extra-config '()))
+  "Configure redshift."
+  (ensure-pred file-like? redshift)
+
+  (define (get-home-services config)
+    (list
+     (service
+      home-redshift-service-type
+      (home-redshift-configuration
+       (redshift redshift)
+       (config
+        `(,@extra-config))))))
+
+  (feature
+   (name 'redshift)
+   (values `((redshift . ,redshift)))
+   (home-services-getter get-home-services)))
+
+#+end_src
+
+****** TODO home-redshift-service
+:PROPERTIES:
+:ID:       92ae8438-7458-4873-b290-470630f04d67
+:CREATED:  [2023-04-26 Wed 20:39]
+:UPDATED:  [2023-04-26 Wed 21:22]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref null
+
+;;;
+;;; redshift.
+;;;
+
+(define-configuration home-redshift-configuration
+  (redshift
+    (file-like redshift)
+    "redshift package to use.")
+  (config
+   (ini-config
+    ;; `(redshift . ((transition . 1)
+    ;;               (temp-day . 5500K)
+    ;;               (temp-night . 1000K)
+    ;;               (brightness-day . 0.8)
+    ;;               (brightness-night . 0.4)))
+    `())
+   "A basic INI-style config.  See http://jonls.dk/redshift/#configuration-file for more details.
+
+@lisp
+()
+@end lisp"))
+
+(define (add-redshift-packages config)
+  (list (home-redshift-configuration-redshift config)))
+
+(define (add-redshift-configuration config)
+  `(("redshift/config"
+     ,(apply
+       mixed-text-file
+       "redshift-config"
+       (generic-serialize-ini-config
+        (home-redshift-configuration-config config))))))
+
+(define (home-redshift-shepherd-service config)
+  (let ((redshift (home-redshift-configuration-redshift config)))
+    (list
+     (shepherd-service
+      (provision '(redshift))
+      (start #~(make-forkexec-constructor
+                (list #$(file-append redshift "/bin/redshift"))
+                #:log-file (string-append
+                            (or (getenv "XDG_LOG_HOME")
+                                (string-append
+                                 (getenv "HOME")
+                                 "/.local/var/log"))
+                            "/redshift.log")))
+      (stop #~(make-kill-destructor))
+      (documentation "Run Redshift")))))
+
+(define (home-redshift-extensions cfg extensions)
+  (home-redshift-configuration
+   (inherit cfg)
+   (config
+    (append (home-redshift-configuration-config cfg)
+            (append-map identity (reverse extensions))))))
+
+(define home-redshift-service-type
+  (service-type (name 'home-redshift)
+                (extensions
+                 (list (service-extension
+                        home-profile-service-type
+                        add-redshift-packages)
+                       (service-extension
+                        home-shepherd-service-type
+                        home-redshift-shepherd-service)
+                       (service-extension
+                        home-xdg-configuration-files-service-type
+                        add-redshift-configuration)))
+                (compose identity)
+                (extend home-redshift-extensions)
+                (default-value (home-redshift-configuration))
+                (description "\
+Install and configure redshift, an adaptive light-temperature controller.")))
+#+end_src
+
 **** debug; pre features
 :PROPERTIES:
 :ID:       36dc9e54-a5c8-43c8-a464-6349186edd50
