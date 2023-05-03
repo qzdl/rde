@@ -13455,6 +13455,26 @@ JS: json object"
 :END:
 #+begin_src shell
 #+end_src
+
+*** note-health
+:PROPERTIES:
+:ID:       f7f6f20c-7184-407b-b921-c5e70ebbbff5
+:CREATED:  [2023-04-16 Sun 15:25]
+:UPDATED:  [2023-04-16 Sun 15:26]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src shell
+echo autosaves: "$(find . | grep -E '(\\b\\.\\#|\\b\\#)' | tee /tmp/autosaves-life | wc -l)"
+echo unignored: "$(git ls-files -ic --exclude-from=.gitignore | tee /tmp/unignored-life | wc -l)"
+#+end_src
+
+#+RESULTS:
+:results:
+autosaves: 0
+unignored: 0
+:end:
+
 *** TODO bye
 :PROPERTIES:
 :ID:       08229c7a-ffa3-4b09-8bfd-f8fa85300131
