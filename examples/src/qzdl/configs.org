@@ -2934,6 +2934,16 @@ host	all	all	0.0.0.0/0       md5
 (feature-emacs-help)
 #+end_src
 
+******* emacs-info
+:PROPERTIES:
+:ID:       96b6b673-2ef5-4981-809e-e48234ee7f5f
+:CREATED:  [2023-04-16 Sun 15:45]
+:UPDATED:  [2023-04-16 Sun 15:46]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref main
+(feature-emacs-info)
 #+end_src
 
 ******* emacs-tempel
