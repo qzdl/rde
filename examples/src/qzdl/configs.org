@@ -5963,7 +5963,14 @@ CLOCK: [2022-03-17 Thu 10:06]--[2022-03-17 Thu 11:32] =>  1:26
 #+RESULTS:
 : ((:engine . postgres) (:dbport . 5432) (:dbhost . localhost) (:var bi . `p-t-business-intelligence-0da1`))
 
-***** org-babel-execute:bq
+***** bigquery
+:PROPERTIES:
+:ID:       61feeb74-4c8a-467e-8e2e-5d17a397a303
+:CREATED:  [2023-05-05 Fri 14:24]
+:UPDATED:  [2023-05-05 Fri 14:24]
+:ROAM_EXCLUDE: t
+:END:
+****** org-babel-execute:bq
 :PROPERTIES:
 :ID:       4bc34558-e335-475b-ad80-87333824ac44
 :CREATED:  [2023-04-14 Fri 18:34]
@@ -6002,6 +6009,91 @@ she said im cool!!
 
 #+RESULTS:
 | qz/advice-enable--org-babel-execute:sql--org-babel-execute:bq | qz/advice-disable--org-babel-execute:sql--org-babel-execute:bq |
+
+
+****** bq-consult-attrs
+:PROPERTIES:
+:ID:       3ee4f0e6-7ead-44fd-b01a-7537aa93c236
+:CREATED:  [2023-05-05 Fri 14:23]
+:UPDATED:  [2023-05-05 Fri 14:26]
+:END:
+
+- see also :: [[id:cbfce57c-9f96-4e68-9585-620f4f249f5a][bq: cli cheatsheet]]
+
+******* shell
+:PROPERTIES:
+:ID:       d8b18278-3586-4471-b1f4-e08ae9dfc56b
+:CREATED:  [2023-05-05 Fri 14:23]
+:UPDATED:  [2023-05-05 Fri 14:24]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src shell :results file :file ~/.cache/bq-schema.txt :tangle ~/.local/bin/bq-scrape
+qdatasets() { bq ls --format=json | jq -r 'map( .datasetReference | [.projectId, .datasetId] | join(".") ) | join("\n") ' ; }
+
+datasets() { bq ls --format=json | jq -r 'map( .datasetReference.datasetId ) | join("\n") ' ; }
+
+tables() { bq ls --format=json $1 | jq -r 'map( .tableReference | [.datasetId, .tableId] | join(".") ) | join("\n") ' ; }
+
+table() { bq show --format=json $1 | jq -r ' .
+| (.tableReference | [.datasetId, .tableId] | join(".")) as $tbl
+| .schema.fields
+| map(["\($tbl).\(.name)", .type, .mode]  | join("::"))
+| join("\n") ' ; }
+
+for dataset in $(datasets) ; do
+    echo $dataset
+    (for tbl in $(tables $dataset) ; do
+         echo $tbl
+         (table $tbl) || echo oops! $tbl
+     done) || echo oops! $dataset
+done
+    #+end_src
+
+    #+RESULTS:
+    :results:
+    [[file:~/.cache/bq-schema.txt]]
+    :end:
+
+
+******* elisp
+:PROPERTIES:
+:ID:       f61e6ac0-150d-41a9-9cd3-4a4941deaaa5
+:CREATED:  [2023-05-05 Fri 14:23]
+:UPDATED:  [2023-05-05 Fri 14:25]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src emacs-lisp
+(defun qz/bq-consult-attrs ()
+  (interactive)
+  (let ((d (mapcar
+            (lambda (line) (s-split "::" line))
+            ;; lines
+            (s-split "\n"
+                     ;; remove last empty line
+                     (s-trim (with-temp-buffer
+                               ;; TODO memoize
+                               (insert-file "~/.cache/bq-schema.txt")
+                               (buffer-string)))))))
+    (consult--read
+     d
+     :prompt "choose attr: "
+     :annotate
+     (lambda (c)
+       (concat
+        (propertize " " 'display '(space :align-to center))
+        (nth 1 (assoc c d))
+        (propertize " " 'display '(space))
+                                        ;(nth 2 (assoc c d))
+
+        ))
+     :sort nil)))
+
+#+end_src
+
+#+RESULTS:
+: qz/bq-consult-attrs
 
 **** [[id:091ac573-6b34-4e0e-88b8-415785d5ae85][python]]
 :PROPERTIES:
