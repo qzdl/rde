@@ -3379,7 +3379,6 @@ annoying! cannot fathom why this doesn't work
 "emacs-dimmer"
 "emacs-edit-server"
 "emacs-eglot"
-"emacs-ement"
 "emacs-eros"
 "emacs-ess"
 "emacs-explain-pause-mode"
@@ -4009,6 +4008,12 @@ annoying! cannot fathom why this doesn't work
 (feature-emacs-dashboard)
 (feature-emacs-ednc)
 (feature-emacs-pulseaudio-control)
+(feature-pantalaimon)
+(feature-matrix-settings
+ #:matrix-accounts (list (matrix-account
+                          (id "@sculp-ns:matrix.org")
+                          (server "localhost:8009"))))
+(feature-emacs-ement)
 #+end_src
 
 #+begin_src scheme :noweb-ref null
