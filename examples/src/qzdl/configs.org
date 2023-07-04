@@ -3999,6 +3999,7 @@ annoying! cannot fathom why this doesn't work
 (feature-emacs-dashboard)
 (feature-emacs-ednc)
 (feature-emacs-pulseaudio-control)
+(feature-emacs-display-wttr)
 (feature-slack-settings
  #:slack-accounts (list (slack-account
                          (workspace "newstoreinc")
