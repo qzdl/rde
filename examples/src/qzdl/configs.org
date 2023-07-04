@@ -5306,7 +5306,9 @@ seems like lots of ways to move
   (run-hook-with-args 'org-pre-cycle-hook 'all)
   (org-show-all '(headings blocks))
   (setq org-cycle-global-status 'all)
-  (run-hook-with-args 'org-cycle-hook 'all))
+  (run-hook-with-args 'org-cycle-hook 'all)
+  (when (not current-prefix-arg)
+    (org-cycle-hide-drawers 'all)))
 
 (defalias 'qz/org-unfold 'qz/org-show-all)
 
