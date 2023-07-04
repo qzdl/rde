@@ -2899,7 +2899,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       855bb3df-f74b-4fff-9122-7c334a878dcc
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2023-03-04 Sat 12:33]
+:UPDATED:  [2023-07-03 Mon 18:54]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -2907,9 +2907,9 @@ host	all	all	0.0.0.0/0       md5
 (feature-ssh
  #:ssh-configuration
  (home-ssh-configuration
-  (default-options
-    '((hostkey-algorithms . "+ssh-rsa")
-      (pubkey-accepted-algorithms "+ssh-rsa")))
+  ;; (default-options
+  ;;   '((hostkey-algorithms . "+ssh-rsa")
+  ;;     (pubkey-accepted-algorithms "+ssh-rsa")))
   (extra-config
    (list (ssh-host
           (host "qz")
@@ -2917,39 +2917,34 @@ host	all	all	0.0.0.0/0       md5
           (options '((user . "samuel")
                      (hostname . "192.168.0.249")
                      (port . 22)
-                     (identity-file . "~/.ssh/qzdl.pub"))))
+                     (identity-file . "~/.ssh/qzdl"))))
          (ssh-host
           (host "ko")
           (options '((user . "root")
                      (hostname . "192.168.0.240")
                      (port . 2222)
-                     (identity-file . "~/.ssh/ko.pub"))))
+                     (identity-file . "~/.ssh/ko"))))
          (ssh-host
           (host "yoho")
           (options '((user . "yoho")
                      (hostname . "192.168.0.12")
                      (port . 22)
-                     (identity-file . "~/.ssh/yoho.pub"))))
+                     (identity-file . "~/.ssh/yoho"))))
          (ssh-host
-          (host "bastion-sandbox")
-          (options '((user . "ubuntu@bastion-sandbox")
-                     (hostname . "bastion-sandbox.ssh.newstore.luminatesec.com")
+          (host "boggartonius")
+          (options '((user . "chopi")
+                     (hostname . "192.168.0.43")
                      (port . 22)
-                     (identity-file . "~/.ssh/newstore-luminate.pem"))))
+                     (identity-file . "~/.ssh/ixy-bogg"))))
          (ssh-host
-          (host "bastion-staging")
-          (options '((user . "ubuntu@bastion-staging")
-                     (hostname . "bastion-staging.ssh.newstore.luminatesec.com")
+          (host "medmac")
+          (options '((user . "sam")
+                     (hostname . "192.168.1.118")
                      (port . 22)
-                     (identity-file . "~/.ssh/newstore-luminate.pem"))))
-         (ssh-host
-          (host "bastion-production")
-          (options '((user . "ubuntu@bastion-production")
-                     (hostname . "bastion-production.ssh.newstore.luminatesec.com")
-                     (port . 22)
-                     (identity-file . "~/.ssh/newstore-luminate.pem"))))))))
+                     (identity-file . "~/.ssh/ixy-medmac"))))))))
 #+end_src
-*
+
+
 ***** git
 :PROPERTIES:
 :ID:       dcd3cd89-5c4d-41e3-9ed5-324a48dc3546
