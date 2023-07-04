@@ -4011,6 +4011,7 @@ annoying! cannot fathom why this doesn't work
                           (id "@sculp-ns:matrix.org")
                           (server "localhost:8009"))))
 (feature-emacs-ement)
+(feature-emacs-pdf-tools)
 #+end_src
 
 ****** pending
