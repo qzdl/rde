@@ -169,11 +169,11 @@ Debugger entered--Lisp error: (file-missing "Cannot open load file" "No such fil
 :UPDATED:  [2022-09-28 Wed 17:43]
 :ROAM_EXCLUDE: t
 :END:
-****** TODO elisp parser in RDE
+****** TODO [#A] elisp parser in RDE
 :PROPERTIES:
 :ID:       d4870719-33ce-4433-98ef-3867e1698969
 :CREATED:  [2022-09-28 Wed 14:12]
-:UPDATED:  [2022-09-28 Wed 17:44]
+:UPDATED:  [2023-06-01 Thu 23:31]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -198,6 +198,17 @@ Debugger entered--Lisp error: (file-missing "Cannot open load file" "No such fil
 :UPDATED:  [2023-05-03 Wed 18:06]
 :ROAM_EXCLUDE: t
 :END:
+******** unquote literals =,=  become literal =unquote=
+:PROPERTIES:
+:ID:       6cdd496b-c4ef-4998-9d48-5bf40f0b1246
+:CREATED:  [2023-06-01 Thu 23:31]
+:UPDATED:  [2023-06-01 Thu 23:31]
+:ROAM_EXCLUDE: t
+:END:
+
+
+#+DOWNLOADED: screenshot @ 2023-06-01 23:31:00
+[[file:etc/2023-06-01_23-31-00_screenshot.png]]
 
 ******* TODO update rde
 :PROPERTIES:
