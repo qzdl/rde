@@ -1879,6 +1879,167 @@ guix import elpa -a melpa selectric-mode
    (license #f)))
 :end:
 
+***** perl-graph-easy
+:PROPERTIES:
+:ID:       a54f3430-07b8-4ba6-8ae6-faef3b53ad6b
+:CREATED:  [2023-05-04 Thu 14:37]
+:UPDATED:  [2023-05-05 Fri 13:11]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref null
+(use-modules (guix build-system perl))
+
+(define-public perl-image-info
+  (package
+    (name "perl-image-info")
+    (version "1.43")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/S/SR/SREZIC/Image-Info-" version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "1ybibpdhz420c7n09vp7cjxq9g8d46qsgbp3fqcskvwmjf41gi2b"))))
+    (build-system perl-build-system)
+    (propagated-inputs `(("perl-image-info" ,perl-image-info)))
+    (home-page "https://metacpan.org/release/Image-Info")
+    (synopsis "Extract meta information from image files")
+    (description "Extract meta information from image files")
+    (license license:perl-license)))
+
+(define-public perl-graph-easy-as-svg
+  (package
+    (name "perl-graph-easy-as-svg")
+    (version "0.28")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/S/SH/SHLOMIF/Graph-Easy-As_svg-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0y177sznq4a1h74hcq1477jh8h3i5xnfi0ch6yrk8bs48jn5z6nd"))))
+    (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs `(
+                         ;;("perl-graph-easy" ,perl-graph-easy)
+                         ("perl-image-info" ,perl-image-info)))
+    (home-page "https://metacpan.org/release/Graph-Easy-As_svg")
+    (synopsis "Output a Graph::Easy as Scalable Vector Graphics (SVG)")
+    (description "Output a Graph::Easy as Scalable Vector Graphics (SVG)")
+    (license license:gpl2)))
+
+(define-public perl-graph-easy
+  (package
+    (name "perl-graph-easy")
+    (version "0.76")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/S/SH/SHLOMIF/Graph-Easy-" version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "1yni1181bqfvqcr155mvzgqsqlmpwfiklzx3ircknrpgxc5c38nl"))))
+    (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs `(("perl-graph-easy-as_svg" ,perl-graph-easy-as-svg)))
+    (home-page "https://metacpan.org/release/Graph-Easy")
+    (synopsis "Convert or render graphs (as ASCII, HTML, SVG or via Graphviz)")
+    (description "Convert or render graphs (as ASCII, HTML, SVG or via Graphviz)")
+    (license license:gpl1)))
+#+end_src
+
+****** guix import
+:PROPERTIES:
+:ID:       f9fde913-acc6-4e7b-a5ba-2781a52027fd
+:CREATED:  [2023-05-04 Thu 14:45]
+:UPDATED:  [2023-05-04 Thu 14:55]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src shell
+echo "(use-modules (guix build-system perl))" && echo
+
+for pkg in Image::Info Graph::Easy::As_svg Graph::Easy ; do
+    name="$(echo $pkg | sed -e 's/::/-/g' -e 's/_/-/g' | awk '{print tolower($0)}')"
+    echo "(define-public $name
+$(guix import cpan $pkg))
+" && echo
+done
+
+#+end_src
+
+#+RESULTS:
+:results:
+(use-modules (guix build-system perl))
+
+(define-public image-info
+(package
+  (name "perl-image-info")
+  (version "1.43")
+  (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "mirror://cpan/authors/id/S/SR/SREZIC/Image-Info-" version
+                  ".tar.gz"))
+            (sha256
+             (base32
+              "1ybibpdhz420c7n09vp7cjxq9g8d46qsgbp3fqcskvwmjf41gi2b"))))
+  (build-system perl-build-system)
+  (propagated-inputs `(("perl-image-info" ,perl-image-info)))
+  (home-page "https://metacpan.org/release/Image-Info")
+  (synopsis "Extract meta information from image files")
+  (description fill-in-yourself!)
+  (license perl-license)))
+
+
+(define-public graph-easy-as-svg
+(package
+  (name "perl-graph-easy-as_svg")
+  (version "0.28")
+  (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "mirror://cpan/authors/id/S/SH/SHLOMIF/Graph-Easy-As_svg-"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "0y177sznq4a1h74hcq1477jh8h3i5xnfi0ch6yrk8bs48jn5z6nd"))))
+  (build-system perl-build-system)
+  (native-inputs `(("perl-module-build" ,perl-module-build)))
+  (propagated-inputs `(("perl-graph-easy" ,perl-graph-easy)
+                       ("perl-image-info" ,perl-image-info)))
+  (home-page "https://metacpan.org/release/Graph-Easy-As_svg")
+  (synopsis "Output a Graph::Easy as Scalable Vector Graphics (SVG)")
+  (description fill-in-yourself!)
+  (license gpl2)))
+
+
+(define-public graph-easy
+(package
+  (name "perl-graph-easy")
+  (version "0.76")
+  (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "mirror://cpan/authors/id/S/SH/SHLOMIF/Graph-Easy-" version
+                  ".tar.gz"))
+            (sha256
+             (base32
+              "1yni1181bqfvqcr155mvzgqsqlmpwfiklzx3ircknrpgxc5c38nl"))))
+  (build-system perl-build-system)
+  (native-inputs `(("perl-module-build" ,perl-module-build)))
+  (propagated-inputs `(("perl-graph-easy-as_svg" ,perl-graph-easy-as_svg)))
+  (home-page "https://metacpan.org/release/Graph-Easy")
+  (synopsis "Convert or render graphs (as ASCII, HTML, SVG or via Graphviz)")
+  (description fill-in-yourself!)
+  (license gpl1)))
+
+
+:end:
 
 
 
