@@ -3238,7 +3238,7 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       e9a4d259-45cc-43e9-89e5-69319a169928
 :CREATED:  [2022-10-28 Fri 12:09]
-:UPDATED:  [2023-04-25 Tue 19:50]
+:UPDATED:  [2023-05-23 Tue 10:09]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -3254,7 +3254,13 @@ host	all	all	0.0.0.0/0       md5
    (profile docked ((output eDP-2 disable)
                     (output DP-2 enable)))
    (profile docked0 ((output eDP-1 disable)
-                     (output DP-2 enable)))))
+                     (output DP-2 enable)))
+   (profile docked1 ((output eDP-2 disable)
+                     (output DP-1 enable)))
+   (profile docked2 ((output eDP-1 disable)
+                     (output DP-1 enable)))
+   (profile hdmi ((output eDP-1 enable)
+                  (output HDMI-1 enable)))))
 #+end_src
 
 ****** TODO redshift
