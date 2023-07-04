@@ -4674,7 +4674,7 @@ nil
 :ID:       a2e3f5db-5cc5-4531-9c9d-470183f5e8aa
 :CREATED:  <2022-02-22 Tue 15:27>
 :ROAM_EXCLUDE: t
-:UPDATED:  [2023-04-16 Sun 15:37]
+:UPDATED:  [2023-06-19 Mon 18:08]
 :END:
 
 #+begin_src emacs-lisp :noweb-ref org
@@ -4685,25 +4685,16 @@ nil
 ;;(setq qz/org-babel-indent-exclude-lang nil)
 ;;(setq qz/debug t)
 
-(defun qz/org-babel-indent-block ()
-  (interactive)
-  (save-mark-and-excursion
-    (when (and (call-interactively 'org-babel-mark-block)
-               (not (seq-contains-p
-                     qz/org-babel-indent-exclude-lang
-                     (car (car (cdr (car (org-babel-tangle-single-block 1 t))))))))
-      (call-interactively 'indent-region))))
 
 (defun qz/org-babel-indent-block-hook (beg end &rest args)
   (interactive "r")
-
   (qz/debug- (message "qz/org-babel-indent-block: BEG %s END %s ARGS %s" beg end args))
-  (qz/org-babel-indent-block))
+  (qz/dwim-indent))
 
 (define-key org-mode-map
-            (kbd "C-c C-v C-\\") 'qz/org-babel-indent-block)
-(define-key global-map
-            (kbd "C-M-|") 'qz/org-babel-indent-block)
+            (kbd "C-c C-v C-\\") 'qz/dwim-indent)
+(define-key global-map ;; this one is burned in hard
+            (kbd "C-M-|") 'qz/dwim-indent)
 
 ;; NOTE: blocks default
 ;;(add-to-list 'org-ctrl-c-ctrl-c-hook 'qz/org-babel-indent-block)
