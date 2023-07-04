@@ -3550,15 +3550,17 @@ annoying! cannot fathom why this doesn't work
 :PROPERTIES:
 :ID:       37e931d1-9093-484c-80ad-c7b30f20aa45
 :CREATED:  [2022-09-28 Wed 15:38]
-:UPDATED:  [2022-09-28 Wed 15:38]
+:UPDATED:  [2023-07-04 Tue 10:58]
 :ROAM_EXCLUDE: t
 :END:
+
 #+begin_src scheme :noweb-ref main
 (feature-emacs-tempel
  #:default-templates? #t
  #:templates `(fundamental-mode
                ,#~""
-               (t (format-time-string "%Y-%m-%d"))))
+               (t (format-time-string "%Y-%m-%d"))
+               (ielisp (elisp "src_emacs-lisp{ " r> " }"))))
 #+end_src
 
 ******* emacs-erc
