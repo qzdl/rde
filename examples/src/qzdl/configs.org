@@ -3316,7 +3316,7 @@ annoying! cannot fathom why this doesn't work
 :PROPERTIES:
 :ID:       d2fc9152-8683-46c1-9ef2-4ca84510bb49
 :CREATED:  [2022-09-28 Wed 16:14]
-:UPDATED:  [2023-04-21 Fri 16:14]
+:UPDATED:  [2023-06-30 Fri 23:04]
 :ROAM_EXCLUDE: t
 :END:
 
@@ -3352,6 +3352,8 @@ annoying! cannot fathom why this doesn't work
    emacs-bigquery-mode
    emacs-dogears
    emacs-chatgpt-shell
+   emacs-selectric-mode
+
    ;;
    ;; emacs-code-review    ; TODO qzdl pkg
    )
