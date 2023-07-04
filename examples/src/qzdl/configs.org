@@ -527,8 +527,8 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
   #:use-module (rde features linux)
   #:use-module (rde features mail)
   #:use-module (rde features markup)
-  ;;#:use-module (rde features messaging) ;; FIXME
   #:use-module (rde features matrix)
+  #:use-module (rde features messaging)
   #:use-module (rde features networking)
   #:use-module (rde features password-utils)
   #:use-module (rde features shells)
