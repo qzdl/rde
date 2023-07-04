@@ -3987,15 +3987,14 @@ annoying! cannot fathom why this doesn't work
 :PROPERTIES:
 :ID:       72ecbbb1-860b-471e-a2e8-d96cf8c3dac3
 :CREATED:  [2023-03-30 Thu 12:47]
-:UPDATED:  [2023-04-25 Tue 20:08]
+:UPDATED:  [2023-07-04 Tue 10:59]
 :ROAM_EXCLUDE: t
 :END:
-
 
 #+begin_src scheme :noweb-ref main
 (feature-youtube-dl
  #:emacs-ytdl emacs-ytdl-next)
-(feature-nyxt)
+;;(feature-nyxt)
 (feature-emacs-dashboard)
 (feature-emacs-ednc)
 (feature-emacs-pulseaudio-control)
