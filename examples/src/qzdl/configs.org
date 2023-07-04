@@ -4008,6 +4008,12 @@ annoying! cannot fathom why this doesn't work
 (feature-emacs-dashboard)
 (feature-emacs-ednc)
 (feature-emacs-pulseaudio-control)
+(feature-slack-settings
+ #:slack-accounts (list (slack-account
+                         (workspace "newstoreinc")
+                         (nick "sculpepper")
+                         (cookie? #t))))
+(feature-emacs-slack)
 (feature-pantalaimon)
 (feature-matrix-settings
  #:matrix-accounts (list (matrix-account
