@@ -1786,6 +1786,99 @@ found in the documentation online.")
 guix import elpa -a melpa ytdl
 #+end_src
 
+***** emacs-selectric-mode
+:PROPERTIES:
+:ID:       8befc63a-afad-4c84-bf58-1e4c3e071896
+:CREATED:  [2023-06-30 Fri 23:04]
+:UPDATED:  [2023-06-30 Fri 23:04]
+:ROAM_EXCLUDE: t
+:END:
+
+****** src
+:PROPERTIES:
+:ID:       fe050d49-8d00-476c-8af7-35ab189596a5
+:CREATED:  [2023-06-30 Fri 23:04]
+:UPDATED:  [2023-07-04 Tue 10:43]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme
+(define-public emacs-selectric-mode
+  (package
+    (name "emacs-selectric-mode")
+    (version "20200209.2107")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rbanffy/selectric-mode.git")
+                    (commit "1840de71f7414b7cd6ce425747c8e26a413233aa")))
+              (sha256 (base32
+                       "1aabqqqcafkqmyarf5kb1k0gglmlpn6kr3h3x0yph5gd6sk3l4ll"))))
+    (build-system emacs-build-system)
+    (arguments '(#:include '("^[^/]+.el$" "^[^/]+.el.in$"
+                             "^dir$"
+                             "^[^/]+.info$"
+                             "^[^/]+.texi$"
+                             "^[^/]+.texinfo$"
+                             "^doc/dir$"
+                             "^doc/[^/]+.info$"
+                             "^doc/[^/]+.texi$"
+                             "^doc/[^/]+.texinfo$"
+                             "^[^/]+.wav$")
+                 #:exclude '("^.dir-locals.el$" "^test.el$" "^tests.el$"
+                             "^[^/]+-test.el$" "^[^/]+-tests.el$")))
+    (home-page "https://github.com/rbanffy/selectric-mode")
+    (synopsis "IBM Selectric mode for Emacs")
+    (description
+     "This minor mode plays the sound of an IBM Selectric typewriter as you type.")
+    (license license:gpl3+)))
+#+end_src
+
+****** import from melpa
+:PROPERTIES:
+:ID:       e8fd13f6-029f-4867-986f-07524f194a65
+:CREATED:  [2023-06-30 Fri 23:04]
+:UPDATED:  [2023-06-30 Fri 23:04]
+:ROAM_EXCLUDE: t
+:END:
+#+begin_src shell
+date -uIs
+guix import elpa -a melpa selectric-mode
+#+end_src
+
+#+RESULTS:
+:results:
+2023-06-30T21:00:14+00:00
+(package
+  ((name "emacs-selectric-mode")
+   (version "20200209.2107")
+   (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/rbanffy/selectric-mode.git")
+                   (commit "1840de71f7414b7cd6ce425747c8e26a413233aa")))
+             (sha256 (base32
+                      "1aabqqqcafkqmyarf5kb1k0gglmlpn6kr3h3x0yph5gd6sk3l4ll"))))
+   (build-system emacs-build-system)
+   (arguments '(#:include '("^[^/]+.el$" "^[^/]+.el.in$"
+                            "^dir$"
+                            "^[^/]+.info$"
+                            "^[^/]+.texi$"
+                            "^[^/]+.texinfo$"
+                            "^doc/dir$"
+                            "^doc/[^/]+.info$"
+                            "^doc/[^/]+.texi$"
+                            "^doc/[^/]+.texinfo$"
+                            "^[^/]+.wav$")
+                #:exclude '("^.dir-locals.el$" "^test.el$" "^tests.el$"
+                            "^[^/]+-test.el$" "^[^/]+-tests.el$")))
+   (home-page "https://github.com/rbanffy/selectric-mode")
+   (synopsis "IBM Selectric mode for Emacs")
+   (description
+    "This minor mode plays the sound of an IBM Selectric typewriter as you type.")
+   (license #f)))
+:end:
+
 
 
 
