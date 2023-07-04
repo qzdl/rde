@@ -4898,9 +4898,15 @@ when prefix arg nil,       fold to all levels."
                current-prefix-arg)
            ;; by default, reveal all
            9999)))
-    ;; HACK I don't understand prefix / current-prefix
-    (message "prefix: %s" (list current-prefix-arg prefix-arg))
-    (funcall-interactively 'org-content prefix-arg)))
+    (qz/debug- ;; HACK I don't understand prefix / current-prefix
+     (message "prefix: %s" (list current-prefix-arg prefix-arg)))
+    ;;; DO THE FOLD
+    (funcall-interactively 'org-content prefix-arg)
+    ;;; HACK ENSURE NICE DISPLAY IF NICE DISPLAY
+    ;; org-modern-mode doesn't handle "demoting" and manual link
+    ;; editing, etc... all too well
+    (when (and (boundp 'org-modern-mode) org-modern-mode)
+      (org-modern-mode 1))))
 
 
 ;; current subtree
