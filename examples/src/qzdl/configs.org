@@ -3458,18 +3458,6 @@ annoying! cannot fathom why this doesn't work
 (feature-emacs-appearance)
 #+end_src
 
-******* emacs-faces
-:PROPERTIES:
-:ID:       1b88781f-5746-47c1-9985-b15a23aefa8d
-:CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-08-01 Mon 12:38]
-:ROAM_EXCLUDE: t
-:END:
-
-#+begin_src scheme :noweb-ref main
-(feature-emacs-faces)
-#+end_src
-
 ******* TODO emacs .. etc
 :PROPERTIES:
 :ID:       480434ca-5147-45f6-9b00-e47b87345dc2
