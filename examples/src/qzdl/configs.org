@@ -555,7 +555,8 @@ CLOCK: [2022-08-15 Mon 12:02]--[2022-08-15 Mon 12:18] =>  0:16
   #:use-module (rde packages)
   #:use-module (rde system services accounts)
   ;;#:use-module (gnu home-services shellutils)
-  ;;#:use-module (nongnu packages nvidia)
+  #:use-module (nongnu packages nvidia)
+  #:use-module (nongnu services nvidia)
   ;;#:use-module (rde features bluetooth) ;; TODO qzdl
 
   #:use-module (srfi srfi-1))
@@ -1932,8 +1933,8 @@ guix import elpa -a melpa ytdl
    ;;      ("__EGL_EXTERNAL_PLATFORM_CONFIG_DIRS" . ,(string-append driver-path "/share/egl/egl_external_platform.d"))
    ;;      ))
    ;;
-   ;;("__GLX_VENDOR_LIBRARY_NAME" . "nvidia")
-   ;;("WLR_NO_HARDWARE_CURSORS" . "1")
+   ("__GLX_VENDOR_LIBRARY_NAME" . "nvidia")
+   ("WLR_NO_HARDWARE_CURSORS" . "1")
    ;;("WLR_DRM_NO_ATOMIC" . "1")
    ;; echo "/dev/dri/card$(udevadm info -a -n /dev/dri/card1 | grep boot_vga | rev | cut -c 2)"
    ;;("WLR_DRM_DEVICES" . "/dev/dri/card1")   ;; gpu only
@@ -2278,7 +2279,7 @@ breathe.  do some hangboarding
        "updatedb")
 #+end_src
 
-******* udev-nvidia                                                        :inactive:
+******* OLD udev-nvidia                                                    :inactive:
 :PROPERTIES:
 :ID:       e005dec1-7261-4fcd-84b6-49209ea7d7b0
 :CREATED:  [2022-09-28 Wed 15:52]
@@ -2292,6 +2293,19 @@ breathe.  do some hangboarding
   (simple-service
    'nvidia-udev-rule udev-service-type
    (list nvidia-driver)))
+#+end_src
+
+******* NEW nvidia-service
+:PROPERTIES:
+:ID:       90f44378-4708-46cb-9a88-a5ef957fca5c
+:CREATED:  [2023-05-28 Sun 15:03]
+:UPDATED:  [2023-05-28 Sun 15:03]
+:ROAM_EXCLUDE: t
+:END:
+
+#+begin_src scheme :noweb-ref services-sys
+
+;;(service nvidia-service-type)
 #+end_src
 
 ******* udev-sdmount
@@ -2364,7 +2378,7 @@ rsync \
         "GROUP=\"input\", OPTIONS+=\"static_node=uinput\"")))
 
 #+end_src
-******* X11 gdm with nvidia                                                :inactive:
+******* OLD X11 gdm with nvidia                                            :inactive:
 :PROPERTIES:
 :ID:       a91bb43f-465e-4a4a-99fa-a8b4a5ba03e6
 :CREATED:  [2022-09-28 Wed 15:52]
@@ -2791,17 +2805,14 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       05be317e-8f65-4a14-a83f-db104b19788f
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2023-04-15 Sat 10:52]
+:UPDATED:  [2023-07-04 Tue 10:48]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src scheme :noweb-ref main
 (unless gaming?
   (feature-sway
-   ;; #:sway sway-latest ;; sway-last (transform-nvidia sway-latest)
-   ;; #:sway (transform-nvidia sway-latest)
-   ;; #:xdg-desktop-portal-wlr xdg-desktop-portal-wlr-latest
-   ;; #:xdg-desktop-portal-wlr (transform-nvidia xdg-desktop-portal-wlr-latest)
+   ;;#:sway (replace-mesa sway)
    #:xwayland? #f
    ;; #:opacity 0.9 ;; TODO qzdl
    ;; #:wallpaper "$HOME/.cache/wallpaper.png" ;; TODO qzdl
@@ -2848,17 +2859,16 @@ host	all	all	0.0.0.0/0       md5
 :PROPERTIES:
 :ID:       1a67a54c-b9c9-4957-8bb7-24633e88c432
 :CREATED:  [2022-08-01 Mon 10:52]
-:UPDATED:  [2022-08-01 Mon 12:35]
+:UPDATED:  [2023-06-05 Mon 19:15]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src scheme :noweb-ref main
-(unless gaming?
-  (feature-sway-run-on-tty
-   #:sway-tty-number 2
-   ;;#:launch-args "--unsupported-gpu" ;; 1.7-rc1+ https://github.com/swaywm/sway/releases/tag/1.7-rc1
-   ;;#:launch-args "--unsupported-gpu --debug &>/tmp/sway"
-   ))
+(feature-sway-run-on-tty
+ #:sway-tty-number 2
+ ;;#:launch-arguments "--unsupported-gpu 2> ${XDG_LOG_HOME}/sway.log"
+ )
+
 #+end_src
 
 ******* TODO sway-tessen
@@ -3927,20 +3937,25 @@ annoying! cannot fathom why this doesn't work
       "nouveau.modeset=1"
       ;; https://forums.developer.nvidia.com/t/nvidia-495-on-sway-tutorial-questions-arch-based-distros/192212
       ;;"nvidia-drm.modeset=1" "nouveau.blacklist=1" "modprobe.blacklist=nouveau"
+      ;; NEW NVIDIA ATTEMPT
+      ;;"modprobe.blacklist=nvidiafb,nouveau"
+      ;;"nvidia.NVreg_OpenRmEnableUnsupportedGpus=1"
+      ;;"nvidia_drm.modeset=1"
+
       )
     ;; removed "modprobe.blacklist=snd_hda_intel,snd_soc_skl"
     #:firmware (list nongnu:linux-firmware
                      nongnu:sof-firmware
-                     ;;nvidia-driver
+
                      )
     #:initrd nongnu-sys:microcode-initrd
     #:kernel-loadable-modules (list v4l2loopback-linux-module
-                                    ;;nvidia-driver
+                                    ;;nvidia-module
                                     ))
    (feature-file-systems
     #:mapped-devices ixy-mapped-devices
     #:file-systems   ixy-file-systems)
-                                        ;(feature-hidpi)
+   ;;(feature-hidpi)
    (feature-networking)))
 
 (pretty-print "post-%ixy-features")
