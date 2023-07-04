@@ -1219,43 +1219,69 @@ https://github.com/ndwarshuis/org-ml")
 :PROPERTIES:
 :ID:       3c32dec6-4f12-4aa0-ad00-98b433c966e8
 :CREATED:  [2022-10-05 Wed 19:07]
-:UPDATED:  [2022-10-05 Wed 19:19]
+:UPDATED:  [2023-07-04 Tue 09:46]
 :ROAM_EXCLUDE: t
 :END:
 
 #+begin_src scheme
 (define-public emacs-moldable-emacs
   (package
-   (name "emacs-moldable-emacs")
-   (version "20220825.0037")
-   (source
-    (origin
-     (method git-fetch)
-     (uri (git-reference
-           (url "https://github.com/ag91/moldable-emacs")
-           (commit "53f8b3af4572ab12be9f1f96da848278507ef350")))
-     (sha256
-      (base32 "1jcac4hiyh98q8cvim6yjaw1xihsy3r5lnjhijr3p89z2bv481xl"))))
-   (build-system emacs-build-system)
+    (name "emacs-moldable-emacs")
+    (version "20220825.0037")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ag91/moldable-emacs")
+             (commit "53f8b3af4572ab12be9f1f96da848278507ef350")))
+       (sha256
+        (base32 "1jcac4hiyh98q8cvim6yjaw1xihsy3r5lnjhijr3p89z2bv481xl"))))
+    (arguments
+     (list
+      ;; #:tests? #true
+      ;; #:test-command
+      ;; #~(list "emacs" "-Q" "--batch"
+      ;;         "-L" "test"
+      ;;         "--load" "test/testein-loader.el")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'install-molds
+            (lambda _
+              (for-each
+               (lambda (f)
+                 (install-file
+                  f (string-append (elpa-directory #$output)
+                                   "/molds")))
+               (find-files "./molds" ".*"))
+              (for-each
+               (lambda (f)
+                 (install-file
+                  f (string-append (elpa-directory #$output)
+                                   "/tutorials")))
+               (find-files "./tutorials" ".*")))))))
+    (build-system emacs-build-system)
    ;;; propagated (external)
-   ;; (check these via the mold “WhatMoldsCanIUse?”)
-   ;; graph-cli
-   ;; graphviz
-   ;; imgclip
-   (inputs (list emacs-dash
-                 emacs-s
-                 emacs-async
-                 ;; emacs-thunk builtin
-                 emacs-esxml
-                 emacs-org-ql
-                 ;; emacs-tree-sitter
-                 ;; emacs-code-compass
-                 ))
-   (home-page "https://github.com/ag91/moldable-emacs")
-   (synopsis "TODO")
-   (description
-    "TODO")
-   (license license:gpl3+)))
+    ;; (check these via the mold “WhatMoldsCanIUse?”)
+    ;; graph-cli
+    ;; graphviz
+    ;; imgclip
+    ;; emacs-csv-mode OPTIONAL (buffer size to bar chart)
+    (propagated-inputs
+     (list emacs-dash
+           emacs-s
+           emacs-async
+           ;; emacs-thunk builtin
+           emacs-esxml
+           emacs-org-ql
+           ;; emacs-tree-sitter
+           ;; emacs-code-compass
+           ))
+    (home-page "https://github.com/ag91/moldable-emacs")
+
+    (synopsis "TODO")
+    (description
+     "TODO")
+    (license license:gpl3+)))
 #+end_src
 
 ***** emacs-ob-go
