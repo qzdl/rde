@@ -3723,6 +3723,7 @@ annoying! cannot fathom why this doesn't work
 (feature-emacs-org-roam
  ;; TODO: Rewrite to states
  #:org-roam-directory my-notes-directory
+ #:org-roam-todo? #f
  ;;#:org-roam-dailies-directory (string-append my-notes-directory "/daily")) ;; TODO qzdl
  )
 #+end_src
@@ -4012,6 +4013,14 @@ annoying! cannot fathom why this doesn't work
 (feature-emacs-ement)
 #+end_src
 
+****** pending
+:PROPERTIES:
+:ID:       5bbe74bc-777b-4dfe-ad73-8650e9ee9ec2
+:CREATED:  [2023-07-04 Tue 10:59]
+:UPDATED:  [2023-07-04 Tue 10:59]
+:ROAM_EXCLUDE: t
+:END:
+
 #+begin_src scheme :noweb-ref null
 (feature-compile)
 (feature-emacs-battery)
@@ -4020,21 +4029,17 @@ annoying! cannot fathom why this doesn't work
 
 ;;(feature-emacs-debbugs)
 (feature-emacs-dired)
-(feature-emacs-display-wttr)
 
 (feature-emacs-elisp)
 (feature-emacs-emms)
 (feature-emacs-flymake)
 (feature-emacs-graphviz)
-(feature-emacs-help)
-(feature-emacs-pdf-tools)
-;;(feature-emacs-slack)
+
 (feature-emacs-webpaste)
 (feature-go)
 (feature-gtk3)
 (feature-imv)
 (feature-ungoogled-chromium)
-(feature-youtube-dl)
 #+end_src
 
 *** debug: post-%main-features
